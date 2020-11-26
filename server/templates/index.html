@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles_v102.css')}}">
+    </link>
+    <title>
+      To Do
+    </title>
+  </head>
+  <body>
+    <p><b>Task:</b><br>
+      <form action= "\create" method= "POST" >
+         <input type="text" size="40" name="new_task_name" formmethod="post" />
+      </form>
+
+    <section>ToDo
+      <ul><hr>
+        {% for task in tasks %}
+          {% if task["is_done"] == False %}
+          <section class=task_line>
+            <li>
+              <a>{{ task["name"]}} </a>
+              <form action="\switch" method= "POST" >
+                  <input type="submit" name="{{task['id']}}" value="switch" method="post"/>
+              </form>
+              <form action= "\delete" method= "POST" >
+                <input type="submit" name="{{task['id']}}" formmethod="post" value="delete" />
+              </form>
+          </section>
+          <hr>
+          {% endif%}
+        {% endfor %}
+      </ul>
+    </section>
+    <section>Done
+      <ul><hr>
+        {% for task in tasks %}
+          {% if task["is_done"] == True %}
+          <section class=task_line>
+            <li>
+              <a>{{ task["name"]}} </a>
+              <form action="\switch" method= "POST" >
+                  <input type="submit" name="{{task['id']}}" value="switch" method="post"/>
+              </form>
+              <form action= "\delete" method= "POST" >
+                <input type="submit" name="{{task['id']}}" formmethod="post" value="delete" />
+              </form>
+          </section>
+          <hr>
+          {% endif%}
+        {% endfor %}
+      </ul>
+    </section>
+  </body>
+
+</html>
