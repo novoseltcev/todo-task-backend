@@ -1,9 +1,14 @@
 from flask import Flask
-from server.data_base import DataBase
-
-app = Flask(__name__)
-db = DataBase()
+from server.server_op import ServerOperationOnDB
+from server.data_base import BinDB, IStorage
 
 
-from server import views, crud
+class App(Flask, ServerOperationOnDB):
+    def __init__(self):
+        super().__init__(__name__)
+        self.init_storage(BinDB())
+        self.storage.append_task('test_title')
+        print(self.storage.tasks, 'aaaa')
 
+
+app = App()

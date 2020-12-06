@@ -1,9 +1,7 @@
-from server import app, db
-from flask import render_template
+from server.crud import app, rerender_page
 
 
 @app.route("/")
-@app.route("/index")
 def index():
-    return render_template("index.html", tasks=db.dictionary)
+    return rerender_page(), 200
 

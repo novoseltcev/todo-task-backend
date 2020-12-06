@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="static/css/mainframe33.css">
+    </link>
+  </head>
+
+  <body style="background: #b7b7b72e">
+    <div class="Application">
+      <ul class="vertical">
+        <li><a href="">Sign In</a></li>
+        <li><a href="">Sign Up</a></li>
+
+        <li><a href="">Categories</a></li>
+        <ul>
+          <li><form action="/" method="post">
+            <input type="button" name="category" value="Category 1" formmethod="post"/>
+          </form></li>
+          <li><a href="">Category 2</a></li>
+          <li><a href="">Category 3</a></li>
+          <li><a href="">Category 4</a></li>
+        </ul>
+      </ul>
+
+      <div class="task_frame">
+        {% for table_element in (("ToDo", False), ("Done", True)) %}
+          <div class="container margin-top">
+            <div class="row">
+              <table class="table table-tasks">
+                <thead>
+                  <tr><th colspan="3">{{table_element[0]}}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for task in tasks %}
+                    {% if task["is_done"] == table_element[1] %}
+                      <tr>
+                        <td style="padding-left: 30px;">{{task["title"]}}</td>
+                        <td style="width: 13px;">
+                          <form action="/" method="post">
+                            <input style="width: 13px;" class="t_button" type="checkbox">
+                          </form>
+                        </td>
+                        <td style="width: 40px;">
+                          <form action="/" method="post">
+                            <input class="t_button" type="button" value="Delete">
+                          </form>
+                        </td>
+                      </tr>
+                    {% endif %}
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% endfor %}
+        <form class="" action="\" method="post">
+          <input class="text_input" type="text" value="Enter new task...">
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
