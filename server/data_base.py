@@ -64,16 +64,14 @@ class BinDB(IStorage):
             self.tasks.remove(searched_task)
             self.__serialization()
 
-    #  TODO - S from SOLID
     def remove_category(self, category: str):
-        if category == self._default:
-            abort(500)
-        for el in self.tasks:
-            if el["category"] == category:
-                self.tasks.remove(el)
-        self.categories.remove(category)
-        self.current_category = self._default
-        self.__serialization()
+        if category != self._default:
+            for el in self.tasks:
+                if el["category"] == category:
+                    self.tasks.remove(el)
+            self.categories.remove(category)
+            self.current_category = self._default
+            self.__serialization()
 
     def search_by_id(self, task_id):
         for task in self.tasks:
