@@ -1,9 +1,9 @@
 class IStorage:
-    __counter = 0
-    __default = 'None'
+    _counter = 0
+    _default = 'None'
     tasks = []
     categories = []
-    current_category = __default
+    current_category = _default
 
     def __init__(self, path=''):
         """"INIT"""
@@ -28,3 +28,6 @@ class IStorage:
 
     def rename_category(self, destination: str, source: str):
         """RENAME"""
+
+    def get_filtered_data(self):
+        """"filter"""

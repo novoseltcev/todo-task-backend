@@ -64,5 +64,5 @@ class ServerOperationOnDB:
             return True
         return False
 
-    def get_data(self, json: dict):
-        """"fghj"""
+    def get_data(self):
+        return self.storage.get_filtered_data()

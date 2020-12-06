@@ -3,25 +3,26 @@ from flask import abort
 from server.istorage import IStorage
 
 
+# TODO - final refactoring
 class BinDB(IStorage):
 
     def __init__(self, filename="server\\data"):
         super().__init__()
         with shelve.open(filename + '\\file_db') as file:
-            self.__counter = file.get('max_id', 0)
+            self._counter = file.get('max_id', 0)
             self.tasks = file.get("db", [])
             self.categories = file.get("categories", [])
 
     def __serialization(self, filename="server\\data"):
         with shelve.open(filename + '\\file_db') as file:
-            file['max_id'] = self.__counter
+            file['max_id'] = self._counter
             file["db"] = self.tasks
             file["categories"] = self.categories
 
     def append_task(self, title_task: str):
-        self.__counter += 1
+        self._counter += 1
         self.tasks.append({
-            "id": self.__counter,
+            "id": self._counter,
             "title": title_task,
             'category': self.current_category,
             "is_done": False
@@ -63,14 +64,15 @@ class BinDB(IStorage):
             self.tasks.remove(searched_task)
             self.__serialization()
 
-    def remove_category(self, category: str):  #  TODO - S from SOLID
-        if category == self.__default:
+    #  TODO - S from SOLID
+    def remove_category(self, category: str):
+        if category == self._default:
             abort(500)
         for el in self.tasks:
             if el["category"] == category:
                 self.tasks.remove(el)
         self.categories.remove(category)
-        self.current_category = self.__default
+        self.current_category = self._default
         self.__serialization()
 
     def search_by_id(self, task_id):
@@ -80,8 +82,14 @@ class BinDB(IStorage):
         abort('404')
         return None
 
+    def get_filtered_data(self):
+        if self.current_category == self._default:
+            return self.tasks
+        else:
+            return list(filter(lambda el: el['category'] == self.current_category, self.tasks))
+
     def filter(self):
-        if self.current_category != self.__default:
+        if self.current_category != self._default:
             result = []
             for el in self.tasks:
                 if el['category'] == self.current_category:
@@ -97,5 +105,4 @@ class BinDB(IStorage):
 
     def __default_category(self, source):
         if self.current_category == source:
-            self.current_category = self.__default
-
+            self.current_category = self._default
