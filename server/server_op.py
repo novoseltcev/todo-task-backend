@@ -1,5 +1,5 @@
 from server.istorage import IStorage
-
+from sqlite3 import IntegrityError
 
 class ServerOperationOnDB:
     storage = IStorage()
@@ -17,8 +17,13 @@ class ServerOperationOnDB:
     def create_category(self, json: dict):
         if 'category' in json and json.get('operation') == 'create':
             task_category = json['category']
-            self.storage.append_category(task_category)
-            return True
+            try:
+                self.storage.append_category(task_category)
+                self.storage.current_category = task_category
+                return True
+            except IntegrityError:
+                return False
+
         return False
 
     def open_category(self, json: dict):

@@ -16,7 +16,8 @@ class SQLiteDB(IStorage):
         self.sqlite_connection.close()
 
     def append_task(self, title_task: str):
-        self.cursor.execute("""INSERT INTO tasks (title, status, id_category) VALUES (?, FALSE, ?)""", (title_task, self.current_category,))
+        print(self.current_category)
+        self.cursor.execute("""INSERT INTO tasks (title, status, id_category) VALUES (?, FALSE, (SELECT id FROM categories WHERE name_category=?))""", (title_task, self.current_category,))
         self.sqlite_connection.commit()
         return self.cursor.fetchall()
 
@@ -28,12 +29,13 @@ class SQLiteDB(IStorage):
     def update_task_status(self, task_id: int):
         self.cursor.execute("""SELECT status FROM tasks WHERE id_task = ?;""", (task_id,))
         prev_status = (self.cursor.fetchone()[0] + 1) % 2
-        self.cursor.execute(f"""UPDATE OR ABORT tasks SET status={prev_status} WHERE id_task=?;""", (task_id,))
+        self.cursor.execute(f"""UPDATE tasks SET status={prev_status} WHERE id_task=?;""", (task_id,))
         self.sqlite_connection.commit()
         return self.cursor.fetchall()
 
     def update_task_category(self, task_id: int, category: str):
-        self.cursor.execute(f"""UPDATE OR ABORT tasks SET id_category=(SELECT id FROM categories WHERE name_category={category}) WHERE id_task=?;""", (task_id,))
+        self.cursor.execute("""SELECT id FROM categories WHERE name_category = ?;""", (category,))
+        self.cursor.execute(f"""UPDATE tasks SET id_category={self.cursor.fetchone()[0]} WHERE id_task=?;""", (task_id,))
         self.sqlite_connection.commit()
         return self.cursor.fetchall()
 
@@ -44,14 +46,13 @@ class SQLiteDB(IStorage):
         self.cursor.execute("""DELETE FROM categories WHERE name_category = ?;""", (category,))
 
     def rename_category(self, destination: str, source: str):
-        self.cursor.execute(f"""UPDATE OR ABORT categories SET name_category={source} WHERE name_category=?;""", (destination,))
+        self.cursor.execute(f"""UPDATE categories SET name_category={source} WHERE name_category=?;""", (destination,))
         self.sqlite_connection.commit()
         return self.cursor.fetchall()
 
     def get_filtered_tasks(self):
-        # print(self.current_category)
         if self.current_category != self._default:
-            self.cursor.execute("""SELECT id FROM categories WHERE name_category=?""", self.current_category)
+            self.cursor.execute("""SELECT id FROM categories WHERE name_category=?""", (self.current_category,))
             cur_category = self.cursor.fetchone()
             self.cursor.execute("""SELECT * FROM tasks WHERE id_category=? ORDER BY id_task DESC ;""", cur_category)
         else:

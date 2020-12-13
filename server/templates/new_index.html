@@ -41,7 +41,11 @@
                         <td style="padding-left: 30px;">{{task['title']}}</td>
                         <td style="width: 13px;">
                           <form action="/" method="post">
-                            <input style="width: 13px;" class="t_button" type="checkbox">
+                            {% if table_element[1] == 0 %}
+                              <input style="width: 13px;" class="t_button" type="checkbox">
+                            {% else %}
+                              <input style="width: 13px;" class="t_button" type="checkbox" checked>
+                            {% endif %}
                           </form>
                         </td>
                         <td style="width: 40px;">
