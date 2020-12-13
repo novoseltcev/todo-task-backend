@@ -2,7 +2,7 @@ from server.istorage import IStorage
 
 
 class ServerOperationOnDB:
-    storage = IStorage
+    storage = IStorage()
 
     def init_storage(self, storage: IStorage):
         self.storage = storage
@@ -27,14 +27,14 @@ class ServerOperationOnDB:
             return True
         return False
 
-    def change_task_status(self, json: dict):
+    def update_task_status(self, json: dict):
         if 'id' in json and 'category' not in json:
             task_id = json['id']
             self.storage.update_task_status(task_id)
             return True
         return False
 
-    def change_task_category(self, json: dict):
+    def update_task_category(self, json: dict):
         if 'id' in json and 'category' in json:
             task_id = json['id']
             category_name = json['category']
@@ -42,10 +42,10 @@ class ServerOperationOnDB:
             return True
         return False
 
-    def change_category_name(self, json: dict):
-        if 'destination_category' in json and 'source_category' in json:
-            destination = json['destination_category']
-            source = json['source_category']
+    def update_category(self, json: dict):
+        if 'destination' in json and 'source' in json:
+            destination = json['destination']
+            source = json['source']
             self.storage.rename_category(destination, source)
             return True
         return False
@@ -65,4 +65,4 @@ class ServerOperationOnDB:
         return False
 
     def get_data(self):
-        return self.storage.get_filtered_data()
+        return self.storage.get_filtered_tasks(), self.storage.get_categories()

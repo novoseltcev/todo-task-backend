@@ -1,8 +1,10 @@
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="static/css/mainframe33.css">
-    </link>
+    <link rel="stylesheet" href="static\css\mainframe33.css">
+      <title>
+          TODO Task Manager
+      </title>
   </head>
 
   <body style="background: #b7b7b72e">
@@ -14,16 +16,17 @@
         <li><a href="">Categories</a></li>
         <ul>
           <li><form action="/" method="post">
-            <input type="button" name="category" value="Category 1" formmethod="post"/>
-          </form></li>
-          <li><a href="">Category 2</a></li>
-          <li><a href="">Category 3</a></li>
-          <li><a href="">Category 4</a></li>
+            <input type="button" name="category" value="All Tasks" formmethod="post"/>
+          </form>
+          </li>
+            {% for category in categories %}
+                <li><a href="">{{ category['name_category'] }}</a></li>
+            {% endfor %}
         </ul>
       </ul>
 
       <div class="task_frame">
-        {% for table_element in (("ToDo", False), ("Done", True)) %}
+        {% for table_element in (("ToDo", 0), ("Done", 1)) %}
           <div class="container margin-top">
             <div class="row">
               <table class="table table-tasks">
@@ -33,9 +36,9 @@
                 </thead>
                 <tbody>
                   {% for task in tasks %}
-                    {% if task["is_done"] == table_element[1] %}
+                    {% if task['status'] == table_element[1] %}
                       <tr>
-                        <td style="padding-left: 30px;">{{task["title"]}}</td>
+                        <td style="padding-left: 30px;">{{task['title']}}</td>
                         <td style="width: 13px;">
                           <form action="/" method="post">
                             <input style="width: 13px;" class="t_button" type="checkbox">

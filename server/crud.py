@@ -34,6 +34,7 @@ def delete():
 
 
 def rerender_page():
-    return render_template("new_index.html", tasks=reversed(app.get_data()))
+    tasks, categories = app.get_data()
+    return render_template("new_index.html", tasks=tasks, categories=categories)
 
 

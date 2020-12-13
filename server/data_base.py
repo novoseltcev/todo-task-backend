@@ -5,16 +5,19 @@ from server.istorage import IStorage
 
 # TODO - final refactoring
 class BinDB(IStorage):
+    _counter = 0
+    tasks = []
+    categories = []
 
-    def __init__(self, filename="server\\data"):
+    def __init__(self, path="server/data"):
         super().__init__()
-        with shelve.open(filename + '\\file_db') as file:
+        with shelve.open(path + '/file_db') as file:
             self._counter = file.get('max_id', 0)
             self.tasks = file.get("db", [])
             self.categories = file.get("categories", [])
 
-    def __serialization(self, filename="server\\data"):
-        with shelve.open(filename + '\\file_db') as file:
+    def __serialization(self, path="server/data"):
+        with shelve.open(path + '/file_db') as file:
             file['max_id'] = self._counter
             file["db"] = self.tasks
             file["categories"] = self.categories
@@ -80,11 +83,14 @@ class BinDB(IStorage):
         abort('404')
         return None
 
-    def get_filtered_data(self):
+    def get_filtered_tasks(self):
         if self.current_category == self._default:
             return self.tasks
         else:
             return list(filter(lambda el: el['category'] == self.current_category, self.tasks))
+
+    def get_categories(self):
+        return self.categories
 
     def filter(self):
         if self.current_category != self._default:
