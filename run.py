@@ -1,5 +1,3 @@
-from server import app
-import server.crud
-import server.views
+import server
 
-app.run(debug=True)
+server.flask_app.run(debug=True)
