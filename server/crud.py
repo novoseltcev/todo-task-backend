@@ -1,4 +1,4 @@
-from flask import render_template, request
+from flask import request
 from server.init_db import DB
 from server import flask_app
 from server.operation import *
@@ -7,17 +7,21 @@ from server.operation import *
 # current_category = 'None'
 
 
+@flask_app.route("/", methods=["GET"])
+def index():
+    return rerender_page(DB)
+
+
 @flask_app.route("/", methods=['POST'])
 def post_processor():
     json = request.json
-    if 'task_name' in json:
-        task_name = json["task_name"]
-        return create_task(DB, task_name)
+    if 'name_task' in json:
+        name_task = json["name_task"]
+        return create_task(DB, name_task)
 
-    if 'category_name' in json:
-        category_name = json["category_name"]
-        return create_category(DB, category_name)
-
+    if 'name_category' in json:
+        name_category = json["name_category"]
+        return create_category(DB, name_category)
     return raise_error()
 
 
@@ -33,47 +37,34 @@ def post_processor():
 @flask_app.route("/", methods=['PUT'])
 def put_processor():
     json = request.json
-    if 'task_id' in json:
+    if 'id_task' in json:
+        id_task = int(json['id_task'])
         if 'prev_status' in json:
-            task_id = int(json['task_id'])
             new_status = (int(json['prev_status']) + 1) % 2
-            return update_task_status(DB, task_id, new_status)
+            return update_task_status(DB, id_task, new_status)
 
-        if 'new_category_id' in json:
-            task_id = int(json['task_id'])
-            new_category_id = int(json['new_category_id'])
-            return update_task_category(DB, task_id, new_category_id)
-
+        if 'new_id_category' in json:
+            new_id_category = int(json['new_id_category'])
+            return update_task_category(DB, id_task, new_id_category)
         else:
             return raise_error()
 
-    if 'destination' in json and 'source_id' in json:
-        destination = json['destination']
-        source_id = int(json['source_id'])
-        return update_category(DB, destination, source_id)
-
+    if 'destination_id' in json and 'source' in json:
+        destination_id = int(json['destination_id'])
+        source = json['source']
+        return update_category_name(DB, destination_id, source)
     return raise_error()
 
 
 @flask_app.route("/", methods=['DELETE'])
 def delete_processor():
     json = request.json
-    if 'task_id' in json:
-        task_id = int(json['task_id'])
-        return delete_task(DB, task_id)
+    if 'id_task' in json:
+        id_task = int(json['id_task'])
+        return delete_task(DB, id_task)
 
-    if 'category_id' in json:
-        category_id = int(json['category_id'])
-        delete_category(DB, category_id)
-
+    if 'id_category' in json:
+        id_category = int(json['id_category'])
+        delete_category(DB, id_category)
     return raise_error()
 
-
-@flask_app.route("/")
-def rerender_page():
-    tasks, categories = DB.get_filtered_tasks(), DB.get_categories()
-    return render_template("index.html", tasks=tasks, categories=categories), 200
-
-
-def raise_error():
-    return 404
