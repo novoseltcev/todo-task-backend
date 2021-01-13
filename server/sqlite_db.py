@@ -4,7 +4,6 @@ import sqlite3
 
 class SQLiteDB:
     _default = "None"
-    current_id_category = 1
 
     def __init__(self, path="server/data"):
         self._setup_path(path)
@@ -36,15 +35,30 @@ class SQLiteDB:
 
     def __create_file_db(self, path):
         self.path = path
-        with open(path, "w") as f:
+        with open(path, "w"):
             pass
 
-    def create_tables(self):
-        self.cursor.execute("CREATE TABLE IF NOT EXISTS categories (id_category INTEGER, name_category varchar(20) UNIQUE, PRIMARY KEY(id_category));")
-        self.cursor.execute("CREATE TABLE IF NOT EXISTS tasks (id_task INTEGER, title VARCHAR(20), status INTEGER , id_category INTEGER, PRIMARY KEY(id_task), FOREIGN KEY(id_category) REFERENCES categories(id_category));")
-        self.cursor.execute("SELECT COUNT(id_category) FROM categories")
+    def is_exist_category(self, id_category: int):
+        self.cursor.execute("SELECT COUNT(id_category) FROM categories WHERE id_category=?", (id_category,))
         categories_count = self.cursor.fetchone()[0]
         if categories_count == 0:
+            raise ValueError("id_category=" + str(id_category) + " isn't exists")
+
+    def is_exist_task(self, id_task: int):
+        self.cursor.execute("SELECT COUNT(id_task) FROM tasks WHERE id_task=?", (id_task,))
+        categories_count = self.cursor.fetchone()[0]
+        if categories_count == 0:
+            raise ValueError("id_category=" + str(id_task) + " isn't exists")
+
+    def create_tables(self):
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS categories (id_category INTEGER, "
+                            "name_category varchar(20) UNIQUE, PRIMARY KEY(id_category));")
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS tasks (id_task INTEGER, title VARCHAR(20), status INTEGER , "
+                            "id_category INTEGER, PRIMARY KEY(id_task), "
+                            "FOREIGN KEY(id_category) REFERENCES categories(id_category));")
+        try:
+            self.is_exist_category(1)
+        except ValueError:
             self.insert_category(self._default)
 
     def get_all_tasks(self):
@@ -52,6 +66,7 @@ class SQLiteDB:
         return self.cursor.fetchall()
 
     def get_filtered_tasks(self, id_category):
+        self.is_exist_category(id_category)
         self.cursor.execute("SELECT * FROM tasks WHERE id_category=? ORDER BY id_task DESC;", (id_category,))
         return self.cursor.fetchall()
 
@@ -59,8 +74,9 @@ class SQLiteDB:
         self.cursor.execute("SELECT * FROM categories;")
         return self.cursor.fetchall()
 
-    def insert_task(self, title_task: str):
-        self.cursor.execute("INSERT INTO tasks (title, status, id_category) VALUES (?, FALSE, ?)", (title_task, self.current_id_category,))
+    def insert_task(self, title_task: str, id_category: int):
+        self.cursor.execute("INSERT INTO tasks (title, status, id_category) VALUES (?, FALSE, ?)",
+                            (title_task, id_category,))
         self.sqlite_connection.commit()
 
     def insert_category(self, category: str):
@@ -68,22 +84,28 @@ class SQLiteDB:
         self.sqlite_connection.commit()
 
     def update_task_status(self, id_task: int, new_status: int):
+        self.is_exist_task(id_task)
         self.cursor.execute("UPDATE tasks SET status=? WHERE id_task=?;", (new_status, id_task,))
         self.sqlite_connection.commit()
 
     def update_task_category(self, id_task: int, id_category: int):
+        self.is_exist_task(id_task)
+        self.is_exist_category(id_category)
         self.cursor.execute("UPDATE tasks SET id_category=? WHERE id_task=?;", (id_category, id_task,))
         self.sqlite_connection.commit()
 
     def update_category_name(self, id_destination: int, source: str):
+        self.is_exist_category(id_destination)
         self.cursor.execute("UPDATE categories SET name_category=? WHERE id_category=?;", (source, id_destination,))
         self.sqlite_connection.commit()
 
-    def delete_task(self, task_id: int):
-        self.cursor.execute("DELETE FROM tasks WHERE id_task=?;", (task_id,))
+    def delete_task(self, id_task: int):
+        self.is_exist_task(id_task)
+        self.cursor.execute("DELETE FROM tasks WHERE id_task=?;", (id_task,))
 
-    def delete_category(self, category_id: int):
-        self.cursor.execute("DELETE FROM categories WHERE id_category=?;", (category_id,))
+    def delete_category(self, id_category: int):
+        self.is_exist_category(id_category)
+        self.cursor.execute("DELETE FROM categories WHERE id_category=?;", (id_category,))
 
     def __del__(self):
         self.sqlite_connection.close()

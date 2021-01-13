@@ -4,12 +4,20 @@ from server import flask_app
 from server.operation import *
 
 
-# current_category = 'None'
+# @flask_app.route("/", methods=["GET"])
+def index():
+    return rerender_page(DB)
 
 
 @flask_app.route("/", methods=["GET"])
-def index():
-    return rerender_page(DB)
+def get_processor():
+    json = request.json
+    if json is None:
+        return rerender_page(DB)
+
+    if 'id_category' in json:
+        id_category = int(json['id_category'])
+        return open_category(DB, id_category)
 
 
 @flask_app.route("/", methods=['POST'])
@@ -25,15 +33,6 @@ def post_processor():
     return raise_error()
 
 
-# TODO
-    # @app.route("/", methods=['POST'])
-    # def open_category(self):
-    #     json = request.json
-    #     if 'category' in json and json.get('operation') == 'open':
-    #         self.storage.current_category = json['category']
-# TODO
-
-
 @flask_app.route("/", methods=['PUT'])
 def put_processor():
     json = request.json
@@ -46,8 +45,6 @@ def put_processor():
         if 'new_id_category' in json:
             new_id_category = int(json['new_id_category'])
             return update_task_category(DB, id_task, new_id_category)
-        else:
-            return raise_error()
 
     if 'destination_id' in json and 'source' in json:
         destination_id = int(json['destination_id'])
@@ -65,6 +62,5 @@ def delete_processor():
 
     if 'id_category' in json:
         id_category = int(json['id_category'])
-        delete_category(DB, id_category)
+        return delete_category(DB, id_category)
     return raise_error()
-
