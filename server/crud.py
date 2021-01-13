@@ -18,6 +18,17 @@ def get_processor():
 
 @flask_app.route("/", methods=['POST'])
 def post_processor():
+    file = request.files.get('file')
+    if file is not None:
+        id_task = 1
+        filename = file.filename
+        data = file.read()
+        return create_file(DB, id_task, filename, data)
+
+    id_file = int(request.form.get('open_file', 0))
+    if id_file != 0:
+        return download_file(DB, id_file)
+
     json = request.json
     if 'name_task' in json:
         name_task = json["name_task"]
@@ -30,6 +41,10 @@ def post_processor():
     if 'id_category' in json:
         id_category = int(json['id_category'])
         return open_category(DB, id_category)
+
+    if 'id_file' in json:
+        id_file = int(json['id_file'])
+        return download_file(DB, id_file)
     return raise_error("Invalid request")
 
 
@@ -46,6 +61,11 @@ def put_processor():
             new_id_category = int(json['new_id_category'])
             return update_task_category(DB, id_task, new_id_category)
 
+        if 'filename' in json and 'data' in json:
+            filename = json['filename']
+            data = json['data']
+            return create_file(DB, id_task, filename, data)
+
     if 'destination_id' in json and 'source' in json:
         destination_id = int(json['destination_id'])
         source = json['source']
@@ -58,6 +78,9 @@ def delete_processor():
     json = request.json
     if 'id_task' in json:
         id_task = int(json['id_task'])
+        if 'id_file' in json:
+            id_file = int(json['id_file'])
+            return delete_file(DB, id_task, id_file)
         return delete_task(DB, id_task)
 
     if 'id_category' in json:
