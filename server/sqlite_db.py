@@ -1,3 +1,8 @@
+#
+# класс SQLiteD,
+# обёрка над БД,
+# реализует базовые запросы к БД без знания логики приложения
+#
 import os
 import sqlite3
 
@@ -50,9 +55,19 @@ class SQLiteDB:
         if categories_count == 0:
             raise ValueError("id_category=" + str(id_task) + " isn't exists")
 
+    def is_exist_file(self, id_file: int):
+        self.cursor.execute("SELECT COUNT(id_file) FROM files WHERE id_file=?", (id_file,))
+        categories_count = self.cursor.fetchone()[0]
+        if categories_count == 0:
+            raise ValueError("id_file=" + str(id_file) + " isn't exists")
+
     def create_tables(self):
         self.cursor.execute("CREATE TABLE IF NOT EXISTS categories (id_category INTEGER, "
                             "name_category varchar(20) UNIQUE, PRIMARY KEY(id_category));")
+
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS files (id_file INTEGER, file_name VARCHAR(40),"
+                            "file_data BLOB, PRIMARY KEY(id_file));")
+
         self.cursor.execute("CREATE TABLE IF NOT EXISTS tasks (id_task INTEGER, title VARCHAR(20), status INTEGER , "
                             "id_category INTEGER, PRIMARY KEY(id_task), "
                             "FOREIGN KEY(id_category) REFERENCES categories(id_category));")
@@ -74,6 +89,14 @@ class SQLiteDB:
         self.cursor.execute("SELECT * FROM categories;")
         return self.cursor.fetchall()
 
+    def get_file(self, id_file: int):
+        self.cursor.execute("SELECT * FROM files WHERE id_file=?;", (id_file,))
+        return self.cursor.fetchone()[0]
+
+    def get_files(self):
+        self.cursor.execute("SELECT * FROM files;")
+        return self.cursor.fetchall()
+
     def insert_task(self, title_task: str, id_category: int):
         self.cursor.execute("INSERT INTO tasks (title, status, id_category) VALUES (?, FALSE, ?)",
                             (title_task, id_category,))
@@ -81,6 +104,10 @@ class SQLiteDB:
 
     def insert_category(self, category: str):
         self.cursor.execute("INSERT INTO categories(name_category) VALUES (?);", (category,))
+        self.sqlite_connection.commit()
+
+    def insert_file(self, filename: str, file_data):
+        self.cursor.execute("INSERT INTO files(file_name, file_data) VALUE (?, ?)", (filename, file_data,))
         self.sqlite_connection.commit()
 
     def update_task_status(self, id_task: int, new_status: int):
@@ -94,6 +121,11 @@ class SQLiteDB:
         self.cursor.execute("UPDATE tasks SET id_category=? WHERE id_task=?;", (id_category, id_task,))
         self.sqlite_connection.commit()
 
+    def update_task_file(self, id_task: int, id_file: int):
+        self.is_exist_task(id_task)
+        self.cursor.execute("UPDATE tasks SET id_file=? WHERE id_task=?;", (id_file, id_task,))
+        self.sqlite_connection.commit()
+
     def update_category_name(self, id_destination: int, source: str):
         self.is_exist_category(id_destination)
         self.cursor.execute("UPDATE categories SET name_category=? WHERE id_category=?;", (source, id_destination,))
@@ -102,10 +134,17 @@ class SQLiteDB:
     def delete_task(self, id_task: int):
         self.is_exist_task(id_task)
         self.cursor.execute("DELETE FROM tasks WHERE id_task=?;", (id_task,))
+        self.sqlite_connection.commit()
 
     def delete_category(self, id_category: int):
         self.is_exist_category(id_category)
         self.cursor.execute("DELETE FROM categories WHERE id_category=?;", (id_category,))
+        self.sqlite_connection.commit()
+
+    def delete_file(self, id_file: int):
+        self.is_exist_file(id_file)
+        self.cursor.execute("DELETE FROM files WHERE id_file=?;", (id_file,))
+        self.sqlite_connection.commit()
 
     def __del__(self):
         self.sqlite_connection.close()

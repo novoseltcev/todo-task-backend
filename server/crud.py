@@ -1,12 +1,12 @@
+#
+# привязка маршрутов
+# и определение логики взаимодействия на высоком уровне
+# в зависимости от переданного json-объекта
+#
 from flask import request
 from server.init_db import DB
 from server import flask_app
 from server.operation import *
-
-
-# @flask_app.route("/", methods=["GET"])
-def index():
-    return rerender_page(DB)
 
 
 @flask_app.route("/", methods=["GET"])
@@ -14,10 +14,6 @@ def get_processor():
     json = request.json
     if json is None:
         return rerender_page(DB)
-
-    if 'id_category' in json:
-        id_category = int(json['id_category'])
-        return open_category(DB, id_category)
 
 
 @flask_app.route("/", methods=['POST'])
@@ -30,7 +26,11 @@ def post_processor():
     if 'name_category' in json:
         name_category = json["name_category"]
         return create_category(DB, name_category)
-    return raise_error()
+
+    if 'id_category' in json:
+        id_category = int(json['id_category'])
+        return open_category(DB, id_category)
+    return raise_error("Invalid request")
 
 
 @flask_app.route("/", methods=['PUT'])
@@ -50,7 +50,7 @@ def put_processor():
         destination_id = int(json['destination_id'])
         source = json['source']
         return update_category_name(DB, destination_id, source)
-    return raise_error()
+    return raise_error("Invalid request")
 
 
 @flask_app.route("/", methods=['DELETE'])
@@ -63,4 +63,4 @@ def delete_processor():
     if 'id_category' in json:
         id_category = int(json['id_category'])
         return delete_category(DB, id_category)
-    return raise_error()
+    return raise_error("Invalid request")
