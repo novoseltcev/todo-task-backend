@@ -2,12 +2,11 @@
 #
 #
 
-from server.handler.locale import error_handler, rerender_page, DB
+from server.handler.locale import rerender_page, DB
 from os import remove
 from flask import send_file
 
 
-@error_handler
 def download_file(id_file: int):
     DB.assert_file(id_file)
     filename, data = DB.get_file(id_file)
@@ -19,7 +18,6 @@ def download_file(id_file: int):
     return result
 
 
-@error_handler
 def create_file(id_task: int, filename: str, data):
     DB.assert_task(id_task)
     DB.insert_file(filename, data)
@@ -28,7 +26,6 @@ def create_file(id_task: int, filename: str, data):
     return rerender_page(), 201
 
 
-@error_handler
 def delete_file(id_task: int, id_file: int):
     DB.assert_task(id_task)
     DB.assert_file(id_file)

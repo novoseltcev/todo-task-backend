@@ -1,6 +1,6 @@
 #
 # инициализайция БД
 #
-from server.sqlite_db import SQLiteDB
+from server.sqlite_utility import SQLiteDB
 
 DB = SQLiteDB()

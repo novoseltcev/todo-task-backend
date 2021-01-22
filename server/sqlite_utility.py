@@ -8,7 +8,7 @@ import sqlite3
 
 
 class SQLiteDB:
-    _default = "None"
+    _default = "All"
 
     def __init__(self, path="server/data/task.db"):
         self.path = path
@@ -18,19 +18,22 @@ class SQLiteDB:
         self.create_tables()
 
     def assert_category(self, id_category: int):
-        self.cursor.execute("SELECT COUNT(id_category) FROM categories WHERE id_category=?", (id_category,))
+        value = (id_category,)
+        self.cursor.execute("SELECT COUNT(id_category) FROM categories WHERE id_category=?", value)
         categories_count = self.cursor.fetchone()[0]
         if categories_count == 0:
             raise ValueError("id_category=" + str(id_category) + " isn't exists")
 
     def assert_task(self, id_task: int):
-        self.cursor.execute("SELECT COUNT(id_task) FROM tasks WHERE id_task=?", (id_task,))
+        value = (id_task,)
+        self.cursor.execute("SELECT COUNT(id_task) FROM tasks WHERE id_task=?", value)
         categories_count = self.cursor.fetchone()[0]
         if categories_count == 0:
             raise ValueError("id_task=" + str(id_task) + " isn't exists")
 
     def assert_file(self, id_file: int):
-        self.cursor.execute("SELECT COUNT(id_file) FROM files WHERE id_file=?", (id_file,))
+        value = (id_file,)
+        self.cursor.execute("SELECT COUNT(id_file) FROM files WHERE id_file=?", value)
         categories_count = self.cursor.fetchone()[0]
         if categories_count == 0:
             raise ValueError("id_file=" + str(id_file) + " isn't exists")
@@ -56,7 +59,8 @@ class SQLiteDB:
         return self.cursor.fetchall()
 
     def get_filtered_tasks(self, id_category):
-        self.cursor.execute("SELECT * FROM tasks WHERE id_category=? ORDER BY id_task DESC;", (id_category,))
+        value = (id_category,)
+        self.cursor.execute("SELECT * FROM tasks WHERE id_category=? ORDER BY id_task DESC;", value)
         return self.cursor.fetchall()
 
     def get_categories(self):
@@ -64,7 +68,8 @@ class SQLiteDB:
         return self.cursor.fetchall()
 
     def get_file(self, id_file: int):
-        self.cursor.execute("SELECT file_name, file_data FROM files WHERE id_file=?;", (id_file,))
+        value = (id_file,)
+        self.cursor.execute("SELECT file_name, file_data FROM files WHERE id_file=?;", value)
         return self.cursor.fetchone()
 
     def get_files(self):
@@ -72,44 +77,49 @@ class SQLiteDB:
         return self.cursor.fetchall()
 
     def insert_task(self, title_task: str, id_category: int):
-        self.cursor.execute("INSERT INTO tasks (title, status, id_category) VALUES (?, FALSE, ?)",
-                            (title_task, id_category,))
+        value = (title_task, id_category)
+        self.cursor.execute("INSERT INTO tasks (title, status, id_category, id_file) VALUES (?, FALSE, ?, 0)",
+                            value)
         self.sqlite_connection.commit()
 
     def insert_category(self, category: str):
-        self.cursor.execute("INSERT INTO categories(name_category) VALUES (?);", (category,))
+        value = (category,)
+        self.cursor.execute("INSERT INTO categories(name_category) VALUES (?);", value)
         self.sqlite_connection.commit()
 
     def insert_file(self, filename: str, file_data):
-        self.cursor.execute("INSERT INTO files(file_name, file_data) VALUES (?, ?)", (filename, file_data,))
+        value = (filename, file_data)
+        self.cursor.execute("INSERT INTO files(file_name, file_data) VALUES (?, ?)", value)
         self.sqlite_connection.commit()
 
-    def update_task_status(self, id_task: int, new_status: int):
-        self.cursor.execute("UPDATE tasks SET status=? WHERE id_task=?;", (new_status, id_task,))
-        self.sqlite_connection.commit()
-
-    def update_task_category(self, id_task: int, id_category: int):
-        self.cursor.execute("UPDATE tasks SET id_category=? WHERE id_task=?;", (id_category, id_task,))
+    def update_task(self, id_task: int, title, status: int, id_category: int):
+        value = (title, status, id_category, id_task)
+        self.cursor.execute("UPDATE tasks SET (title, status, id_category)=(?, ?, ?) WHERE id_task=?;", value)
         self.sqlite_connection.commit()
 
     def update_task_file(self, id_task: int, id_file: int):
-        self.cursor.execute("UPDATE tasks SET id_file=? WHERE id_task=?;", (id_file, id_task,))
+        value = (id_file, id_task)
+        self.cursor.execute("UPDATE tasks SET id_file=? WHERE id_task=?;", value)
         self.sqlite_connection.commit()
 
     def update_category_name(self, id_destination: int, source: str):
-        self.cursor.execute("UPDATE categories SET name_category=? WHERE id_category=?;", (source, id_destination,))
+        value = (source, id_destination)
+        self.cursor.execute("UPDATE categories SET name_category=? WHERE id_category=?;", value)
         self.sqlite_connection.commit()
 
     def delete_task(self, id_task: int):
-        self.cursor.execute("DELETE FROM tasks WHERE id_task=?;", (id_task,))
+        value = (id_task,)
+        self.cursor.execute("DELETE FROM tasks WHERE id_task=?;", value)
         self.sqlite_connection.commit()
 
     def delete_category(self, id_category: int):
-        self.cursor.execute("DELETE FROM categories WHERE id_category=?;", (id_category,))
+        value = (id_category,)
+        self.cursor.execute("DELETE FROM categories WHERE id_category=?;", value)
         self.sqlite_connection.commit()
 
     def delete_file(self, id_file: int):
-        self.cursor.execute("DELETE FROM files WHERE id_file=?;", (id_file,))
+        value = (id_file,)
+        self.cursor.execute("DELETE FROM files WHERE id_file=?;", value)
         self.sqlite_connection.commit()
 
     def __del__(self):

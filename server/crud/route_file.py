@@ -1,30 +1,33 @@
 #
 #
 #
-from server.crud.locale import request, flask_app, preset_json_receive_method
-from server.crud.locale import handler_file as hnd
+from server.crud.locale import handler_file as hnd, flask_app, request
 
 
-@flask_app.route("/file", methods=['GET'])
-#@preset_json_receive_method
-def open_file(json):
-    id_file = int(json['id_file'])
+@flask_app.route("/get-file", methods=['POST'])
+def open_file():
+    json = request.json
+    if json is not None:
+        id_file = json['id_file']
+    else:
+        id_file = request.form['id_file']
+    print(id_file)
     return hnd.download_file(id_file)
 
 
 @flask_app.route("/file", methods=['POST'])
 def create_file():
-    file = request.files.get('file')
+    file = request.files['file']
     if file is not None:
-        id_task = 1
+        id_task = request.form["id_task"]
         filename = file.filename
         data = file.read()
         return hnd.create_file(id_task, filename, data)
 
 
 @flask_app.route("/file", methods=['DELETE'])
-#@preset_json_receive_method
 def delete_file():
-    id_task = int(json['id_task'])
-    id_file = int(json['id_file'])
+    json = request.json
+    id_task = json['id_task']
+    id_file = json['id_file']
     return hnd.delete_file(id_task, id_file)
