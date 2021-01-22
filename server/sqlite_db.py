@@ -10,52 +10,26 @@ import sqlite3
 class SQLiteDB:
     _default = "None"
 
-    def __init__(self, path="server/data"):
-        self._setup_path(path)
+    def __init__(self, path="server/data/task.db"):
+        self.path = path
         self.sqlite_connection = sqlite3.connect(self.path, check_same_thread=False)
         self.sqlite_connection.row_factory = sqlite3.Row
         self.cursor = self.sqlite_connection.cursor()
         self.create_tables()
 
-    def _setup_path(self, path):
-        if os.path.exists(path):
-            if os.path.isdir(path):
-                files = []
-                for file in os.listdir(path):
-                    if file.endswith(".db"):
-                        files.append(file)
-                if len(files) != 0:
-                    self.path = os.path.join(path, files[0])
-                else:
-                    self.__create_file_db(os.path.join(path, "task.db"))
-            if os.path.isfile(path):
-                self.path = path
-        else:
-            if os.path.isdir(path):
-                self.__create_file_db(os.path.join(path, "task.db"))
-            if os.path.isfile(path) and os.path.splitext(path)[1] == ".db":
-                self.__create_file_db(path)
-            if os.path.isfile(path) and os.path.splitext(path)[1] != ".db":
-                self.__create_file_db(os.path.splitext(path)[0] + ".db")
-
-    def __create_file_db(self, path):
-        self.path = path
-        with open(path, "w"):
-            pass
-
-    def is_exist_category(self, id_category: int):
+    def assert_category(self, id_category: int):
         self.cursor.execute("SELECT COUNT(id_category) FROM categories WHERE id_category=?", (id_category,))
         categories_count = self.cursor.fetchone()[0]
         if categories_count == 0:
             raise ValueError("id_category=" + str(id_category) + " isn't exists")
 
-    def is_exist_task(self, id_task: int):
+    def assert_task(self, id_task: int):
         self.cursor.execute("SELECT COUNT(id_task) FROM tasks WHERE id_task=?", (id_task,))
         categories_count = self.cursor.fetchone()[0]
         if categories_count == 0:
             raise ValueError("id_task=" + str(id_task) + " isn't exists")
 
-    def is_exist_file(self, id_file: int):
+    def assert_file(self, id_file: int):
         self.cursor.execute("SELECT COUNT(id_file) FROM files WHERE id_file=?", (id_file,))
         categories_count = self.cursor.fetchone()[0]
         if categories_count == 0:
@@ -73,7 +47,7 @@ class SQLiteDB:
                             "FOREIGN KEY(id_category) REFERENCES categories(id_category),"
                             "FOREIGN KEY(id_file) REFERENCES files(id_file));")
         try:
-            self.is_exist_category(1)
+            self.assert_category(1)
         except ValueError:
             self.insert_category(self._default)
 
