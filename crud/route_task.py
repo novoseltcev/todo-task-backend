@@ -1,7 +1,7 @@
 #
 #
 #
-from server.crud.locale import handler_task as hnd, flask_app, request
+from crud.locale import handler_task as hnd, flask_app, request
 
 
 @flask_app.route("/task", methods=['POST'])

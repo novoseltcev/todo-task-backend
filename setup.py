@@ -8,7 +8,7 @@ setup(
     version=__import__(NAME).__version__,
     description=DESCRIPTION,
     author='Novoseltcev Stanislav',
-    namespace_packages=['server', 'handler', 'crud'],
+    namespace_packages=['server', 'crud', 'handler'],
     packages=find_packages(),
     platforms='Linux',
     zip_safe=False,

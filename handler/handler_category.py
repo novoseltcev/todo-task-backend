@@ -1,7 +1,7 @@
 #
 #
 #
-from server.handler.locale import rerender_page, DB, current_category
+from handler.locale import rerender_page, DB, current_category
 
 
 def open_category(id_category: int):
@@ -20,7 +20,7 @@ def update_category(destination_id: int, source: str):
     DB.assert_category(destination_id)
     if destination_id == 1:
         raise ValueError("ban on changing the main category")
-    DB.update_category_name(destination_id, source)
+    DB.update_category(destination_id, source)
     return rerender_page(), 202
 
 

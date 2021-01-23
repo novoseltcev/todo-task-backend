@@ -1,5 +1,6 @@
-from flask import render_template
+from flask import render_template, send_file
 from server import DB
+from os import remove
 
 
 class Category:

@@ -2,14 +2,12 @@
 #
 #
 
-from server.handler.locale import rerender_page, DB
-from os import remove
-from flask import send_file
+from handler.locale import rerender_page, DB, remove, send_file
 
 
 def download_file(id_file: int):
     DB.assert_file(id_file)
-    filename, data = DB.get_file(id_file)
+    id_file, filename, data = DB.get_file(id_file)
     with open("server/" + filename, "wb+") as fp:
         fp.write(data)
 

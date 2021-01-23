@@ -1,7 +1,7 @@
 #
 #
 #
-from server.crud.locale import handler_file as hnd, flask_app, request
+from crud.locale import handler_file as hnd, flask_app, request
 
 
 @flask_app.route("/get-file", methods=['POST'])
@@ -11,7 +11,6 @@ def open_file():
         id_file = json['id_file']
     else:
         id_file = request.form['id_file']
-    print(id_file)
     return hnd.download_file(id_file)
 
 
