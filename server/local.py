@@ -1,6 +1,7 @@
+from server.db.sqlite_db import SQLiteDB
 from flask import Flask, request, send_file, render_template
 from os import remove
-from server.db.sqlite_db import SQLiteDB
+
 
 DB = SQLiteDB()
 

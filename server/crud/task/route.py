@@ -1,11 +1,9 @@
-#
-#
-#
-from server.crud.locale import flask_app, request, handler_task as hnd
+from server.crud.locale import flask_app, request
+from server.crud.task import handler as hnd
 
-from flask import Blueprint  # TODO BLUEPRINT
-task = Blueprint('task', __name__)
-flask_app.register_blueprint(task, url_prefix='/task')
+# from flask import Blueprint  # TODO BLUEPRINT
+# task = Blueprint('task', __name__)
+# flask_app.register_blueprint(task, url_prefix='/task')
 
 
 @flask_app.route("/task", methods=['POST'])
@@ -31,4 +29,3 @@ def delete_task():
     id_task = json['id_task']
     #id_file = int(json['id_file'])
     return hnd.delete_task(id_task)
-

@@ -1,7 +1,4 @@
-#
-#
-#
-from server.handler.locale import rerender_page, DB, current_category
+from server.crud.locale import rerender_page, DB, current_category
 
 
 def open_category(id_category: int):

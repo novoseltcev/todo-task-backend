@@ -46,4 +46,3 @@ class SQLGenerator:
     def delete(table, where: str):
         result = "DELETE FROM " + table + " WHERE " + where + "=?"
         return result
-

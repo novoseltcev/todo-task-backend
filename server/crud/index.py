@@ -1,6 +1,3 @@
-#
-#
-#
 from server.crud.locale import rerender_page, flask_app
 
 

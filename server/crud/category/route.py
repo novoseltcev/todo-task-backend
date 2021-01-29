@@ -1,7 +1,5 @@
-#
-#
-#
-from server.crud.locale import flask_app, request, handler_category as hnd
+from server.crud.locale import flask_app, request
+from server.crud.category import handler as hnd
 
 
 @flask_app.route("/category", methods=['GET'])

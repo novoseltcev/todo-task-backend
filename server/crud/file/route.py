@@ -1,7 +1,5 @@
-#
-#
-#
-from server.crud.locale import flask_app, request, handler_file as hnd
+from server.crud.locale import flask_app, request
+from server.crud.file import handler as hnd
 
 
 @flask_app.route("/get-file", methods=['POST'])
