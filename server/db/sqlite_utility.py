@@ -4,13 +4,13 @@
 # реализует базовые запросы к БД без знания логики приложения
 #
 import sqlite3
-from server.sql_generator import SQLGenerator
+from server.db.sql_generator import SQLGenerator
 
 
 class SQLiteUtility:
     SQL = SQLGenerator()
 
-    def __init__(self, path="server/data/task.db"):
+    def __init__(self, path):
         self.__path = path
         self.__sqlite_connection = sqlite3.connect(self.__path, check_same_thread=False)
         self.__sqlite_connection.row_factory = sqlite3.Row
@@ -66,5 +66,5 @@ class SQLiteUtility:
         self.__execute(sql, value)
         self.__commit()
 
-    def __del__(self):
-        self.__sqlite_connection.close()
+    # def __del__(self):
+    #     self.__sqlite_connection.close()

@@ -1,7 +1,11 @@
 #
 #
 #
-from crud.locale import handler_task as hnd, flask_app, request
+from server.crud.locale import flask_app, request, handler_task as hnd
+
+from flask import Blueprint  # TODO BLUEPRINT
+task = Blueprint('task', __name__)
+flask_app.register_blueprint(task, url_prefix='/task')
 
 
 @flask_app.route("/task", methods=['POST'])

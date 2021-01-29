@@ -1,7 +1,7 @@
 #
 #
 #
-from crud.locale import rerender_page, flask_app
+from server.crud.locale import rerender_page, flask_app
 
 
 @flask_app.route("/", methods=["GET"])

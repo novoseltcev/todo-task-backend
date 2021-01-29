@@ -1,7 +1,7 @@
 #
 #
 #
-from handler.locale import rerender_page, DB, current_category
+from server.handler.locale import rerender_page, DB, current_category
 
 
 def create_task(name_task):

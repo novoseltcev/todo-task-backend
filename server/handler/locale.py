@@ -1,6 +1,4 @@
-from flask import render_template, send_file
-from server import DB
-from os import remove
+from server.local import render_template, send_file, remove, DB
 
 
 class Category:

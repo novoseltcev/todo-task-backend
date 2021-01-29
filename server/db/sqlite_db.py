@@ -3,7 +3,8 @@
 # обёрка над БД,
 # реализует базовые запросы к БД без знания логики приложения
 #
-from server.sqlite_utility import SQLiteUtility
+
+from server.db.sqlite_utility import SQLiteUtility
 
 
 class SQLiteDB:
@@ -105,6 +106,6 @@ class SQLiteDB:
 
     def delete_file(self, id_file: int):
         self.utility.delete("files", "id_file", (id_file,))
-
-    def __del__(self):
-        self.utility.__del__()
+    #
+    # def __del__(self):
+    #     self.utility.__del__()
