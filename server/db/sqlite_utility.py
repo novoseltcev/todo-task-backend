@@ -26,7 +26,7 @@ class SQLiteUtility:
         sql = self.SQL.count(table, field)
         params = (value,)
         self.__execute(sql, params)
-        field_count = self.get_data(is_all=False)
+        field_count = self.get_data(is_all=False)[0]
         if field_count == 0:
             raise ValueError(field + "=" + str(value) + " isn't exists")
 
@@ -66,5 +66,5 @@ class SQLiteUtility:
         self.__execute(sql, value)
         self.__commit()
 
-    # def __del__(self):
-    #     self.__sqlite_connection.close()
+    def __del__(self):
+        self.__sqlite_connection.close()

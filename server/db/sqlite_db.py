@@ -32,15 +32,6 @@ class SQLiteDB:
                                   )
                                   )
 
-        self.utility.create_table("files",
-                                  (
-                                      "id_file INTEGER",
-                                      "file_name VARCHAR(40)",
-                                      "file_data BLOB",
-                                      "PRIMARY KEY(id_file)"
-                                  )
-                                  )
-
         self.utility.create_table("tasks",
                                   (
                                       "id_task INTEGER",
@@ -49,20 +40,30 @@ class SQLiteDB:
                                       "id_category INTEGER",
                                       "id_file INTEGER",
                                       "PRIMARY KEY(id_task)",
-                                      "FOREIGN KEY(id_category) REFERENCES categories(id_category)",
-                                      "FOREIGN KEY(id_file) REFERENCES files(id_file)"
+                                      "FOREIGN KEY(id_category) REFERENCES categories(id_category)"
+                                  )
+                                  )
+
+        self.utility.create_table("files",
+                                  (
+                                      "id_file INTEGER",
+                                      "file_name VARCHAR(40)",
+                                      "file_path TEXT",
+                                      "id_task INTEGER",
+                                      "PRIMARY KEY(id_file)",
+                                      "FOREIGN KEY(id_task) REFERENCES tasks(id_task)"
                                   )
                                   )
 
         try:
             self.utility.assert_db("categories", "id_category", 1)
         except ValueError:
-            self.utility.insert("categories", "name_category", self.__default)
+            self.utility.insert("categories", ("name_category",), (self.__default,))
 
     def get_all_tasks(self):
         return self.utility.select_all("tasks", sorted_column="id_task")
 
-    def get_filtered_tasks(self, id_category):
+    def get_filtered_tasks(self, id_category: int):
         return self.utility.select_all("tasks", "id_category", "id_task", (id_category,))
 
     def get_categories(self):
@@ -74,25 +75,28 @@ class SQLiteDB:
     def get_files(self):
         return self.utility.select_all("files")
 
+    def get_filtered_files(self, id_task):
+        return self.utility.select_all("files", filter_column="id_task", value=(id_task,))
+
     def insert_task(self, title_task: str, id_category: int):
-        value = (title_task, False, id_category, 0)
-        self.utility.insert("tasks", ("title", "status", "id_category", "id_file"), value)
+        value = (title_task, False, id_category)
+        self.utility.insert("tasks", ("title", "status", "id_category"), value)
 
     def insert_category(self, category: str):
         value = (category,)
         self.utility.insert("categories", ("name_category",), value)
 
-    def insert_file(self, filename: str, file_data):
-        value = (filename, file_data)
-        self.utility.insert("files", ("file_name", "file_data"), value)
+    def insert_file(self, filename: str, file_path: str, id_task: int):
+        value = (filename, file_path, id_task)
+        self.utility.insert("files", ("file_name", "file_path", 'id_task'), value)
 
     def update_task(self, id_task: int, title, status: int, id_category: int):
         value = (title, status, id_category, id_task)
         self.utility.update("tasks", ("title", "status", "id_category"), "id_task", value)
 
-    def update_task_file(self, id_task: int, id_file: int):
-        value = (id_file, id_task)
-        self.utility.update("tasks", ("id_file",), "id_task", value)
+    def update_file_task(self, id_file: int, id_task: int):
+        value = (id_task, id_file)
+        self.utility.update("files", ("id_task",), "id_file", value)
 
     def update_category(self, id_destination: int, source: str):
         value = (source, id_destination)
@@ -106,6 +110,6 @@ class SQLiteDB:
 
     def delete_file(self, id_file: int):
         self.utility.delete("files", "id_file", (id_file,))
-    #
-    # def __del__(self):
-    #     self.utility.__del__()
+
+    def __del__(self):
+        self.utility.__del__()

@@ -18,13 +18,13 @@ def create_file():
     if file is not None:
         id_task = request.form["id_task"]
         filename = file.filename
-        data = file.read()
-        return hnd.create_file(id_task, filename, data)
+        data = file.read()  # TODO  --  Выгрузка на диск
+        return hnd.create_file(filename, data, id_task)
 
 
 @flask_app.route("/file", methods=['DELETE'])
 def delete_file():
     json = request.json
-    id_task = json['id_task']
     id_file = json['id_file']
-    return hnd.delete_file(id_task, id_file)
+    path = json['path']
+    return hnd.delete_file(id_file, path)

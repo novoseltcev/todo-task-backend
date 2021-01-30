@@ -49,29 +49,30 @@
                           </form>
                         </td>
                         <td style="width: 40px;">
-                          <form action="/task" method="post">
+                          <form action="/task" method="delete">
                             <input class="t_button" type="button" value="Delete">
                           </form>
                         </td>
                         <td style="width: 50px;">
-                           {% if task['id_file'] == 0 %}
-                               <form action="/file" method="POST" enctype="multipart/form-data">
+                        {% set flag = 0 %}
+                          {% for file in files %}
+                           {% if file['id_task'] == task['id_task'] %}
+                               <form action="/get-file" method="POST" enctype="multipart/form-data">
+                                    <input type="hidden" name="id_file" value={{ file["id_file"] }} >
+                                    <button type="submit">{{ file['file_name'] }}</button>
+                               </form>
+                               <form action="/file" method="DELETE">
+                                <input type="hidden" name="id_file" value={{ file["id_file"] }} >
+                                <button type="submit">Удалить</button>
+                               </form>
+                               {% set flag = 1 %}
+                           {% endif %}
+                          {% endfor %}
+                        {% if flag == 0 %}<form action="/file" method="POST" enctype="multipart/form-data">
                                     <input type="file" name="file">
                                     <input type="hidden" name="id_task" value={{ task["id_task"] }} >
                                     <button type="submit">Прикрепить</button>
-                                </form>
-                           {% else %}
-                               <form action="/get-file" method="POST" enctype="multipart/form-data">
-                                    <input type="hidden" name="id_file" value={{ task["id_file"] }} >
-                                    <button type="submit">{% for file in files%}
-                                        {% if file['id_file'] == task['id_file'] %}  {{ file['file_name'] }}  {% endif %}
-                                    {% endfor %}</button>
-                               </form>
-                               <form action="/file" method="DELETE">
-                                <input type="hidden" name="id_file" value={{ task["id_file"] }} >
-                                <button type="submit">Удалить</button>
-                               </form>
-                           {% endif %}
+                                </form>{% endif %}
                         </td>
                       </tr>
                     {% endif %}
