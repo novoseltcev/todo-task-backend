@@ -1,4 +1,6 @@
-from server.crud.locale import rerender_page, DB, remove, send_file, files_path
+from flask import send_file
+from os import remove
+from server.crud.locale import rerender_page, DB, files_path
 
 
 def download_file(id_file: int):

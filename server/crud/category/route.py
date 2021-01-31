@@ -1,22 +1,22 @@
-from server.crud.locale import flask_app, request
-from server.crud.category import handler as hnd
+from flask import request
+from server.crud.category import handler as hnd, category_blueprint
 
 
-@flask_app.route("/category", methods=['GET'])
+@category_blueprint.route('/', methods=['GET'])
 def open_category():
     json = request.json
     id_category = json['id_category']
     return hnd.open_category(id_category)
 
 
-@flask_app.route("/category", methods=['POST'])
+@category_blueprint.route("/", methods=['POST'])
 def create_category():
     json = request.json
     name_category = json["name_category"]
     return hnd.create_category(name_category)
 
 
-@flask_app.route("/category", methods=['PUT'])
+@category_blueprint.route("/", methods=['PUT'])
 def edit_category():
     json = request.json
     destination_id = json['id_category']
@@ -24,7 +24,7 @@ def edit_category():
     return hnd.update_category(destination_id, source)
 
 
-@flask_app.route("/category", methods=['DELETE'])
+@category_blueprint.route("/", methods=['DELETE'])
 def delete_category():
     json = request.json
     id_category = json['id_category']

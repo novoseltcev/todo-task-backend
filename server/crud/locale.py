@@ -1,4 +1,5 @@
-from server.local import flask_app, request, render_template, send_file, remove, DB
+from flask import render_template
+from server.local import DB
 
 
 class Category:

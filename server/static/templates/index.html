@@ -49,7 +49,7 @@
                           </form>
                         </td>
                         <td style="width: 40px;">
-                          <form action="/task" method="delete">
+                          <form action="/server/crud/task" method="delete">
                             <input class="t_button" type="button" value="Delete">
                           </form>
                         </td>
@@ -57,7 +57,7 @@
                         {% set flag = 0 %}
                           {% for file in files %}
                            {% if file['id_task'] == task['id_task'] %}
-                               <form action="/get-file" method="POST" enctype="multipart/form-data">
+                               <form action="/file/get" method="POST" enctype="multipart/form-data">
                                     <input type="hidden" name="id_file" value={{ file["id_file"] }} >
                                     <button type="submit">{{ file['file_name'] }}</button>
                                </form>
@@ -68,7 +68,7 @@
                                {% set flag = 1 %}
                            {% endif %}
                           {% endfor %}
-                        {% if flag == 0 %}<form action="/file" method="POST" enctype="multipart/form-data">
+                        {% if flag == 0 %}<form action="/file/" method="POST" enctype="multipart/form-data">
                                     <input type="file" name="file">
                                     <input type="hidden" name="id_task" value={{ task["id_task"] }} >
                                     <button type="submit">Прикрепить</button>

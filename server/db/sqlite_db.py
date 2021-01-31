@@ -104,6 +104,7 @@ class SQLiteDB:
 
     def delete_task(self, id_task: int):
         self.utility.delete("tasks", "id_task", (id_task,))
+        self.utility.delete("files", 'id_task', (id_task,))
 
     def delete_category(self, id_category: int):
         self.utility.delete("categories", "id_category", (id_category,))

@@ -1,4 +1,4 @@
-from server.crud.locale import rerender_page, DB, current_category
+from server.crud.locale import DB, rerender_page, current_category
 
 
 def create_task(name_task):
@@ -15,7 +15,5 @@ def update_task(id_task: int, title: str, status: int, id_category: int):
 
 def delete_task(id_task: int):
     DB.assert_task(id_task)
-    #DB.assert_file(id_file)
-    #answer = DB.delete_file(id_file)
     DB.delete_task(id_task)
     return rerender_page(), 202
