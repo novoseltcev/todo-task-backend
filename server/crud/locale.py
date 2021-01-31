@@ -2,11 +2,11 @@ from flask import render_template
 from server.local import DB
 
 
-class Category:
+class Category:  # TODO - delete class
     id = 1
 
 
-def rerender_page():
+def rerender_page():  # TODO - add new param: current_category
     if current_category.id == 1:
         tasks = DB.get_all_tasks()
     else:
@@ -21,5 +21,5 @@ def rerender_page():
     return render_template("index.html", tasks=tasks, categories=categories, files=files)
 
 
-current_category = Category()
+current_category = Category()  # TODO - delete init
 files_path = "data/files/"

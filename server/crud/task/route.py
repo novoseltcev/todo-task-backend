@@ -2,16 +2,11 @@ from flask import request
 from server.crud.task import handler as hnd, task_blueprint
 
 
-@task_blueprint.route('/')
-def index_task():
-    return "task"
-
-
 @task_blueprint.route("/", methods=['POST'])
 def create_task():
     json = request.json
     name_task = json["name_task"]
-    return hnd.create_task(name_task)
+    return hnd.create_task(name_task)  # TODO - set 2nd param from session['current_category']
 
 
 @task_blueprint.route("/", methods=['PUT'])
