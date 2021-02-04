@@ -1,10 +1,12 @@
 # Основной модуль, работа с http
-from flask import request, session
-# from server.app import app as task_blueprint
-from server.task import service, task_blueprint
+from flask import request, session, Blueprint
+from server.task import service
 
 
-@task_blueprint.route("/task", methods=['POST'])
+task_blueprint = Blueprint('task', __name__)
+
+
+@task_blueprint.route("/", methods=['POST'])
 def create_task():
     json = request.json
     name_task = json["name_task"]
@@ -22,7 +24,7 @@ def edit_task():
     return service.update_task(id_task, title, status, id_category)  # TODO
 
 
-@task_blueprint.route("/task", methods=['DELETE'])
+@task_blueprint.route("/", methods=['DELETE'])
 def delete_task():
     id_task = request.json['id_task']
     return service.delete_task(id_task)

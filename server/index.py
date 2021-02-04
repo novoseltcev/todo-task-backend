@@ -1,5 +1,5 @@
 from server.app import app
-from server.locale import rerender_page
+from server.task.service import rerender_page
 
 
 @app.route("/")

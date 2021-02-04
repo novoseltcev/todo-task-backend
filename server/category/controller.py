@@ -1,6 +1,9 @@
-from flask import request
-from server.category import service, category_blueprint
-from flask import session
+from flask import request, session
+from server.category import service
+from flask import Blueprint
+
+
+category_blueprint = Blueprint('category', __name__)
 
 
 @category_blueprint.route('/')
@@ -19,6 +22,7 @@ def create_category():
     name_category = json["name_category"]
     res = service.create_category(name_category)
     session['current_category'] = 1
+    session.modified = True
     return res
 
 
@@ -35,6 +39,7 @@ def delete_category():
     json = request.json
     id_category = json['id_category']
     res = service.delete_category(id_category)
-    if session.get('current_session') == id_category:
+    if session.get('current_session', 1) == id_category:
         session['current_category'] = 1
+        session.modified = True
     return res

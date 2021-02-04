@@ -1,10 +1,10 @@
 # Серилазизация данных
 from sqlalchemy.orm import mapper, relationship
 from server.category.model import Category
-from server.category.schema import categories
+from server.category.schema import categories, engine
 
 from server.task.model import Task
-from server.task.repository import tasks
+from server.task.schema import tasks
 
 mapper(Category, categories,
        properties={

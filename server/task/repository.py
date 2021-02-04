@@ -1,15 +1,4 @@
 # Класс для работы с БД
-from server.initialize_db import engine
-from server.file.repository import file_rep
-from sqlalchemy import Table, Column, MetaData, Integer, String, ForeignKey
-
-metadata = MetaData()
-tasks = Table('tasks', metadata,
-              Column('id', Integer, primary_key=True),
-              Column('title', String(25)),
-              Column('status', Integer),
-              Column('category', Integer, ForeignKey('categories.id'))
-              )
 
 
 class TaskRepository:
@@ -17,8 +6,9 @@ class TaskRepository:
     __columns = ['id_task', 'title', 'status', 'id_category']
     __primary_key = __columns[0]
 
-    def __init__(self):
+    def __init__(self, engine, model):
         self.engine = engine
+        self.model = model
 
     def assert_exist(self, id_task: int):
         self.engine.assert_db(self.__table, self.__primary_key, id_task)
@@ -63,9 +53,7 @@ class TaskRepository:
 
     def delete(self, id_task: int):
         self.engine.delete(self.__table, self.__primary_key, (id_task,))
-        files = file_rep.get_by_foreign(id_task)
-        for file in files:
-            task_rep.delete(file[0])
+        # files = file_rep.get_by_foreign(id_task)
+        # for file in files:
+            # file_rep.delete(file[0]) # TODO
 
-
-task_rep = TaskRepository()

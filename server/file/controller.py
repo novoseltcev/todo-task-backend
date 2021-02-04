@@ -1,8 +1,12 @@
 from flask import request
-from server.file import service, file_blueprint as blueprint
+from server.file import service
+from flask import Blueprint
 
 
-@blueprint.route("/get", methods=['POST'])
+file_blueprint = Blueprint('file', __name__)
+
+
+@file_blueprint.route("/get", methods=['POST'])
 def open_file():
     json = request.json
     if json is not None:
@@ -12,7 +16,7 @@ def open_file():
     return service.download_file(id_file)
 
 
-@blueprint.route("/", methods=['POST'])
+@file_blueprint.route("/", methods=['POST'])
 def create_file():
     file = request.files['file']
     if file is not None:
@@ -22,7 +26,7 @@ def create_file():
         return service.create_file(filename, data, id_task)
 
 
-@blueprint.route("/", methods=['DELETE'])
+@file_blueprint.route("/", methods=['DELETE'])
 def delete_file():
     json = request.json
     id_file = json['id_file']

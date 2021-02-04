@@ -1,5 +1,3 @@
-from flask import Blueprint
+from server.category.controller import category_blueprint
 
-
-category_blueprint = Blueprint('category', __name__)
 __all__ = ["controller", 'category_blueprint']

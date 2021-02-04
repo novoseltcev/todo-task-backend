@@ -1,5 +1,2 @@
-from flask import Blueprint
-
-
-file_blueprint = Blueprint('file', __name__)
-__all__ = ["controller", 'file_blueprint']
+from server.file.controller import file_blueprint
+__all__ = ["controller"]

@@ -1,5 +1,2 @@
-from flask import Blueprint
-
-
-task_blueprint = Blueprint('task', __name__)
+from server.task.controller import task_blueprint
 __all__ = ["controller", 'task_blueprint']

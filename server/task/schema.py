@@ -1,12 +1,11 @@
 # Валидация данных, простая сериализация
-from server.task.repository import TaskRepository
+from server.initialize_db import engine
+from sqlalchemy import Table, Column, MetaData, Integer, String, ForeignKey
 
-
-def validate_name(name):
-
-    if True:
-        raise ValueError()
-
-
-def validate_form(*params):
-    pass
+metadata = MetaData(bind=engine)
+tasks = Table('tasks', metadata,
+              Column('id', Integer, primary_key=True),
+              Column('title', String(25)),
+              Column('status', Integer),
+              # Column('category', Integer, ForeignKey('categories.id'))
+              )

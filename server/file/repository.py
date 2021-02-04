@@ -1,23 +1,14 @@
 # Класс для работы с БД
-from server.initialize_db import engine
-from sqlalchemy import Table, MetaData, Column, String, Integer, ForeignKey
-
-
-metadata = MetaData()
-files = Table('files', metadata,
-              Column('id', Integer, primary_key=True),
-              Column('filename', String),
-              Column('path', String),
-              Column('task', Integer, ForeignKey('tasks.id')))
 
 
 class FileRepository:
     __table = 'files'
-    __columns = ['id_file', 'filename', 'path', 'id_task']
+    __columns = ['id_file', 'file_name', 'file_path', 'id_task']
     __primary_key = __columns[0]
 
-    def __init__(self):
+    def __init__(self, engine, model):
         self.engine = engine
+        self.model = model
 
     def assert_exist(self, id_file: int):
         self.engine.assert_db(self.__table, self.__primary_key, id_file)
@@ -53,6 +44,3 @@ class FileRepository:
 
     def delete(self, id_file: int):
         self.engine.delete(self.__table, self.__columns, (id_file,))
-
-
-file_rep = FileRepository()

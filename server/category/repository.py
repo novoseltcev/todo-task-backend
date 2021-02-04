@@ -1,5 +1,4 @@
 # Класс для работы с БД
-from server.initialize_db import engine
 
 
 class CategoryRepository:
@@ -8,8 +7,9 @@ class CategoryRepository:
     __primary_key = __columns[0]
     __default = 'All'
 
-    def __init__(self):
+    def __init__(self, engine, model):
         self.engine = engine
+        self.model = model
 
     def assert_exist(self, id_category: int):
         self.engine.assert_db(self.__table, self.__primary_key, id_category)
@@ -45,6 +45,3 @@ class CategoryRepository:
 
     def delete(self, id_category: int):
         return self.engine.delete(self.__table, self.__primary_key, (id_category,))
-
-
-category_rep = CategoryRepository()
