@@ -18,7 +18,7 @@
             {% for category in categories %}
                 <li>
                     <form action="/" method="post">
-                        <input type="button" name="id_category" value={{ category['name_category'] }} formmethod="post"/>
+                        <input type="button" name="id_category" value={{ category['name'] }} formmethod="post"/>
                     </form>
                 </li>
             {% endfor %}
@@ -56,13 +56,13 @@
                         <td style="width: 50px;">
                         {% set flag = 0 %}
                           {% for file in files %}
-                           {% if file['id_task'] == task['id_task'] %}
-                               <form action="/file/get" method="POST" enctype="multipart/form-data">
-                                    <input type="hidden" name="id_file" value={{ file["id_file"] }} >
-                                    <button type="submit">{{ file['file_name'] }}</button>
+                           {% if file['task'] == task['id'] %}
+                               <form action="/file/download" method="POST" enctype="multipart/form-data">
+                                    <input type="hidden" name="id" value={{ file["id"] }} >
+                                    <button type="submit">{{ file['name'] }}</button>
                                </form>
                                <form action="/file" method="DELETE">
-                                <input type="hidden" name="id_file" value={{ file["id_file"] }} >
+                                <input type="hidden" name="id" value={{ file["id"] }} >
                                 <button type="submit">Удалить</button>
                                </form>
                                {% set flag = 1 %}
@@ -70,7 +70,7 @@
                           {% endfor %}
                         {% if flag == 0 %}<form action="/file/" method="POST" enctype="multipart/form-data">
                                     <input type="file" name="file">
-                                    <input type="hidden" name="id_task" value={{ task["id_task"] }} >
+                                    <input type="hidden" name="task" value={{ task["id"] }} >
                                     <button type="submit">Прикрепить</button>
                                 </form>{% endif %}
                         </td>

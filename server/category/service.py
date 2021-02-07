@@ -26,6 +26,10 @@ def update_category(id_category: int, source_name: str):
 
 def delete_category(id_category: int):
     category_rep.assert_exist(id_category)
-    # category_rep.get_by_primary(id_category)
+
+    tasks_by_category = svc.task_rep.get_by_foreign(id_category)
+    for task in tasks_by_category:
+        svc.task_rep.delete(task[0])
+
     category_rep.delete(id_category)
     return svc.rerender_page(), 202

@@ -2,58 +2,64 @@
 
 
 class TaskRepository:
-    __table = 'tasks'
-    __columns = ['id_task', 'title', 'status', 'id_category']
-    __primary_key = __columns[0]
+    __table__ = 'tasks'
+    _id = 'id'
+    _title = 'title'
+    _status = 'status'
+    _category = 'category'
+
+    __primary_key = _id
+    __foreign_key = _category
 
     def __init__(self, engine, model):
         self.engine = engine
         self.model = model
 
-    def assert_exist(self, id_task: int):
-        self.engine.assert_db(self.__table, self.__primary_key, id_task)
+    def assert_exist(self, id: int):
+        self.engine.assert_db(self.__table__, self.__primary_key, id)
 
     def get(self):
-        return self.engine.select_all(self.__table, sorted_column=self.__primary_key)
+        return self.engine.select_all(self.__table__, sorted_column=self.__primary_key)
 
-    def get_filtered(self, id_category: int):
-        return self.engine.select_all(self.__table, self.__columns[3], self.__primary_key, (id_category,))
+    def get_by_primary(self, id: int):
+        return self.engine.select_one(self.__table__, self.__primary_key, (id,))
+
+    def get_by_foreign(self, category: int):
+        return self.engine.select_all(self.__table__, self._category, self.__primary_key, (category,))
 
     def create_table(self):
-        types = (
+        values = (
+            self.__primary_key,
             "INTEGER",
-            "title VARCHAR(20)",
+            self._title,
+            "VARCHAR(20)",
+            self._status,
             "INTEGER",
-            "INTEGER")
-        values = list(self.__columns[i] + " " + types[i] for i in range(len(self.__columns)))
-        values.append("PRIMARY KEY(" + self.__primary_key + ")")
-        values.append("FOREIGN KEY(" + self.__columns[3] + ") REFERENCES categories(" + self.__columns[3] + ")")
+            self._category,
+            "INTEGER",
+            "PRIMARY KEY(" + self.__primary_key + ")",
+            "FOREIGN KEY(" + self.__foreign_key + ") REFERENCES categories(" + self.__foreign_key + ")"
+        )
 
-        self.engine.create_table(self.__table, values)
+        self.engine.create_table(self.__table__, values)
 
-    def insert(self, title_task: str, id_category: int):
-        value = (title_task, False, id_category)
-        self.engine.insert(self.__table, self.__columns[1:], value)
+    def insert(self, title: str, category: int):
+        value = (title, False, category)
+        self.engine.insert(self.__table__, (self._title, self._status, self._category), value)
 
-    def update_task(self, id_task: int, title, ):
-        value = (title, id_task)
-        self.engine.update(self.__table, tuple(self.__columns[1]), self.__primary_key, value)
+    def update_title(self, id: int, title: str):
+        value = (title, id)
+        self.engine.update(self.__table__, (self._title,), self.__primary_key, value)
 
-    def update_category(self, id_task: int, id_category: int):
-        value = (id_category, id_task)
-        self.engine.update(self.__table, tuple(self.__columns[3]), self.__primary_key, value)
+    def update_category(self, id: int, category: int):
+        value = (category, id)
+        self.engine.update(self.__table__, (self._category,), self.__primary_key, value)
 
-    def update_status(self, id_task: int, status: bool):
-        if status:
-            int_status = 1
-        else:
-            int_status = 0
-        value = (int_status, id_task)
-        self.engine.update(self.__table, tuple(self.__columns[2]), self.__primary_key, value)
+    def update_status(self, id: int):
+        status = self.get_by_primary(id)[2]
+        new_status = (status + 1) % 2
+        value = (new_status, id)
+        self.engine.update(self.__table__, (self._status,), self.__primary_key, value)
 
     def delete(self, id_task: int):
-        self.engine.delete(self.__table, self.__primary_key, (id_task,))
-        # files = file_rep.get_by_foreign(id_task)
-        # for file in files:
-            # file_rep.delete(file[0]) # TODO
-
+        self.engine.delete(self.__table__, self.__primary_key, (id_task,))

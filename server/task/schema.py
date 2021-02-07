@@ -7,5 +7,5 @@ tasks = Table('tasks', metadata,
               Column('id', Integer, primary_key=True),
               Column('title', String(25)),
               Column('status', Integer),
-              # Column('category', Integer, ForeignKey('categories.id'))
+              Column('category', Integer, ForeignKey('categories.id'))
               )

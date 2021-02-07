@@ -5,34 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d3af227f-9d84-4dc1-9d93-74aff3bb65fd" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/category/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/category/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/category/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/category/controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/category/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/category/model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/category/repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/category/repository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/category/scheldure" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/server/category/schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/category/schema.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/category/serializer.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/category/serializer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/category/service.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/category/service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/data/task.db" beforeDir="false" afterPath="$PROJECT_DIR$/server/data/task.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/errors_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/errors_handler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/file/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/file/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/file/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/file/controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/file/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/file/model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/file/repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/file/repository.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/file/schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/file/schema.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/file/serializer.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/file/serializer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/file/service.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/file/service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/index.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/index.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/locale.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/task/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/task/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/static/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/static/templates/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/task/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/task/controller.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/task/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/task/model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/task/repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/task/repository.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/task/schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/task/schema.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/task/serializer.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/task/serializer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/task/service.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/task/service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,18 +60,21 @@
     <property name="DatabaseDriversLRU" value="sqlite" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/server/category" />
+    <property name="database.data.extractors.current.export.id" value="SQL Inserts" />
+    <property name="database.data.extractors.current.id" value="SQL Inserts" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/server/data/files" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/server/data/files" />
       <recent name="$PROJECT_DIR$/server/category" />
       <recent name="$PROJECT_DIR$/server/file" />
       <recent name="$PROJECT_DIR$/server/crud/category" />
       <recent name="$PROJECT_DIR$/server/crud/file" />
-      <recent name="$PROJECT_DIR$/server/crud/task" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -237,6 +231,8 @@
       <workItem from="1612197316266" duration="12913000" />
       <workItem from="1612380053224" duration="3104000" />
       <workItem from="1612444619634" duration="13537000" />
+      <workItem from="1612607711533" duration="9130000" />
+      <workItem from="1612679083752" duration="19120000" />
     </task>
     <servers />
   </component>
@@ -272,6 +268,6 @@
     <SUITE FILE_PATH="coverage/ToDoTaskManager$ToDoTaskManager.coverage" NAME="ToDoTaskManager Coverage Results" MODIFIED="1610501174085" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/ToDoTaskManager$init_db.coverage" NAME="init_db Coverage Results" MODIFIED="1611344824543" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/server" />
     <SUITE FILE_PATH="coverage/ToDoTaskManager$setup__1_.coverage" NAME="setup (1) Coverage Results" MODIFIED="1611881732934" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ToDoTaskManager$run.coverage" NAME="run Coverage Results" MODIFIED="1612458510528" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ToDoTaskManager$run.coverage" NAME="run Coverage Results" MODIFIED="1612700581457" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

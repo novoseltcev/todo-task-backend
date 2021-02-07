@@ -1,12 +1,6 @@
 # Валидация данных, простая сериализация
 from server.initialize_db import engine
-from sqlalchemy import Table, Column, MetaData, Integer, String
-
-
-# def validate_name(name: str):
-#     category_rep = CategoryRepository()
-#     if len(category_rep.get_by_name(name)) == 0:
-#         raise ValueError()
+from sqlalchemy import Table, Column, MetaData, Integer, String, UniqueConstraint
 
 
 metadata = MetaData(bind=engine)

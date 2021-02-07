@@ -1,8 +1,5 @@
 # Класс модели, который описывает сущность предметной области или ее часть
-
-
 class Task(object):
-
     def __init__(self, title: str, category, status=0):
         self.title = title
         self.category = category

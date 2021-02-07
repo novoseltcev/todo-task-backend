@@ -4,19 +4,19 @@ import os
 
 class File(object):
     def __init__(self, name: str, path: str):
-        self.name = name
-        self.path = path
+        self.file_name = name
+        self.file_path = path
 
     def change_name(self, new_name: str):
-        self.name = new_name
+        self.file_name = new_name
 
-    def get_full_path(self):
+    def _get_full_path(self):
         cwd = os.getcwd()
-        return os.path.join(cwd, 'data', self.path)
+        return os.path.join(cwd, 'data', self.file_path)
 
     def save(self, data):
-        with open(self.get_full_path(), "wb+") as fp:
+        with open(self._get_full_path(), "wb+") as fp:
             fp.write(data)
 
     def delete(self):
-        os.remove(self.get_full_path())
+        os.remove(self._get_full_path())

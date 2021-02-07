@@ -13,7 +13,7 @@ def rerender_page():
     if 'current_category' not in session:
         session['current_category'] = 1
 
-    current_category = session.get('current_category', 1)
+    current_category = int(session['current_category'])
     if current_category == 1:
         tasks = task_rep.get()
     else:
@@ -29,6 +29,7 @@ def rerender_page():
 
 
 def create_task(title, current_category):
+    category_rep.assert_exist(current_category)
     task_rep.insert(title, current_category)
     return rerender_page(), 201
 
@@ -47,11 +48,18 @@ def update_status(id_task: int):
 
 def update_category(id_task: int, new_category: int):
     task_rep.assert_exist(id_task)
+    category_rep.assert_exist(new_category)
     task_rep.update_category(id_task, new_category)
     return rerender_page(), 202
 
 
-def delete_task(id_task: int):
-    task_rep.assert_exist(id_task)
-    task_rep.delete(id_task)
+def delete_task(id: int):
+    task_rep.assert_exist(id)
+
+    files_by_task = file_rep.get_by_foreign(id)
+    for file in files_by_task:
+        print(file, file[0])
+        file_rep.delete(file[0])
+
+    task_rep.delete(id)
     return rerender_page(), 202
