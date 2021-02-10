@@ -1,3 +1,3 @@
-from database.engine import Engine
+from database.manager import DBManager
 
-__all__ = ['Engine']
+__all__ = ['DBManager']

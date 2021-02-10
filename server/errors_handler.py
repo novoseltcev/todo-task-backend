@@ -1,5 +1,6 @@
+from sqlalchemy.exc import IntegrityError
+
 from server import app
-from sqlite3 import IntegrityError
 
 
 @app.errorhandler(KeyError)

@@ -1,6 +1,6 @@
-from flask import request, session
+from flask import request, session, Blueprint
+
 from server.category import service
-from flask import Blueprint
 
 
 category_blueprint = Blueprint('category', __name__)

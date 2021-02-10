@@ -25,7 +25,7 @@ def rerender_page():
     categories = c_svc.category_rep.get()
     files = f_svc.file_rep.get()
     assert (len(categories) != 0)
-    return render_template("index.html", tasks=tasks, categories=categories, files=files)
+    return render_template("index.html", tasks=tuple(reversed(tasks)), categories=categories, files=files)
 
 
 def create_task(title, current_category):

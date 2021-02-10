@@ -1,5 +1,7 @@
 import os
+
 from flask import send_file
+
 from server.file.serializer import File, engine
 from server.file.repository import FileRepository
 from server.task import service as svc
@@ -39,7 +41,10 @@ def get_unique_path(name):
 def create_file(name: str, data, task: int):
     svc.task_rep.assert_exist(task)
     path = get_unique_path(name)
-    file_rep.insert(name, data, task, path)
+    file_rep.insert(name, path, task)
+    with open(path, 'wb+') as fp:
+        fp.write(data)
+
     return svc.rerender_page(), 201
 
 

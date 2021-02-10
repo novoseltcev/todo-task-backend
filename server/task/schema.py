@@ -1,6 +1,8 @@
 # Валидация данных, простая сериализация
-from server.initialize_db import metadata, engine
 from sqlalchemy import Table, Column, Integer, String, ForeignKey
+
+from server.initialize_db import metadata, engine
+
 
 tasks = Table('tasks', metadata,
               Column('id', Integer, primary_key=True),

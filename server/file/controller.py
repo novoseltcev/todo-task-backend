@@ -1,6 +1,6 @@
-from flask import request
+from flask import request, Blueprint
+
 from server.file import service
-from flask import Blueprint
 
 
 file_blueprint = Blueprint('file', __name__)
