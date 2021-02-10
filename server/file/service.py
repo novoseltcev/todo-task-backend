@@ -12,7 +12,7 @@ root_dir = 'server'
 
 def download_file(id: int):
     file_rep.assert_exist(id)
-    id_file, name, path, id_task = file_rep.get_by_primary(id)
+    path = file_rep.get_by_primary(id).path
     cwd = os.getcwd()
     result = send_file(os.path.join(cwd, path))
     return result
@@ -46,7 +46,7 @@ def create_file(name: str, data, task: int):
 def delete_file(id: int):
     file_rep.assert_exist(id)
 
-    path = file_rep.get_by_primary(id)[2]
+    path = file_rep.get_by_primary(id).path
     cwd = os.getcwd()
     full_path = os.path.join(cwd, path)
     os.remove(full_path)

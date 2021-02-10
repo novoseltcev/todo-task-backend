@@ -1,7 +1,7 @@
 from server.app import app
 from server import errors_handler
-from server.task import controller
 from server.category import controller
+# from server.task import controller
 from server.file import controller
 import server.index
 

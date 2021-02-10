@@ -2,8 +2,8 @@
 from flask import render_template, session
 from server.task.repository import TaskRepository
 from server.task.serializer import Task, engine
-from server.category.service import category_rep
-from server.file.service import file_rep
+from server.category import service as c_svc
+from server.file import service as f_svc
 
 
 task_rep = TaskRepository(engine, Task)
@@ -22,14 +22,14 @@ def rerender_page():
         except ValueError as error:
             return error.args[0], 404
 
-    categories = category_rep.get()
-    files = file_rep.get()
+    categories = c_svc.category_rep.get()
+    files = f_svc.file_rep.get()
     assert (len(categories) != 0)
     return render_template("index.html", tasks=tasks, categories=categories, files=files)
 
 
 def create_task(title, current_category):
-    category_rep.assert_exist(current_category)
+    c_svc.category_rep.assert_exist(current_category)
     task_rep.insert(title, current_category)
     return rerender_page(), 201
 
@@ -48,7 +48,7 @@ def update_status(id_task: int):
 
 def update_category(id_task: int, new_category: int):
     task_rep.assert_exist(id_task)
-    category_rep.assert_exist(new_category)
+    c_svc.category_rep.assert_exist(new_category)
     task_rep.update_category(id_task, new_category)
     return rerender_page(), 202
 
@@ -56,10 +56,10 @@ def update_category(id_task: int, new_category: int):
 def delete_task(id: int):
     task_rep.assert_exist(id)
 
-    files_by_task = file_rep.get_by_foreign(id)
+    files_by_task = f_svc.file_rep.get_by_foreign(id)
     for file in files_by_task:
         print(file, file[0])
-        file_rep.delete(file[0])
+        f_svc.file_rep.delete(file[0])
 
     task_rep.delete(id)
     return rerender_page(), 202

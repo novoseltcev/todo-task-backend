@@ -22,7 +22,7 @@ def create_category():
     name = json["name"]
     res = service.create_category(name)
     category = service.category_rep.get_by_name(name)  # TODO - нарушает абстракцию
-    session['current_category'] = category[0]
+    session['current_category'] = category.id
     session.modified = True
     return res
 

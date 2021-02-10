@@ -29,7 +29,7 @@ def delete_category(id_category: int):
 
     tasks_by_category = svc.task_rep.get_by_foreign(id_category)
     for task in tasks_by_category:
-        svc.task_rep.delete(task[0])
+        svc.task_rep.delete(task.id)
 
     category_rep.delete(id_category)
     return svc.rerender_page(), 202

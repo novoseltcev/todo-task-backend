@@ -1,6 +1,6 @@
 from flask import Flask
-from server.task import task_blueprint
 from server.category import category_blueprint
+from server.task import task_blueprint
 from server.file import file_blueprint
 import os
 

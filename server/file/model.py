@@ -3,16 +3,17 @@ import os
 
 
 class File(object):
-    def __init__(self, name: str, path: str):
-        self.file_name = name
-        self.file_path = path
+    def __init__(self, name: str, path: str, task: id):
+        self.name = name
+        self.path = path
+        self.task = task
 
     def change_name(self, new_name: str):
-        self.file_name = new_name
+        self.name = new_name
 
     def _get_full_path(self):
         cwd = os.getcwd()
-        return os.path.join(cwd, 'data', self.file_path)
+        return os.path.join(cwd, self.path)
 
     def save(self, data):
         with open(self._get_full_path(), "wb+") as fp:

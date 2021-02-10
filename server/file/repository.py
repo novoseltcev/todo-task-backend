@@ -1,57 +1,63 @@
 # Класс для работы с БД
-import os
+from sqlalchemy.orm import sessionmaker
 
 
 class FileRepository:
-    __table = 'files'
-    _id = 'id'
-    _name = "name"
-    _path = 'path'
-    _task = 'task'
-
-    __primary_key = _id
-    __foreign_key = _task
 
     def __init__(self, engine, model):
-        self.engine = engine
+        self.session_maker = sessionmaker(bind=engine)
         self.model = model
 
     def assert_exist(self, id: int):
-        self.engine.assert_db(self.__table, self.__primary_key, id)
+        session = self.session_maker()
+        count = session.query(self.model).filter_by(id=id).count()
+        if count == 0:
+            raise ValueError(str(self.model.id) + ' = ' + str(id) + " isn't exists")
 
     def get(self):
-        return self.engine.select_all(self.__table)
+        session = self.session_maker()
+        return session.query(self.model).all()
 
     def get_by_primary(self, id: int):
-        return self.engine.select_one(self.__table, filter_column=self._id, value=(id,))
+        session = self.session_maker()
+        return session.query(self.model).filter_by(id=id).one()
 
     def get_by_name(self, name):
-        return self.engine.select_all(self.__table, filter_column=self._name, value=(name,))
+        session = self.session_maker()
+        return session.query(self.model).filter_by(name=name).one()
 
     def get_by_foreign(self, task):
-        return self.engine.select_all(self.__table, filter_column=self.__foreign_key, value=(task,))
-
-    def create_table(self):
-        self.engine.create_table(self.__table,
-                                 (
-                                     self._id + " INTEGER",
-                                     self._name + " VARCHAR(40)",
-                                     self._path + " TEXT UNIQUE",
-                                     self._task + " INTEGER",
-                                     "PRIMARY KEY(" + self.__primary_key + ")",
-                                     "FOREIGN KEY(" + self.__foreign_key + ") REFERENCES tasks(" + self.__foreign_key + ")"
-                                 )
-                                 )
+        session = self.session_maker()
+        return session.query(self.model).filter_by(task=task).all()
 
     def insert(self, name: str, data, task: int, path: str):
-        value = (name, path, task)
-        self.engine.insert(self.__table, (self._name, self._path, self._task), value)
-        with open(path, 'wb+') as fp:
-            fp.write(data)
+        session = self.session_maker()
+        try:
+            file = self.model(name=name, path=path, task=task)
+            session.add(file)
+            file.save(data)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
 
     def update_task(self, id: int, task: int):
-        value = (task, id)
-        self.engine.update(self.__table, (self.__foreign_key,), self.__primary_key, value)
+        session = self.session_maker()
+        try:
+            file = session.query(self.model).filter_by(id=id).one()
+            file.task = task
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
 
     def delete(self, id: int):
-        self.engine.delete(self.__table, self.__primary_key, (id,))
+        session = self.session_maker()
+        try:
+            file = session.query(self.model).filter_by(id=id).one()
+            session.delete(file)
+            file.delete()
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e

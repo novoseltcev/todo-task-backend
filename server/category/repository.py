@@ -1,49 +1,58 @@
 # Класс для работы с БД
+from sqlalchemy.orm import sessionmaker
 
 
 class CategoryRepository:
-    __table = 'categories'
-    _id = 'id'
-    _name = 'name'
-
-    __primary_key = _id
     __default = 'All'
 
     def __init__(self, engine, model):
-        self.engine = engine
+        self.session_maker = sessionmaker(bind=engine)
         self.model = model
+        session = self.session_maker()
+        count = session.query(self.model).count()
+        if count == 0:
+            self.insert(self.__default)
 
     def assert_exist(self, id: int):
-        return self.engine.assert_db(self.__table, self.__primary_key, id)
-
-    def create_tables(self):
-        res = self.engine.create_table(self.__table,
-                                       (
-                                           self._id + " INTEGER",
-                                           self._name + " varchar(20) UNIQUE",
-                                           "PRIMARY KEY(" + self.__primary_key + ")"
-                                       )
-                                       )
-
-        try:
-            self.engine.assert_db(self.__table, self.__primary_key, 1)
-            return res
-        except ValueError:
-            return self.engine.insert(self.__table, (self._name,), (self.__default,))
+        session = self.session_maker()
+        count = session.query(self.model).filter_by(id=id).count()
+        if count == 0:
+            raise ValueError(str(self.model.id) + ' = ' + str(id) + " isn't exists")
 
     def get(self):
-        return self.engine.select_all(self.__table)
+        session = self.session_maker()
+        return session.query(self.model).all()
 
     def get_by_name(self, name):
-        return self.engine.select_one(self.__table, self._name, (name,))
+        session = self.session_maker()
+        return session.query(self.model).filter_by(name=name).one()
 
-    def insert(self, category: str):
-        value = (category,)
-        return self.engine.insert(self.__table, (self._name,), value)
+    def insert(self, name: str):
+        session = self.session_maker()
+        try:
+            category = self.model(name=name)
+            session.add(category)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
 
     def update_name(self, id: int, source: str):
-        value = (source, id)
-        return self.engine.update(self.__table, (self._name,), self.__primary_key, value)
+        session = self.session_maker()
+        try:
+            category = session.query(self.model).filter_by(id=id).one()
+            category.change_name(source)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
 
     def delete(self, id: int):
-        return self.engine.delete(self.__table, self.__primary_key, (id,))
+        session = self.session_maker()
+        try:
+            category = session.query(self.model).filter_by(id=id).one()
+            session.delete(category)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
