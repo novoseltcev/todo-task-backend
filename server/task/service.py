@@ -1,12 +1,14 @@
 # Логика приложения (бизнес и прикладная)
 from flask import render_template, session
-from server.task.repository import TaskRepository
-from server.task.serializer import Task, engine
+
+from .repository import TaskRepository
+from .schema import TaskSchema
+
 from server.category import service as c_svc
 from server.file import service as f_svc
 
 
-task_rep = TaskRepository(engine, Task)
+task_rep = TaskRepository()
 
 
 def rerender_page():

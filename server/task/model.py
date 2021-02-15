@@ -1,9 +1,20 @@
 # Класс модели, который описывает сущность предметной области или ее часть
-class Task(object):
-    def __init__(self, title: str, category, status=0):
-        self.title = title
-        self.category = category
-        self.status = status
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
+
+from server.initialize_db import Base, engine, DB_config
+
+
+task_title_len = DB_config['task_title_len']
+
+
+class Task(Base):
+    __tablename__ = 'tasks'
+    id = Column(Integer, primary_key=True)
+    title = Column(String(task_title_len))
+    status = Column(Integer, nullable=True)
+    category = Column(Integer, ForeignKey('categories.id'))
+    files = relationship("File", backref=__tablename__, order_by="File.name")
 
     def change_title(self, new_title: str):
         self.title = new_title
@@ -13,3 +24,6 @@ class Task(object):
 
     def change_category(self, new_category):
         self.category = new_category
+
+
+Base.metadata.create_all(bind=engine)

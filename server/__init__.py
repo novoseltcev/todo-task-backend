@@ -1,8 +1,8 @@
-from server.app import app
-from server import errors_handler
-from server.category import controller
-from server.task import controller
-from server.file import controller
+from .app import app
+from . import errors_handler
+from .category import controller
+from .task import controller
+from .file import controller
 import server.index
 
 

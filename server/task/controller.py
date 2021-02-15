@@ -1,7 +1,7 @@
 # Основной модуль, работа с http
 from flask import request, session, Blueprint
 
-from server.task import service
+from . import service
 
 
 task_blueprint = Blueprint('task', __name__)

@@ -1,11 +1,13 @@
 # Валидация данных, простая сериализация
-from sqlalchemy import Table, Column, Integer, String, UniqueConstraint
+from marshmallow import Schema, fields, validate
 
-from server.initialize_db import metadata, engine
+from server.initialize_db import DB_config
 
 
-categories = Table('categories', metadata,
-                   Column('id', Integer, primary_key=True),
-                   Column('name', String(25), unique=True)
-                   )
-metadata.create_all()
+category_name_len = DB_config['category_name_len']
+
+
+class CategorySchema(Schema):
+    id = fields.Integer(dump_only=True)
+    name = fields.String(required=True, validate=[
+        validate.Length(max=category_name_len)])

@@ -1,9 +1,10 @@
-from server.category.repository import CategoryRepository
-from server.category.serializer import Category, engine
+from .repository import CategoryRepository
+from .schema import CategorySchema
+
 from server.task import service as svc
 
 
-category_rep = CategoryRepository(engine, Category)
+category_rep = CategoryRepository()
 
 
 def open_category(id_category: int):

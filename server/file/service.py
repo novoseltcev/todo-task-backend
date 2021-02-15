@@ -2,12 +2,13 @@ import os
 
 from flask import send_file
 
-from server.file.serializer import File, engine
-from server.file.repository import FileRepository
+from .repository import FileRepository
+from .schema import FileSchema
+
 from server.task import service as svc
 
 
-file_rep = FileRepository(engine, File)
+file_rep = FileRepository()
 files_dir = os.path.join('data', 'files')
 root_dir = 'server'
 

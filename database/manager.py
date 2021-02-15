@@ -1,44 +1,54 @@
-from sqlalchemy.orm import sessionmaker
-
-
+from server.initialize_db import session
 class DBManager:
-    def __init__(self, engine, model):
-        self.engine = engine
+    def __init__(self, model):
         self.model = model
-        self.session_maker = sessionmaker(bind=self.engine)
 
     def get(self):
-        session = self.session_maker()
-        return session.query(self.model).all()
+        return self.model.query.all()
 
-    def _get_by(self, all_rows=False, session=None, **kwargs):
-        if session is None:
-            session = self.session_maker()
-        query = session.query(self.model).filter_by(**kwargs)
+    def _get_by(self, all_rows=False, **kwargs):
+        query = self.model.query.filter_by(**kwargs)
         if all_rows:
             return query.all()
         return query.one()
 
     def assert_exist(self, id: int):
-        session = self.session_maker()
-        query = session.query(self.model).filter_by(id=id)
+        query = self.model.query.filter_by(id=id)
         if query.count() == 0:
             raise ValueError(str(self.model.id) + ' = ' + str(id) + " isn't exist")
 
     def _insert(self, **kwargs):
-        session = self.session_maker()
-        obj = self.model(**kwargs)
-        session.add(obj)
-        session.commit()
+        try:
+            obj = self.model(**kwargs)
+            session.add(obj)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
         return obj
 
     def _before(self, id: int):
-        session = self.session_maker()
-        obj = self._get_by(id=id, session=session)
-        return obj, session
+        obj = self._get_by(id=id)
+        return obj
 
     def _delete(self, id: int):
-        obj, session = self._before(id)
-        session.delete(obj)
-        session.commit()
+        try:
+            obj = self._get_by(id=id)
+            session.delete(obj)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise e
         return obj
+
+    @staticmethod
+    def session_handler(func):
+        def wrapper(*args, **kwargs):
+            try:
+                func(*args, **kwargs)
+                session.commit()
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                raise e
+        return wrapper

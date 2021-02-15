@@ -1,10 +1,13 @@
 # Класс для работы с БД
-from sqlalchemy.orm import sessionmaker
 
 from database.manager import DBManager
 
+from .model import Task
+
 
 class TaskRepository(DBManager):
+    def __init__(self):
+        super().__init__(Task)
 
     def get_by_primary(self, id: int):
         return self._get_by(all_rows=False, id=id)
@@ -15,20 +18,21 @@ class TaskRepository(DBManager):
     def insert(self, title: str, category: int):
         self._insert(title=title, status=False, category=category)
 
+    @DBManager.session_handler
     def update_title(self, id: int, title: str):
-        task, session = self._before(id)
+        task = self._get_by(id=id)
         task.change_title(title)
-        session.commit()
 
+    @DBManager.session_handler
     def update_category(self, id: int, category: int):
-        task, session = self._before(id)
+        task = self._get_by(id=id)
         task.change_category(category)
-        session.commit()
 
+    @DBManager.session_handler
     def update_status(self, id: int):
-        task, session = self._before(id)
+        task = self._get_by(id=id)
         task.change_status()
-        session.commit()
 
     def delete(self, id: int):
         self._delete(id)
+
