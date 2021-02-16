@@ -1,3 +1,5 @@
+from flask import redirect
+
 from .repository import CategoryRepository
 from .schema import CategorySchema
 
@@ -7,38 +9,34 @@ from server.task import service as svc
 category_rep = CategoryRepository()
 
 
-def open_category(json):
-    schema = CategorySchema(only=('id',)).load(json)
-    id = schema['id']
-
+def open_category(**kwargs):
+    id = kwargs['id']
     category_rep.assert_exist(id)
+
     # TODO -- app-session open
-    return svc.rerender_page()
+    return redirect('/', 200)
 
 
-def create_category(json):
-    schema = CategorySchema(only=('name',)).load(json)
-    name = schema['name']
+def create_category(**kwargs):
+    name = kwargs['name']
 
     category_rep.insert(name)
-    return svc.rerender_page(), 201
+    return redirect('/', 201)
 
 
-def update_category(json):
-    schema = CategorySchema(only=('id', 'name')).load(json)
-    id = schema['id']
-    source_name = schema['name']
-
+def update_category(**kwargs):
+    id = kwargs['id']
     category_rep.assert_exist(id)
+
+    source_name = kwargs['name']
     if id == 1:
         raise ValueError("ban on changing the main category")
     category_rep.update_name(id, source_name)
-    return svc.rerender_page(), 202
+    return redirect('/', 202)
 
 
-def delete_category(json):
-    schema = CategorySchema(only=('id',)).load(json)
-    id = schema['id']
+def delete_category(**kwargs):
+    id = kwargs['id']
 
     category_rep.assert_exist(id)
     if id == 1:
@@ -49,4 +47,4 @@ def delete_category(json):
         svc.task_rep.delete(task.id)
 
     category_rep.delete(id)
-    return svc.rerender_page(), 202
+    return redirect('/', 202)

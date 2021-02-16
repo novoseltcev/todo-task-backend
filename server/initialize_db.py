@@ -14,4 +14,3 @@ engine = create_engine('sqlite:///' + path.join(cwd, DB_config['ROOT'], 'data', 
 DB_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 Base = declarative_base()
 Base.query = DB_session.query_property()
-

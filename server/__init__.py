@@ -1,9 +1,10 @@
 from .app import app
 from . import errors_handler
+import server.index
+
 from .category import controller
 from .task import controller
 from .file import controller
-import server.index
 
 
 __all__ = ['controller', 'index', 'app']

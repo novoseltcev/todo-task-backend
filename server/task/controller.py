@@ -1,5 +1,7 @@
 # Основной модуль, работа с http
 from flask import request, session, Blueprint
+from flask_apispec import use_kwargs
+from .schema import TaskSchema
 
 from . import service
 
@@ -15,29 +17,31 @@ def check_json():
 
 
 @task_blueprint.route("/", methods=['POST'])
-def create():
-    current_category = session.get('current_category', 1)
-    return service.create_task(current_category, request.json)
+@use_kwargs(TaskSchema(only=('title',)))
+def create(**kwargs):
+    current_category = session['current_category']
+    return service.create_task(current_category, **kwargs)
 
 
 @task_blueprint.route("/status", methods=['PUT'])
-def edit_status():
-    json = request.json
-    if not json:
-        raise Exception("")
-    return service.update_status(request.json)
+@use_kwargs(TaskSchema(only=('id',)))
+def edit_status(**kwargs):
+    return service.update_status(**kwargs)
 
 
 @task_blueprint.route("/title", methods=['PUT'])
-def edit_title():
-    return service.update_title(request.json)
+@use_kwargs(TaskSchema(only=('id', 'title',)))
+def edit_title(**kwargs):
+    return service.update_title(**kwargs)
 
 
 @task_blueprint.route("/category", methods=['PUT'])
-def edit_category():
-    return service.update_category(request.json)
+@use_kwargs(TaskSchema(only=('id', 'category')))
+def edit_category(**kwargs):
+    return service.update_category(**kwargs)
 
 
 @task_blueprint.route("/", methods=['DELETE'])
-def delete():
-    return service.delete_task(request.json)
+@use_kwargs(TaskSchema(only=('id',)))
+def delete(**kwargs):
+    return service.delete_task(**kwargs)

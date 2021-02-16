@@ -1,6 +1,6 @@
 import os
 
-from flask import send_file
+from flask import send_file, redirect, send_from_directory
 from marshmallow import INCLUDE
 
 from .repository import FileRepository
@@ -20,9 +20,11 @@ def download_file(json):
     id = schema['id']
 
     file_rep.assert_exist(id)
-    path = file_rep.get_by_primary(id).path
+    file = file_rep.get_by_primary(id)
+    path = file.path
+    name = file.name
     cwd = os.getcwd()
-    result = send_file(os.path.join(cwd, path))
+    result = send_file(os.path.join(cwd, path), attachment_filename=name, as_attachment=True)
     return result
 
 
@@ -56,7 +58,7 @@ def create_file(json):
     with open(path, 'wb+') as fp:
         fp.write(data)
 
-    return svc.rerender_page(), 201
+    return redirect('/', 201)
 
 
 def delete_file(json):
@@ -71,4 +73,4 @@ def delete_file(json):
     os.remove(full_path)
 
     file_rep.delete(id)
-    return svc.rerender_page(), 202
+    return redirect('/', 202)

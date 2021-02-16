@@ -17,8 +17,9 @@
         <ul>
             {% for category in data %}
                 <li>
-                    <form action="/" method="post">
-                        <input type="button" name="id_category" value={{ category['name'] }} formmethod="post"/>
+                    <form action="/category/" method="GET">
+                        <input type="hidden" name="id" value={{ category['id'] }} >
+                        <button type="submit">{{ category['name'] }}</button>
                     </form>
                 </li>
             {% endfor %}
@@ -42,7 +43,7 @@
                               <tr>
                                 <td style="padding-left: 30px;">{{task['title']}} </td>
                                 <td style="width: 13px;">
-                                  <form action="/" method="post">
+                                  <form action="/task/status" method="PUT">
                                     {% if table_element[1] == 0 %}
                                       <input style="width: 13px;" class="t_button" type="checkbox">
                                     {% else %}
@@ -51,7 +52,7 @@
                                   </form>
                                 </td>
                                 <td style="width: 40px;">
-                                  <form action="/server/task" method="delete">
+                                  <form action="/task/" method="DELETE">
                                     <input class="t_button" type="button" value="Delete">
                                   </form>
                                 </td>
@@ -61,7 +62,7 @@
                                         <input type="hidden" name="id" value={{ file["id"] }} >
                                         <button type="submit">{{ file['name'] }}</button>
                                     </form>
-                                    <form action="/file" method="DELETE">
+                                    <form action="/file/" method="DELETE">
                                       <input type="hidden" name="id" value={{ file["id"] }} >
                                       <button type="submit">Удалить</button>
                                     </form>

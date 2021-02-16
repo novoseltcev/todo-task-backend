@@ -6,6 +6,12 @@ from . import service
 file_blueprint = Blueprint('file', __name__)
 
 
+def check_json(f):
+    json = request.json
+    if not json:
+        raise Exception("")
+
+
 @file_blueprint.route("/download", methods=['POST'])
 def open_file():
     json = {'id': int(request.form['id'])}
