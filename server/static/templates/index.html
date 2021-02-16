@@ -15,7 +15,7 @@
 
         <li><a href="">Categories:</a></li>
         <ul>
-            {% for category in categories %}
+            {% for category in data %}
                 <li>
                     <form action="/" method="post">
                         <input type="button" name="id_category" value={{ category['name'] }} formmethod="post"/>
@@ -35,48 +35,48 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% for task in tasks %}
-                    {% if task['status'] == table_element[1] %}
-                      <tr>
-                        <td style="padding-left: 30px;">{{task['title']}} </td>
-                        <td style="width: 13px;">
-                          <form action="/" method="post">
-                            {% if table_element[1] == 0 %}
-                              <input style="width: 13px;" class="t_button" type="checkbox">
-                            {% else %}
-                              <input style="width: 13px;" class="t_button" type="checkbox" checked>
+                    {% for category in data %}
+                        {% if category['id'] == current_category %}
+                          {% for task in category['tasks'] %}
+                            {% if task['status'] == table_element[1] %}
+                              <tr>
+                                <td style="padding-left: 30px;">{{task['title']}} </td>
+                                <td style="width: 13px;">
+                                  <form action="/" method="post">
+                                    {% if table_element[1] == 0 %}
+                                      <input style="width: 13px;" class="t_button" type="checkbox">
+                                    {% else %}
+                                      <input style="width: 13px;" class="t_button" type="checkbox" checked>
+                                    {% endif %}
+                                  </form>
+                                </td>
+                                <td style="width: 40px;">
+                                  <form action="/server/task" method="delete">
+                                    <input class="t_button" type="button" value="Delete">
+                                  </form>
+                                </td>
+                                <td style="width: 50px;">
+                                  {% for file in task['files'] %}
+                                    <form action="/file/download" method="POST" enctype="multipart/form-data">
+                                        <input type="hidden" name="id" value={{ file["id"] }} >
+                                        <button type="submit">{{ file['name'] }}</button>
+                                    </form>
+                                    <form action="/file" method="DELETE">
+                                      <input type="hidden" name="id" value={{ file["id"] }} >
+                                      <button type="submit">Удалить</button>
+                                    </form>
+                                  {% endfor %}
+                                  <form action="/file/" method="POST" enctype="multipart/form-data">
+                                        <input type="file" name="file">
+                                        <input type="hidden" name="task" value={{ task["id"] }} >
+                                        <button type="submit">Прикрепить</button>
+                                    </form>
+                                </td>
+                              </tr>
                             {% endif %}
-                          </form>
-                        </td>
-                        <td style="width: 40px;">
-                          <form action="/server/task" method="delete">
-                            <input class="t_button" type="button" value="Delete">
-                          </form>
-                        </td>
-                        <td style="width: 50px;">
-                        {% set flag = 0 %}
-                          {% for file in files %}
-                           {% if file['task'] == task['id'] %}
-                               <form action="/file/download" method="POST" enctype="multipart/form-data">
-                                    <input type="hidden" name="id" value={{ file["id"] }} >
-                                    <button type="submit">{{ file['name'] }}</button>
-                               </form>
-                               <form action="/file" method="DELETE">
-                                <input type="hidden" name="id" value={{ file["id"] }} >
-                                <button type="submit">Удалить</button>
-                               </form>
-                               {% set flag = 1 %}
-                           {% endif %}
                           {% endfor %}
-                        {% if flag == 0 %}<form action="/file/" method="POST" enctype="multipart/form-data">
-                                    <input type="file" name="file">
-                                    <input type="hidden" name="task" value={{ task["id"] }} >
-                                    <button type="submit">Прикрепить</button>
-                                </form>{% endif %}
-                        </td>
-                      </tr>
-                    {% endif %}
-                  {% endfor %}
+                        {% endif %}
+                    {% endfor %}
                 </tbody>
               </table>
             </div>

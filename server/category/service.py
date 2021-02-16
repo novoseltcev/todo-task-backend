@@ -7,30 +7,46 @@ from server.task import service as svc
 category_rep = CategoryRepository()
 
 
-def open_category(id_category: int):
-    category_rep.assert_exist(id_category)
+def open_category(json):
+    schema = CategorySchema(only=('id',)).load(json)
+    id = schema['id']
+
+    category_rep.assert_exist(id)
+    # TODO -- app-session open
     return svc.rerender_page()
 
 
-def create_category(name):
+def create_category(json):
+    schema = CategorySchema(only=('name',)).load(json)
+    name = schema['name']
+
     category_rep.insert(name)
     return svc.rerender_page(), 201
 
 
-def update_category(id_category: int, source_name: str):
-    category_rep.assert_exist(id_category)
-    if id_category == 1:
+def update_category(json):
+    schema = CategorySchema(only=('id', 'name')).load(json)
+    id = schema['id']
+    source_name = schema['name']
+
+    category_rep.assert_exist(id)
+    if id == 1:
         raise ValueError("ban on changing the main category")
-    category_rep.update_name(id_category, source_name)
+    category_rep.update_name(id, source_name)
     return svc.rerender_page(), 202
 
 
-def delete_category(id_category: int):
-    category_rep.assert_exist(id_category)
+def delete_category(json):
+    schema = CategorySchema(only=('id',)).load(json)
+    id = schema['id']
 
-    tasks_by_category = svc.task_rep.get_by_foreign(id_category)
+    category_rep.assert_exist(id)
+    if id == 1:
+        raise ValueError("ban on delete the main category")
+
+    tasks_by_category = svc.task_rep.get_by_foreign(id)
     for task in tasks_by_category:
         svc.task_rep.delete(task.id)
 
-    category_rep.delete(id_category)
+    category_rep.delete(id)
     return svc.rerender_page(), 202

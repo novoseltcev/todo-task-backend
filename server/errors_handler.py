@@ -1,4 +1,5 @@
 from sqlalchemy.exc import IntegrityError
+from marshmallow import ValidationError
 
 from server import app
 
@@ -16,3 +17,8 @@ def value_error(error):
 @app.errorhandler(IntegrityError)
 def integrity_error(error):
     return {"error": "value already exists"}, 403
+
+
+@app.errorhandler(ValidationError)
+def validation_error(err):
+    return err.args[0], 422

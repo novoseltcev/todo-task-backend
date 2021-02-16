@@ -17,6 +17,7 @@ class FileRepository(DBManager):
     def get_by_foreign(self, task):
         return self._get_by(task=task, all_rows=True)
 
+    @DBManager.session_handler
     def insert(self, name: str, path: str, task: int):
         self._insert(name=name, path=path, task=task)
 
@@ -25,5 +26,6 @@ class FileRepository(DBManager):
         file, session = self._before(id)
         file.change_task(task)
 
+    @DBManager.session_handler
     def delete(self, id: int):
         self._delete(id)

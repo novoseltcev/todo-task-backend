@@ -15,6 +15,7 @@ class TaskRepository(DBManager):
     def get_by_foreign(self, category: int):
         return self._get_by(all_rows=True, category=category)
 
+    @DBManager.session_handler
     def insert(self, title: str, category: int):
         self._insert(title=title, status=False, category=category)
 
@@ -33,6 +34,7 @@ class TaskRepository(DBManager):
         task = self._get_by(id=id)
         task.change_status()
 
+    @DBManager.session_handler
     def delete(self, id: int):
         self._delete(id)
 

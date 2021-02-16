@@ -1,19 +1,24 @@
 import os
 
 from flask import send_file
+from marshmallow import INCLUDE
 
 from .repository import FileRepository
 from .schema import FileSchema
 
 from server.task import service as svc
+from server.initialize_db import DB_config
 
 
 file_rep = FileRepository()
-files_dir = os.path.join('data', 'files')
-root_dir = 'server'
+files_dir = DB_config['UPLOAD_FOLDER']
+root_dir = DB_config['ROOT']
 
 
-def download_file(id: int):
+def download_file(json):
+    schema = FileSchema(only=('id',)).load(json)
+    id = schema['id']
+
     file_rep.assert_exist(id)
     path = file_rep.get_by_primary(id).path
     cwd = os.getcwd()
@@ -39,7 +44,12 @@ def get_unique_path(name):
     return result
 
 
-def create_file(name: str, data, task: int):
+def create_file(json):
+    schema = FileSchema(only=('name', 'task', 'data')).load(json)
+    name = schema['name']
+    task = schema['task']
+    data = schema['data']
+
     svc.task_rep.assert_exist(task)
     path = get_unique_path(name)
     file_rep.insert(name, path, task)
@@ -49,7 +59,10 @@ def create_file(name: str, data, task: int):
     return svc.rerender_page(), 201
 
 
-def delete_file(id: int):
+def delete_file(json):
+    schema = FileSchema(only=('id',)).load(json)
+    id = schema['id']
+
     file_rep.assert_exist(id)
 
     path = file_rep.get_by_primary(id).path

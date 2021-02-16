@@ -8,12 +8,14 @@ task_title_len = DB_config['task_title_len']
 
 
 class TaskSchema(Schema):
-    id = fields.Integer(dump_only=True)
-    title = fields.String(validate=[
+    id = fields.Integer(validate=validate.Range(1))
+    title = fields.String(required=True, validate=[
         validate.Length(max=task_title_len)])
 
-    status = fields.Integer()
-    category = fields.Integer(dump_only=True)
+    status = fields.Integer(default=0, dump_only=True)
+    category = fields.Integer(default=1, validate=validate.Range(1))
+    files = fields.List(fields.Nested('FileSchema'),
+                        dump_only=True)
 
 
 
