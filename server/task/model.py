@@ -26,4 +26,4 @@ class Task(Base):
         self.category = new_category
 
 
-Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)  # TODO - вынести в server.init_db.py

@@ -1,7 +1,6 @@
 import os
 
-from flask import send_file, redirect, send_from_directory
-from marshmallow import INCLUDE
+from flask import send_file, make_response
 
 from .repository import FileRepository
 from .schema import FileSchema
@@ -15,12 +14,9 @@ files_dir = DB_config['UPLOAD_FOLDER']
 root_dir = DB_config['ROOT']
 
 
-def download_file(json):
-    schema = FileSchema(only=('id',)).load(json)
-    id = schema['id']
-
-    file_rep.assert_exist(id)
-    file = file_rep.get_by_primary(id)
+@file_rep.assert_kwargs
+def download_file(**kwargs):
+    file = file_rep.get_by_primary(**kwargs)
     path = file.path
     name = file.name
     cwd = os.getcwd()
@@ -42,7 +38,6 @@ def get_unique_path(name):
             index = index + 1
 
     result = os.path.join(root_dir, files_dir, cur_name)
-
     return result
 
 
@@ -57,20 +52,15 @@ def create_file(json):
     file_rep.insert(name, path, task)
     with open(path, 'wb+') as fp:
         fp.write(data)
+    return make_response(svc.rerender_page(), 201)
 
-    return redirect('/', 201)
 
-
-def delete_file(json):
-    schema = FileSchema(only=('id',)).load(json)
-    id = schema['id']
-
-    file_rep.assert_exist(id)
-
-    path = file_rep.get_by_primary(id).path
+@file_rep.assert_kwargs
+def delete_file(**kwargs):
+    path = file_rep.get_by_primary(**kwargs).path
     cwd = os.getcwd()
     full_path = os.path.join(cwd, path)
     os.remove(full_path)
 
-    file_rep.delete(id)
-    return redirect('/', 202)
+    file_rep.delete(**kwargs)
+    return make_response(svc.rerender_page(), 202)

@@ -5,7 +5,7 @@ from .task.service import rerender_page
 
 
 @app.route("/")
-def get_page():
+def index():
     return rerender_page()
 
 

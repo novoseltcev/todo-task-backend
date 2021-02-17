@@ -1,4 +1,4 @@
-from flask import request, session, Blueprint
+from flask import session, Blueprint
 from flask_apispec import use_kwargs
 
 from . import service
@@ -6,13 +6,6 @@ from .schema import CategorySchema
 
 
 category_blueprint = Blueprint('category', __name__)
-
-
-@category_blueprint.before_request
-def check_json():
-    json = request.json
-    if not json:
-        raise Exception("")
 
 
 @category_blueprint.route('/')

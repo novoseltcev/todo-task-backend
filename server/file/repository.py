@@ -14,7 +14,7 @@ class FileRepository(DBManager):
     def get_by_name(self, name):
         return self._get_by(name=name)
 
-    def get_by_foreign(self, task):
+    def get_by_foreign(self, task: int):
         return self._get_by(task=task, all_rows=True)
 
     @DBManager.session_handler

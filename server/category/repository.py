@@ -21,9 +21,9 @@ class CategoryRepository(DBManager):
         self._insert(name=name)
 
     @DBManager.session_handler
-    def update_name(self, id: int, source: str):
+    def update_name(self, id: int, name: str):
         category = self._get_by(id=id)
-        category.change_name(source)
+        category.change_name(name)
 
     @DBManager.session_handler
     def delete(self, id: int):

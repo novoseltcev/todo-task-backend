@@ -1,5 +1,4 @@
 # Класс для работы с БД
-
 from database.manager import DBManager
 
 from .model import Task

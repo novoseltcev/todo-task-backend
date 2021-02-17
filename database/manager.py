@@ -19,6 +19,12 @@ class DBManager:
         if query.count() == 0:
             raise ValueError(str(self.model.id) + ' = ' + str(id) + " isn't exist")
 
+    def assert_kwargs(self, func, field='id'):
+        def wrapper(**kwargs):
+            self.assert_exist(kwargs[field])
+            return func(**kwargs)
+        return wrapper
+
     def _insert(self, **kwargs):
         DB_session.add(self.model(**kwargs))
 

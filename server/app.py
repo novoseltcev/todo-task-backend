@@ -2,6 +2,7 @@ import os
 from datetime import timedelta
 
 from flask import Flask
+
 from .category import category_blueprint
 from .task import task_blueprint
 from .file import file_blueprint
