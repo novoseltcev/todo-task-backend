@@ -1,11 +1,12 @@
 import os
 
-from flask import send_file, make_response
+from flask import send_file
 
 from .repository import FileRepository
 from .schema import FileSchema
 
-from server.task import service as svc
+from server.task import service as t_svc
+from server.category import service as c_svc
 from server.initialize_db import DB_config
 
 
@@ -20,8 +21,7 @@ def download_file(**kwargs):
     path = file.path
     name = file.name
     cwd = os.getcwd()
-    result = send_file(os.path.join(cwd, path), attachment_filename=name, as_attachment=True)
-    return result
+    return send_file(os.path.join(cwd, path), attachment_filename=name, as_attachment=True)
 
 
 def get_unique_path(name):
@@ -47,12 +47,11 @@ def create_file(json):
     task = schema['task']
     data = schema['data']
 
-    svc.task_rep.assert_exist(task)
+    t_svc.task_rep.assert_exist(task)
     path = get_unique_path(name)
     file_rep.insert(name, path, task)
     with open(path, 'wb+') as fp:
         fp.write(data)
-    return make_response(svc.rerender_page(), 201)
 
 
 @file_rep.assert_kwargs
@@ -63,4 +62,3 @@ def delete_file(**kwargs):
     os.remove(full_path)
 
     file_rep.delete(**kwargs)
-    return make_response(svc.rerender_page(), 202)

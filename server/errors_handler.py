@@ -4,11 +4,6 @@ from marshmallow import ValidationError
 from server import app
 
 
-# @app.errorhandler(KeyError)
-def invalid_request_error(error):
-    return {"error": "Invalid request"}, 400
-
-
 @app.errorhandler(ValueError)
 def value_error(error):
     return error.args[0], 404

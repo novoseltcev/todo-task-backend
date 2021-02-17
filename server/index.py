@@ -1,12 +1,13 @@
 from flask import session
-from .app import app
+from . import app
+from .local import response
 from .initialize_db import DB_session
-from .task.service import rerender_page
+from .category.service import get_categories
 
 
 @app.route("/")
 def index():
-    return rerender_page()
+    return response(**get_categories(), code=200)
 
 
 @app.teardown_appcontext
@@ -18,3 +19,4 @@ def shutdown_session(exception=None):
 def check_session():
     if 'current_category' not in session:
         session['current_category'] = 1
+        session.modified = True

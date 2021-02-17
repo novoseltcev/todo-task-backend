@@ -35,6 +35,3 @@ class File(Base):
 
     def delete(self):
         os.remove(self._get_full_path())
-
-
-Base.metadata.create_all(bind=engine)

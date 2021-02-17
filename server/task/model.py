@@ -14,7 +14,7 @@ class Task(Base):
     title = Column(String(task_title_len))
     status = Column(Integer, nullable=True)
     category = Column(Integer, ForeignKey('categories.id'))
-    files = relationship("File", backref=__tablename__, order_by="File.name")
+    files = relationship('File', backref=__tablename__, order_by='File.name')
 
     def change_title(self, new_title: str):
         self.title = new_title
@@ -24,6 +24,3 @@ class Task(Base):
 
     def change_category(self, new_category):
         self.category = new_category
-
-
-Base.metadata.create_all(bind=engine)  # TODO - вынести в server.init_db.py

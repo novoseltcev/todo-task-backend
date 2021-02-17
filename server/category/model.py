@@ -16,6 +16,3 @@ class Category(Base):
 
     def change_name(self, new_name):
         self.name = new_name
-
-
-Base.metadata.create_all(bind=engine)
