@@ -21,7 +21,7 @@ def open_file(**kwargs):
 
 @file_blueprint.route("/", methods=['POST'])
 def create():
-    task = request.form['task']
+    task = request.json['task']
     file = request.files['file']
     if file is None:
         raise ValueError("File hasn't been transfered from client")

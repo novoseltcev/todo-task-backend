@@ -4,9 +4,9 @@ from marshmallow import ValidationError
 from server import app
 
 
-@app.errorhandler(ValueError)
+# @app.errorhandler(ValueError)
 def value_error(error):
-    return error.args[0], 404
+    return error.args[0], 403
 
 
 @app.errorhandler(IntegrityError)

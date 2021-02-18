@@ -10,13 +10,15 @@ from server import docs
 category_blueprint = Blueprint('category', __name__)
 
 
-@category_blueprint.route('/')
+@category_blueprint.route('/current', methods=['POST'])
 @use_kwargs(CategorySchema(only=('id',)))
 def open_category(**kwargs):
     service.open_category(**kwargs)
+    print(session['current_category'])
     session['current_category'] = kwargs['id']
     session.modified = True
-    return response(**service.get_categories(), code=200)
+    res = service.get_categories()
+    return {'categories': res, 'current_category': session['current_category']}, 201
 
 
 @category_blueprint.route("/", methods=['POST'])
@@ -26,15 +28,14 @@ def create(**kwargs):
     new_category = service.get_category(**kwargs)
     session['current_category'] = new_category['id']
     session.modified = True
-    return response(**service.get_categories(), code=201)
+    return service.get_categories(), 201
 
 
 @category_blueprint.route("/", methods=['PUT'])
 @use_kwargs(CategorySchema(only=('id', 'name')))
 def edit(**kwargs):
     service.update_category(**kwargs)
-
-    return response(**service.get_categories(), code=202)
+    return service.get_categories(), 202
 
 
 @category_blueprint.route("/", methods=['DELETE'])
@@ -44,7 +45,7 @@ def delete(**kwargs):
     if session['current_category'] == kwargs['id']:
         session['current_category'] = 1
         session.modified = True
-    return response(**service.get_categories(), code=202)
+    return service.get_categories(), 202
 
 
 docs.register(open_category, blueprint=category_blueprint.name)

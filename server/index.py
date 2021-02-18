@@ -7,7 +7,7 @@ from .category.service import get_categories
 
 @app.route("/")
 def index():
-    return response(**get_categories(), code=200)
+    return response(code=200)
 
 
 @app.teardown_appcontext

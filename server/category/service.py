@@ -9,7 +9,7 @@ category_rep = CategoryRepository()
 
 def get_categories():
     cat = category_rep.get()
-    return {'data': serialize_category(cat, many=True)}
+    return serialize_category(cat, many=True)
 
 
 def get_category(**kwargs):

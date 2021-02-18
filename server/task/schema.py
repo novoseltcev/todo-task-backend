@@ -8,7 +8,7 @@ task_title_len = DB_config['task_title_len']
 
 
 class TaskSchema(Schema):
-    id = fields.Integer()
+    id = fields.Integer(required=True)
     title = fields.String(required=True)
     status = fields.Integer(default=0, dump_only=True)
     category = fields.Integer(default=1)
@@ -26,6 +26,6 @@ class TaskSchema(Schema):
         if length > max_size or length < 1:
             raise ValidationError('text-field should have size = {1, .., ' + str(max_size) + '}')
 
-    @validates('name')
+    @validates('title')
     def validate_filename(self, value):
         self.validate_text_field(value, task_title_len)
