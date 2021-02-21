@@ -1,13 +1,14 @@
-from flask import session
+from os import path, getcwd
+
+from flask import session, send_from_directory
+
 from . import app
-from .local import response
 from .initialize_db import DB_session
-from .category.service import get_categories
 
 
 @app.route("/")
 def index():
-    return response(code=200)
+    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), 'new_index.html')
 
 
 @app.teardown_appcontext

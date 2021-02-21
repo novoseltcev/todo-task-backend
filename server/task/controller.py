@@ -2,6 +2,7 @@
 from flask import Blueprint, session
 from flask_apispec import use_kwargs, marshal_with
 from .schema import TaskSchema
+from server.category.schema import CategorySchema
 
 from . import service
 from server import docs
@@ -12,39 +13,39 @@ task_blueprint = Blueprint('task', __name__)
 
 @task_blueprint.route("/", methods=['POST'])
 @use_kwargs(TaskSchema(only=('title',)))
-@marshal_with(TaskSchema, 201)
 def create(**kwargs):
     kwargs['category'] = session['current_category']
     service.create_task(**kwargs)
-    return service.c_svc.get_categories()
+    return service.get_task(**kwargs), 201
 
 
 @task_blueprint.route("/status", methods=['PUT'])
 @use_kwargs(TaskSchema(only=('id',)))
 def edit_status(**kwargs):
     service.update_status(**kwargs)
-    return service.c_svc.get_categories(), 202
+    return service.get_task(**kwargs), 202
 
 
 @task_blueprint.route("/title", methods=['PUT'])
 @use_kwargs(TaskSchema(only=('id', 'title',)))
 def edit_title(**kwargs):
     service.update_title(**kwargs)
-    return service.c_svc.get_categories(), 202
+    return service.get_task(**kwargs), 202
 
 
 @task_blueprint.route("/category", methods=['PUT'])
 @use_kwargs(TaskSchema(only=('id', 'category')))
 def edit_category(**kwargs):
     service.update_category(**kwargs)
-    return service.c_svc.get_categories(), 202
+    return service.get_task(**kwargs), 202
 
 
 @task_blueprint.route("/", methods=['DELETE'])
 @use_kwargs(TaskSchema(only=('id',)))
 def delete(**kwargs):
+    response = service.get_task(**kwargs)
     service.delete_task(**kwargs)
-    return service.c_svc.get_categories(), 202
+    return response, 202
 
 
 docs.register(create, blueprint=task_blueprint.name)

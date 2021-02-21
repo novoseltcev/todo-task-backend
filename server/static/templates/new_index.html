@@ -12,7 +12,7 @@
       </title>
   </head>
 
-  <body style="background: #b7b7b72e" >
+  <body style="background: #b7b7b72e">
     <div class="Application" id="app" v-cloak>
       <ul class="vertical">
           <li><a href="">Sign In</a></li>
@@ -29,7 +29,7 @@
           </ul>
       </ul>
 
-         <div class="task_frame">
+        <div class="task_frame">
           <div class="container margin-top" v-for="table_el in table">
             <div class="row">
                 <p colspan="3">{{table_el.name}}</p>
@@ -37,19 +37,19 @@
                     <div v-if="category.id == current_category">
                         <div v-for="task in category.tasks">
                             <div v-if="task.status === table_el.id">
-                                <div style = "padding-left: 30px;">{{ task.name }}</div>
-                                <div style="width: 13px;">
-                                    <form @click="editStatusTask(task.id)">
-                                        <input style="width: 13px;" class="t_button" type="checkbox" v-if="table_el.id === 0">
-                                        <input style="width: 13px;" class="t_button" type="checkbox" checked v-if="table_el.id === 1">
+                                <span style = "padding-left: 30px; display: inline-block;">{{ task.title }}</span>
+                                <div style="width: 20px;height: 20px; display: inline-block;" >
+                                    <form style="width: 20px;height: 20px;" @click="editStatusTask(task.id)">
+                                        <input style="width: 20px;height: 20px;" class="t_button" type="checkbox" v-if="table_el.id === 0">
+                                        <input style="width: 20px;height: 20px;" class="t_button" type="checkbox" checked v-if="table_el.id === 1">
                                     </form>
                                 </div>
-                                <div style="width: 40px;">
+                                <div style="width: 60px;height: 20px; display: inline-block;" >
                                     <form @click="deleteTask(task.id)">
                                         <input class="t_button" type="button" value="Delete">
                                     </form>
                                 </div>
-                                <div style="width: 50px;" v-for="file in task.files">
+                                <div style="width: 50px; display: inline-block;" v-for="file in task.files">
                                     <form action="/file/download" method="POST" enctype="multipart/form-data" @submit.prevent="downloadFile(file.id)">
                                         <button type="submit">file.name</button>
                                     </form>
@@ -58,7 +58,7 @@
                                     </form>
 
                                 </div>
-                                <form action="/file/" method="POST" enctype="multipart/form-data" @submit.prevent="createFile(task.id)">
+                                <form style="display: inline-block;" action="/file/" method="POST" enctype="multipart/form-data" @submit.prevent="createFile(task.id)">
                                     <input type="file" name="file">
                                     <button type="submit">Прикрепить</button>
                                 </form>

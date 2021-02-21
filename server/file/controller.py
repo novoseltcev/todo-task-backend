@@ -3,7 +3,6 @@ from flask_apispec import use_kwargs
 
 from . import service
 from .schema import FileSchema
-from server.local import response
 from server import docs
 
 
@@ -29,14 +28,14 @@ def create():
     data = file.read()
     json = {'task': task, 'name': filename, 'data': data}
     service.create_file(json)
-    return response(**service.c_svc.get_categories(), code=201)
+    return 204
 
 
 @file_blueprint.route("/", methods=['DELETE'])
 @use_kwargs(FileSchema(only=('id',)))
 def delete(**kwargs):
     service.delete_file(**kwargs)
-    return response(**service.c_svc.get_categories(), code=202)
+    return 204
 
 
 docs.register(create, blueprint=file_blueprint.name)

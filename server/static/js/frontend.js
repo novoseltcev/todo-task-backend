@@ -11,40 +11,65 @@ new Vue({
                 'title': ''
             },
             categories: [
-                {'id': 1, 'name': "All", 'tasks': [{'id': 1, 'title': "HW", 'status': 1, 'files':[]}]}
                 ],
             current_category: 1,
         },
     methods: {
+        async getData() {
+            this.categories = await request('/category/all', 'GET')
+            console.log(this.categories)
+        },
         async createTask() {
             const {...cur_task} = this.form_task
-            this.categories = await request('/task/', 'POST', {"title": {...cur_task}.title})
+            this.last_added_task = await request('/task/', 'POST', {"title": {...cur_task}.title})
+            await this.getData()
             this.form_task.title = ''
         },
-        async openCategory(id) {
-            const res = await request('/category/current', 'POST', {"id": id})
-            this.categories = res.categories
-            this.current_category = res.current_category
-            console.log(this.categories)
-            console.log(this.current_category)
-        },
         async deleteTask(id) {
-            this.categories = await request('/task/', 'DELETE', {"id": id})
-            console.log(this.categories)
+            this.last_deleted_task = await request('/task/', 'DELETE', {"id": id})
+            await this.getData()
         },
         async editStatusTask(id) {
-            this.categories = await request('/task/status', 'PUT', {"id": id})
-            console.log(this.categories)
+            this.last_edited_task = await request('/task/status', 'PUT', {"id": id})
+            await this.getData()
         },
-        async createFile(task) {
-            this.categories = await request('/file/', 'POST', {"task": task})
-            console.log(this.categories)
+
+        async openCategory(id) {
+            const res = await request('/category/open', 'POST', {"id": id})
+            this.current_category = res.current_category
+            console.log(this.current_category)
+        },
+        async createCategory(name) {
+            const res = await request('/category/', 'POST', {"name": name})
+            this.current_category = res.current_category
+            await this.getData()
+
+        },
+        async deleteCategory(id) {
+            this.last_deleted_category = await request('/category/', 'DELETE', {"id": id})
+            await this.getData()
+        },
+        async editCategory(name) {
+            this.last_edit_category = await request('/category/', 'PUT', {"name": name})
+            await this.getData()
+        },
+
+        async downloadFile(id) {
+            this.last_added_file = await request('/file/download', 'GET', {"id": id})
+            await this.getData()
+        },
+        async createFile(file) {
+            this.last_added_file = await request('/file/', 'POST', {"file": file})
+            await this.getData()
         },
         async deleteFile(id) {
-            this.categories = await request('/file/', 'DELETE', {"id": id})
-            console.log(this.categories)
+            this.last_deleted_file = await request('/file/', 'DELETE', {"id": id})
+            await this.getData()
         },
-    }
+    },
+    created: function () {
+     this.getData();
+    },
 })
 
 async function request(url, method = 'GET', data = null) {

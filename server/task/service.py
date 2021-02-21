@@ -1,13 +1,17 @@
 # Логика приложения (бизнес и прикладная)
-from flask import session
-
 from .repository import TaskRepository
+from .serializer import serialize_task
 
 from server.category import service as c_svc
 from server.file import service as f_svc
 
 
 task_rep = TaskRepository()
+
+
+def get_task(**kwargs):
+    task = task_rep._get_by(**kwargs)
+    return serialize_task(task)
 
 
 def create_task(**kwargs):
