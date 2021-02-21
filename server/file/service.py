@@ -4,15 +4,15 @@ from flask import send_file
 
 from .repository import FileRepository
 from .schema import FileSchema
+from .serializer import serialize_file
 
 from server.task import service as t_svc
-from server.category import service as c_svc
-from server.initialize_db import DB_config
+from server.initialize_db import config
 
 
 file_rep = FileRepository()
-files_dir = DB_config['UPLOAD_FOLDER']
-root_dir = DB_config['ROOT']
+files_dir = config.UPLOAD_FOLDER
+root_dir = config.ROOT
 
 
 @file_rep.assert_kwargs

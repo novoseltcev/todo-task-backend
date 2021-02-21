@@ -16,12 +16,13 @@ new Vue({
         },
     methods: {
         async getData() {
-            this.categories = await request('/category/all', 'GET')
+            this.categories = await request('/category/all')
             console.log(this.categories)
         },
         async createTask() {
             const {...cur_task} = this.form_task
-            this.last_added_task = await request('/task/', 'POST', {"title": {...cur_task}.title})
+            const req = {"title": {...cur_task}.title, 'category': this.current_category}
+            this.last_added_task = await request('/task/', 'POST', req)
             await this.getData()
             this.form_task.title = ''
         },
@@ -35,8 +36,7 @@ new Vue({
         },
 
         async openCategory(id) {
-            const res = await request('/category/open', 'POST', {"id": id})
-            this.current_category = res.current_category
+            this.current_category = id
             console.log(this.current_category)
         },
         async createCategory(name) {
@@ -47,6 +47,9 @@ new Vue({
         },
         async deleteCategory(id) {
             this.last_deleted_category = await request('/category/', 'DELETE', {"id": id})
+            if (this.last_deleted_category.id === this.current_category) {
+                this.current_category = 1
+            }
             await this.getData()
         },
         async editCategory(name) {

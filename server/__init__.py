@@ -7,12 +7,11 @@ from flask_apispec import FlaskApiSpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec import APISpec
 
+from .config import Config
+
 
 app = Flask(__name__)
 app.template_folder = os.path.join('static', 'templates')
-app.config['SECRET_KEY'] = os.urandom(20).hex()
-app.config['USE_PERMANENT_SESSION'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=5)
 app.config.update({
     'APISPEC_SPEC': APISpec(
         title='server',
@@ -22,6 +21,7 @@ app.config.update({
     ),
     'APISPEC_SWAGGER_URL': '/swagger/'
 })
+app.config.from_object(Config())
 docs = FlaskApiSpec()
 
 
@@ -40,4 +40,4 @@ app.register_blueprint(file_blueprint, url_prefix="/file")
 docs.register(index)
 docs.init_app(app)
 
-__version__ = "0.1"
+__version__ = "0.3"

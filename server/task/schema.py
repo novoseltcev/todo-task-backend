@@ -1,10 +1,7 @@
 # Валидация данных, простая сериализация
-from marshmallow import Schema, fields, validates, validate, ValidationError
+from marshmallow import Schema, fields, validates, ValidationError
 
-from server.initialize_db import DB_config
-
-
-task_title_len = DB_config['task_title_len']
+from server.initialize_db import config
 
 
 class TaskSchema(Schema):
@@ -28,4 +25,4 @@ class TaskSchema(Schema):
 
     @validates('title')
     def validate_filename(self, value):
-        self.validate_text_field(value, task_title_len)
+        self.validate_text_field(value, config.task_title_len)

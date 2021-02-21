@@ -22,10 +22,5 @@ class FileRepository(DBManager):
         self._insert(name=name, path=path, task=task)
 
     @DBManager.session_handler
-    def update_task(self, id: int, task: int):
-        file, session = self._before(id)
-        file.change_task(task)
-
-    @DBManager.session_handler
     def delete(self, id: int):
         self._delete(id)

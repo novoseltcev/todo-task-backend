@@ -38,5 +38,6 @@ def delete(**kwargs):
     return 204
 
 
+docs.register(open_file, blueprint=file_blueprint.name)
 docs.register(create, blueprint=file_blueprint.name)
 docs.register(delete, blueprint=file_blueprint.name)

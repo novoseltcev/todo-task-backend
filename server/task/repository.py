@@ -36,4 +36,3 @@ class TaskRepository(DBManager):
     @DBManager.session_handler
     def delete(self, id: int):
         self._delete(id)
-

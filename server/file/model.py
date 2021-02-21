@@ -3,18 +3,14 @@ import os
 
 from sqlalchemy import Column, Integer, String, ForeignKey
 
-from server.initialize_db import Base, engine, DB_config
-
-
-filename_len = DB_config['filename_len']
-files_dir_len = DB_config['files_dir_len']
+from server.initialize_db import Base, config
 
 
 class File(Base):
     __tablename__ = 'files'
     id = Column(Integer, primary_key=True)
-    name = Column(String(filename_len))
-    path = Column(String(files_dir_len + filename_len), unique=True)
+    name = Column(String(config.filename_len))
+    path = Column(String(config.files_dir_len + config.filename_len), unique=True)
     task = Column(Integer, ForeignKey('tasks.id'))
 
     def __init__(self, name: str, path: str, task: id):

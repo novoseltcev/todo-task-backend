@@ -1,10 +1,10 @@
 # Основной модуль, работа с http
-from flask import Blueprint, session
-from flask_apispec import use_kwargs, marshal_with
-from .schema import TaskSchema
-from server.category.schema import CategorySchema
+from flask import Blueprint
+from flask_apispec import use_kwargs
 
+from .schema import TaskSchema
 from . import service
+
 from server import docs
 
 
@@ -12,9 +12,8 @@ task_blueprint = Blueprint('task', __name__)
 
 
 @task_blueprint.route("/", methods=['POST'])
-@use_kwargs(TaskSchema(only=('title',)))
+@use_kwargs(TaskSchema(only=('title', 'category')))
 def create(**kwargs):
-    kwargs['category'] = session['current_category']
     service.create_task(**kwargs)
     return service.get_task(**kwargs), 201
 

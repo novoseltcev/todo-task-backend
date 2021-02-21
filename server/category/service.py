@@ -17,11 +17,6 @@ def get_category(**kwargs):
     return serialize_category(cat)
 
 
-@category_rep.assert_kwargs
-def open_category(**kwargs):
-    pass
-
-
 def create_category(**kwargs):
     category_rep.insert(**kwargs)
 

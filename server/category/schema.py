@@ -1,10 +1,7 @@
 # Валидация данных, простая сериализация
 from marshmallow import Schema, fields, validates, ValidationError
 
-from server.initialize_db import DB_config
-
-
-category_name_len = DB_config['category_name_len']
+from server.initialize_db import config
 
 
 class CategorySchema(Schema):
@@ -25,4 +22,4 @@ class CategorySchema(Schema):
 
     @validates('name')
     def validate_filename(self, value):
-        self.validate_text_field(value,category_name_len)
+        self.validate_text_field(value, config.category_name_len)

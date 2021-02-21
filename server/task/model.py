@@ -2,16 +2,13 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from server.initialize_db import Base, engine, DB_config
-
-
-task_title_len = DB_config['task_title_len']
+from server.initialize_db import Base, engine, config
 
 
 class Task(Base):
     __tablename__ = 'tasks'
     id = Column(Integer, primary_key=True)
-    title = Column(String(task_title_len))
+    title = Column(String(config.task_title_len))
     status = Column(Integer, nullable=True)
     category = Column(Integer, ForeignKey('categories.id'))
     files = relationship('File', backref=__tablename__, order_by='File.name')
