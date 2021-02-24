@@ -7,9 +7,8 @@ new Vue({
                 {"id": 0, "name": "ToDo"},
                 {"id": 1, "name": "Done"},
             ],
-            form_task: {
-                'title': ''
-            },
+            form_task: {'title': ''},
+            form_file: {},
             categories: [
                 ],
             current_category: 1,
@@ -17,27 +16,32 @@ new Vue({
     methods: {
         async getData() {
             this.categories = await request('/category/all')
-            console.log(this.categories)
         },
         async createTask() {
-            const {...cur_task} = this.form_task
-            const req = {"title": {...cur_task}.title, 'category': this.current_category}
+            console.log(this.form_task)
+            const req = {"title": this.form_task.title, 'category': this.current_category}
             this.last_added_task = await request('/task/', 'POST', req)
             await this.getData()
-            this.form_task.title = ''
+            this.form_task = ''
         },
         async deleteTask(id) {
             this.last_deleted_task = await request('/task/', 'DELETE', {"id": id})
             await this.getData()
         },
-        async editStatusTask(id) {
-            this.last_edited_task = await request('/task/status', 'PUT', {"id": id})
+        async editStatusTask(task) {
+            const data = {
+                'id': task.id,
+                'title': task.title,
+                'status': (task.status + 1) % 2,
+                'category': task.category
+            }
+            this.last_edited_task = await request('/task/', 'PUT', data)
             await this.getData()
         },
 
         async openCategory(id) {
             this.current_category = id
-            console.log(this.current_category)
+            console.log(this.categories)
         },
         async createCategory(name) {
             const res = await request('/category/', 'POST', {"name": name})
@@ -57,32 +61,50 @@ new Vue({
             await this.getData()
         },
 
-        async downloadFile(id) {
-            this.last_added_file = await request('/file/download', 'GET', {"id": id})
-            await this.getData()
+        downloadFile(task) {
+            this.last_added_file = request('/file/download', 'GET', {"task": task.id})
+            // this.getData()
         },
-        async createFile(file) {
-            this.last_added_file = await request('/file/', 'POST', {"file": file})
+        async createFile(id) {
+            this.last_added_file = await request('/file/', 'POST', {"id": id, 'file': file}, 'multipart/form-data')
             await this.getData()
         },
         async deleteFile(id) {
             this.last_deleted_file = await request('/file/', 'DELETE', {"id": id})
             await this.getData()
         },
+
+        async submitFile(id) {
+            // let formData = new FormData();
+            // console.log(this.form_file)
+            // formData.append('file', this.form_file);
+            // formData.append('id', id);
+            this.last_added_file = await request('/file/', 'POST', this.form_file, 'multipart/form-data')
+        },
+
+        submitFile2(event) {
+            this.form_file = event.target.files
+        }
+
     },
     created: function () {
-     this.getData();
+        this.getData();
     },
 })
 
-async function request(url, method = 'GET', data = null) {
+async function request(url, method = 'GET', data = null, type= 'application/json') {
     try {
         const headers = {}
         let body
 
         if (data) {
-            headers['Content-type'] = 'application/json'
-            body = JSON.stringify(data)
+            headers['Content-type'] = type
+            if (type !== 'application/json') {
+                body = new FormData()
+                body.append('file', data)
+            } else {
+                body = JSON.stringify(data)
+            }
             console.log(data)
         }
 

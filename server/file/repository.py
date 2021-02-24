@@ -1,26 +1,55 @@
 # Класс для работы с БД
-from database import DBManager
+from server import DB_session
 
 from .model import File
 
 
-class FileRepository(DBManager):
-    def __init__(self):
-        super().__init__(File)
+def session_handler(func):
+    def wrapper(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+            DB_session.commit()
+        except Exception as e:
+            DB_session.rollback()
+            raise e
+
+    return wrapper
+
+
+class FileRepository:
+    @staticmethod
+    def get_all():
+        return File.query.all()
+
+    @staticmethod
+    def __get_by(all_rows=False, **kwargs):
+        assert (len(kwargs.items()) != 0)
+        query = File.query.filter_by(**kwargs)
+        if all_rows:
+            return query.all()
+        return query.one()
 
     def get_by_primary(self, id: int):
-        return self._get_by(id=id)
+        return self.__get_by(id=id)
 
     def get_by_name(self, name):
-        return self._get_by(name=name)
+        return self.__get_by(name=name)
 
     def get_by_foreign(self, task: int):
-        return self._get_by(task=task, all_rows=True)
+        return self.__get_by(task=task, all_rows=True)
 
-    @DBManager.session_handler
+    def assert_id(self, func):
+        def wrapper(id, *args, **kwargs):
+            self.get_by_primary(id)
+            return func(id, *args, **kwargs)
+
+        return wrapper
+
+    @session_handler
     def insert(self, name: str, path: str, task: int):
-        self._insert(name=name, path=path, task=task)
+        file = File(name=name, path=path, task=task)
+        DB_session.add(file)
 
-    @DBManager.session_handler
+    @session_handler
     def delete(self, id: int):
-        self._delete(id)
+        DB_session.delete(self.get_by_primary(id))

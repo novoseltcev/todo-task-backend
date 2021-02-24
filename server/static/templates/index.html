@@ -39,7 +39,7 @@
                             <div v-if="task.status === table_el.id">
                                 <span style = "padding-left: 30px; display: inline-block;">{{ task.title }}</span>
                                 <div style="width: 20px;height: 20px; display: inline-block;" >
-                                    <form style="width: 20px;height: 20px;" @click="editStatusTask(task.id)">
+                                    <form style="width: 20px;height: 20px;" @click="editStatusTask(task)">
                                         <input style="width: 20px;height: 20px;" class="t_button" type="checkbox" v-if="table_el.id === 0">
                                         <input style="width: 20px;height: 20px;" class="t_button" type="checkbox" checked v-if="table_el.id === 1">
                                     </form>
@@ -50,16 +50,16 @@
                                     </form>
                                 </div>
                                 <div style="width: 50px; display: inline-block;" v-for="file in task.files">
-                                    <form action="/file/download" method="POST" enctype="multipart/form-data" @submit.prevent="downloadFile(file.id)">
-                                        <button type="submit">file.name</button>
+                                    <form action="/file/download" method="POST" enctype="multipart/form-data" @submit="downloadFile(file.id)">
+                                        <button type="submit">{{file.name}}</button>
                                     </form>
                                     <form @submit.prevent="deleteFile(file.id)">
                                         <button class="btn btn-danger" type="submit">Удалить</button>
                                     </form>
-
                                 </div>
-                                <form style="display: inline-block;" action="/file/" method="POST" enctype="multipart/form-data" @submit.prevent="createFile(task.id)">
+                                <form action="/file/" method="POST" enctype="multipart/form-data">
                                     <input type="file" name="file">
+                                    <input type="hidden" name="task" value={{ task.id }} >
                                     <button type="submit">Прикрепить</button>
                                 </form>
                             </div>
@@ -69,7 +69,7 @@
             </div>
           </div>
           <form class="form-task" @submit.prevent="createTask">
-              <input class="text_input" type="text" v-model="form_task.title">
+              <input required class="text_input" type="text" v-model="form_task.title">
               <button class="btn btn-primary" type="submit">Создать</button>
           </form>
       </div>

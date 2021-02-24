@@ -1,30 +1,67 @@
 # Класс для работы с БД
-from database import DBManager
+from sqlalchemy.orm.exc import MultipleResultsFound
+
+from server import DB_session
 
 from .model import Category
 
 
-class CategoryRepository(DBManager):
+def session_handler(func):
+    def wrapper(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+            DB_session.commit()
+        except Exception as e:
+            DB_session.rollback()
+            raise e
+
+    return wrapper
+
+
+class CategoryRepository:
     __default = 'All'
 
-    def __init__(self):
-        super().__init__(Category)
-        count = self.model.query.count()
-        if count == 0:
-            self.insert(self.__default)
+    def __init__(self):  # TODO - it's a business logic in repository
+        pass
+        # count = Category.query.count()
+        # if count == 0:
+        #     self.insert(self.__default)
 
-    def get_by_name(self, name):
-        return self._get_by(name=name)
+    @staticmethod
+    def get_all():
+        return Category.query.all()
 
-    @DBManager.session_handler
+    @staticmethod
+    def __get_by(all_rows=False, **kwargs):
+        assert (len(kwargs.items()) != 0)
+        query = Category.query.filter_by(**kwargs)
+        if all_rows:
+            return query.all()
+        return query.one()
+
+    def get_by_primary(self, id: int):
+        return self.__get_by(id=id)
+
+    def get_by_name(self, name: str):
+        return self.__get_by(name=name)
+
+    def assert_id(self, func):
+        def wrapper(id, *args, **kwargs):
+            self.get_by_primary(id)
+            return func(id, *args, **kwargs)
+
+        return wrapper
+
+    @session_handler
     def insert(self, name: str):
-        self._insert(name=name)
+        category = Category(name=name)
+        DB_session.add(category)
 
-    @DBManager.session_handler
-    def update_name(self, id: int, name: str):
-        category = self._get_by(id=id)
-        category.change_name(name)
+    @session_handler
+    def update(self, id: int, name: str):
+        category = self.get_by_primary(id=id)
+        category.name = name
 
-    @DBManager.session_handler
+    @session_handler
     def delete(self, id: int):
-        self._delete(id)
+        DB_session.delete(self.get_by_primary(id))

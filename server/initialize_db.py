@@ -1,22 +1,15 @@
-from os import getcwd, path
+import os
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy.ext.declarative import declarative_base
-
-from .config import Config
-
-cwd = getcwd()
-
-config = Config()
-engine = create_engine('sqlite:///' + path.join(cwd, config.ROOT, 'data', 'task.db'),
-                       echo=False)
-DB_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
-Base = declarative_base()
-Base.query = DB_session.query_property()
-
+from . import engine, Base
 from .category import model
 from .task import model
 from .file import model
 
+cwd = os.getcwd()
+
+Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
+
+with open(os.path.join(cwd, 'server', 'inserts.sql')) as inserts_file:
+    for insert in inserts_file:
+        engine.execute(insert)

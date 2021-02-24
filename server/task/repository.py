@@ -1,38 +1,61 @@
 # Класс для работы с БД
-from database.manager import DBManager
+from sqlalchemy.orm.exc import MultipleResultsFound
+
+from server import DB_session
 
 from .model import Task
 
 
-class TaskRepository(DBManager):
-    def __init__(self):
-        super().__init__(Task)
+def session_handler(func):
+    def wrapper(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+            DB_session.commit()
+        except Exception as e:
+            DB_session.rollback()
+            raise e
+
+    return wrapper
+
+
+class TaskRepository:
+
+    @staticmethod
+    def get_all():
+        return Task.query.all()
+
+    @staticmethod
+    def __get_by(all_rows=False, **kwargs):
+        assert (len(kwargs.items()) != 0)
+        query = Task.query.filter_by(**kwargs)
+        if all_rows:
+            return query.all()
+        return query.one()
 
     def get_by_primary(self, id: int):
-        return self._get_by(all_rows=False, id=id)
+        return self.__get_by(id=id)
 
     def get_by_foreign(self, category: int):
-        return self._get_by(all_rows=True, category=category)
+        return self.__get_by(all_rows=True, category=category)
 
-    @DBManager.session_handler
+    def assert_id(self, func):
+        def wrapper(id, *args, **kwargs):
+            self.get_by_primary(id)
+            return func(id, *args, **kwargs)
+        return wrapper
+
+    @session_handler
     def insert(self, title: str, category: int):
-        self._insert(title=title, status=False, category=category)
+        task = Task(title=title, status=False, category=category)
+        DB_session.add(task)
 
-    @DBManager.session_handler
-    def update_title(self, id: int, title: str):
-        task = self._get_by(id=id)
-        task.change_title(title)
+    @session_handler
+    def update(self, id: int, title: str, status: int, category: int):
+        task = self.get_by_primary(id)
+        task.title = title
+        task.status = status
+        task.category = category
 
-    @DBManager.session_handler
-    def update_category(self, id: int, category: int):
-        task = self._get_by(id=id)
-        task.change_category(category)
-
-    @DBManager.session_handler
-    def update_status(self, id: int):
-        task = self._get_by(id=id)
-        task.change_status()
-
-    @DBManager.session_handler
+    @session_handler
     def delete(self, id: int):
-        self._delete(id)
+        DB_session.delete(self.get_by_primary(id))

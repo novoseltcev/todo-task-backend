@@ -1,13 +1,13 @@
 # Валидация данных, простая сериализация
 from marshmallow import Schema, fields, validates, ValidationError
 
-from server.initialize_db import config
+from server import config
 
 
 class TaskSchema(Schema):
     id = fields.Integer(required=True)
     title = fields.String(required=True)
-    status = fields.Integer(default=0, dump_only=True)
+    status = fields.Integer(default=0)
     category = fields.Integer(default=1)
     files = fields.List(fields.Nested('FileSchema'), dump_only=True)
 

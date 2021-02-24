@@ -2,43 +2,33 @@
 from .repository import TaskRepository
 from .serializer import serialize_task
 
-from server.category import service as c_svc
-from server.file import service as f_svc
+from server.category import service as category_service
+from server.file.service import file_repository
 
 
-task_rep = TaskRepository()
+task_repository = TaskRepository()
 
 
-def get_task(**kwargs):
-    task = task_rep._get_by(**kwargs)
+def get_one(id: int):
+    task = task_repository.get_by_primary(id)
     return serialize_task(task)
 
 
-def create_task(**kwargs):
-    c_svc.category_rep.assert_exist(kwargs['category'])
-    task_rep.insert(**kwargs)
+def create(title: str, category: int):
+    category_service.category_repository.get_by_primary(category)
+    task_repository.insert(title, category)
 
 
-@task_rep.assert_kwargs
-def update_title(**kwargs):
-    task_rep.update_title(**kwargs)
+@task_repository.assert_id
+def update(id: int, title: str, status: int, category: int):
+    category_service.category_repository.get_by_primary(category)
+    task_repository.update(id, title, status, category)
 
 
-@task_rep.assert_kwargs
-def update_status(**kwargs):
-    task_rep.update_status(**kwargs)
-
-
-@task_rep.assert_kwargs
-def update_category(**kwargs):
-    c_svc.category_rep.assert_exist(kwargs['category'])
-    task_rep.update_category(**kwargs)
-
-
-@task_rep.assert_kwargs
-def delete_task(**kwargs):
-    files_by_task = f_svc.file_rep.get_by_foreign(*kwargs)
+@task_repository.assert_id
+def delete(id: int):
+    files_by_task = file_repository.get_by_foreign(id)
     for file in files_by_task:
-        f_svc.file_rep.delete(file.id)
+        file_repository.delete(file.id)
 
-    task_rep.delete(**kwargs)
+    task_repository.delete(id)

@@ -2,53 +2,42 @@
 from flask import Blueprint
 from flask_apispec import use_kwargs
 
+from . import service as task_service
 from .schema import TaskSchema
-from . import service
-
-from server import docs
 
 
 task_blueprint = Blueprint('task', __name__)
+prefix = '/task/'
 
 
-@task_blueprint.route("/", methods=['POST'])
+@task_blueprint.route(prefix, methods=['POST'])
 @use_kwargs(TaskSchema(only=('title', 'category')))
 def create(**kwargs):
-    service.create_task(**kwargs)
-    return service.get_task(**kwargs), 201
+    request_obj = {
+        'title': kwargs['title'],
+        'category': kwargs['category']
+    }
+    task_service.create(**request_obj)
+    return 204
 
 
-@task_blueprint.route("/status", methods=['PUT'])
-@use_kwargs(TaskSchema(only=('id',)))
-def edit_status(**kwargs):
-    service.update_status(**kwargs)
-    return service.get_task(**kwargs), 202
+@task_blueprint.route(prefix, methods=['PUT'])
+@use_kwargs(TaskSchema)
+def edit(**kwargs):
+    request_obj = {
+        'id': kwargs['id'],
+        'title': kwargs['title'],
+        'status': kwargs['status'],
+        'category': kwargs['category']
+    }
+    task_service.update(**request_obj)
+    return task_service.get_one(request_obj['id']), 202
 
 
-@task_blueprint.route("/title", methods=['PUT'])
-@use_kwargs(TaskSchema(only=('id', 'title',)))
-def edit_title(**kwargs):
-    service.update_title(**kwargs)
-    return service.get_task(**kwargs), 202
-
-
-@task_blueprint.route("/category", methods=['PUT'])
-@use_kwargs(TaskSchema(only=('id', 'category')))
-def edit_category(**kwargs):
-    service.update_category(**kwargs)
-    return service.get_task(**kwargs), 202
-
-
-@task_blueprint.route("/", methods=['DELETE'])
+@task_blueprint.route(prefix, methods=['DELETE'])
 @use_kwargs(TaskSchema(only=('id',)))
 def delete(**kwargs):
-    response = service.get_task(**kwargs)
-    service.delete_task(**kwargs)
+    request_obj = {'id': kwargs['id']}
+    response = task_service.get_one(**request_obj)
+    task_service.delete(**request_obj)
     return response, 202
-
-
-docs.register(create, blueprint=task_blueprint.name)
-docs.register(edit_status, blueprint=task_blueprint.name)
-docs.register(edit_category, blueprint=task_blueprint.name)
-docs.register(edit_title, blueprint=task_blueprint.name)
-docs.register(delete, blueprint=task_blueprint.name)

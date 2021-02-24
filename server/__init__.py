@@ -1,43 +1,37 @@
 import os
-from datetime import timedelta
 
 from flask import Flask
-from flask_apispec import FlaskApiSpec
-
-from apispec.ext.marshmallow import MarshmallowPlugin
-from apispec import APISpec
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.ext.declarative import declarative_base
 
 from .config import Config
 
 
+config = Config()
 app = Flask(__name__)
 app.template_folder = os.path.join('static', 'templates')
-app.config.update({
-    'APISPEC_SPEC': APISpec(
-        title='server',
-        version='v_1.3',
-        openapi_version='2.0',
-        plugins=[MarshmallowPlugin()],
-    ),
-    'APISPEC_SWAGGER_URL': '/swagger/'
-})
-app.config.from_object(Config())
-docs = FlaskApiSpec()
+app.config.from_object(config)
+
+engine = create_engine('sqlite:///' + os.path.join(os.getcwd(), app.config['ROOT'], 'data', 'task.db'),
+                       echo=False)
+DB_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+Base = declarative_base()
+Base.query = DB_session.query_property()
 
 
-from . import errors_handler
+from . import initialize_db
+
+from .errors import handler
 from .index import index
 
-from .category import *
-from .task import *
-from .file import *
+from .category import category_blueprint
+from .task import task_blueprint
+from .file import file_blueprint
 
 
-app.register_blueprint(task_blueprint, url_prefix="/task")
-app.register_blueprint(category_blueprint, url_prefix="/category")
-app.register_blueprint(file_blueprint, url_prefix="/file")
-
-docs.register(index)
-docs.init_app(app)
+app.register_blueprint(task_blueprint)
+app.register_blueprint(category_blueprint)
+app.register_blueprint(file_blueprint)
 
 __version__ = "0.3"

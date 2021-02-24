@@ -1,40 +1,45 @@
 from .repository import CategoryRepository
 from .serializer import serialize_category, CategorySchema
 
-from server.task import service as t_svc
+from server.task.service import task_repository
 
 
-category_rep = CategoryRepository()
+category_repository = CategoryRepository()
 
 
-def get_categories():
-    cat = category_rep.get()
+def get_all():
+    cat = category_repository.get_all()
     return serialize_category(cat, many=True)
 
 
-def get_category(**kwargs):
-    cat = category_rep._get_by(**kwargs)
-    return serialize_category(cat)
+def get_one(id: int):
+    category = category_repository.get_by_primary(id)
+    return serialize_category(category)
 
 
-def create_category(**kwargs):
-    category_rep.insert(**kwargs)
+def get_by_name(name: str):
+    category = category_repository.get_by_name(name)
+    return serialize_category(category)
 
 
-@category_rep.assert_kwargs
-def update_category(**kwargs):
-    if kwargs['id'] == 1:
+def create(name: str):
+    category_repository.insert(name)
+
+
+@category_repository.assert_id
+def update(id: int, name: str):
+    if id == 1:
         raise ValueError("ban on changing the main category")
-    category_rep.update_name(**kwargs)
+    category_repository.update(id, name)
 
 
-@category_rep.assert_kwargs
-def delete_category(**kwargs):
-    if kwargs['id'] == 1:
+@category_repository.assert_id
+def delete(id: int):
+    if id == 1:
         raise ValueError("ban on delete the main category")
 
-    tasks_by_category = t_svc.task_rep.get_by_foreign(*kwargs)
+    tasks_by_category = task_repository.get_by_foreign(id)
     for task in tasks_by_category:
-        t_svc.task_rep.delete(task.id)
+        task_repository.delete(task.id)
 
-    category_rep.delete(**kwargs)
+    category_repository.delete(id)

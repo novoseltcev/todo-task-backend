@@ -3,7 +3,7 @@ from os import path, getcwd
 from flask import send_from_directory
 
 from . import app
-from .initialize_db import DB_session
+from . import DB_session
 
 
 @app.route("/")

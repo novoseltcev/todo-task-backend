@@ -1,7 +1,7 @@
 # Валидация данных, простая сериализация
 from marshmallow import Schema, fields, validates, ValidationError
 
-from server.initialize_db import config
+from server import config
 
 
 class FileSchema(Schema):

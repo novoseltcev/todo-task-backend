@@ -25,8 +25,3 @@ def sign_out():
 @user_blueprint.route('/register')
 def register():
     pass
-
-
-@user_blueprint.route('/profile')
-def profile():
-    pass

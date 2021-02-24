@@ -2,7 +2,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from server.initialize_db import Base, engine, config
+from server import Base, engine, config
 
 
 class Task(Base):
@@ -12,12 +12,3 @@ class Task(Base):
     status = Column(Integer, nullable=True)
     category = Column(Integer, ForeignKey('categories.id'))
     files = relationship('File', backref=__tablename__, order_by='File.name')
-
-    def change_title(self, new_title: str):
-        self.title = new_title
-
-    def change_status(self):
-        self.status = (self.status + 1) % 2
-
-    def change_category(self, new_category):
-        self.category = new_category
