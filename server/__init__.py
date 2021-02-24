@@ -1,6 +1,8 @@
 import os
 
 from flask import Flask
+from flask_login import LoginManager
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
@@ -12,6 +14,8 @@ config = Config()
 app = Flask(__name__)
 app.template_folder = os.path.join('static', 'templates')
 app.config.from_object(config)
+
+login_manager = LoginManager(app)
 
 engine = create_engine('sqlite:///' + os.path.join(os.getcwd(), app.config['ROOT'], 'data', 'task.db'),
                        echo=False)

@@ -1,5 +1,4 @@
-from flask import Blueprint, jsonify
-from flask_apispec import use_kwargs
+from flask import Blueprint, jsonify, request
 
 from . import service as category_service
 from .schema import CategorySchema
@@ -11,32 +10,36 @@ prefix = '/category/'
 
 @category_blueprint.route(prefix + 'all', methods=['GET'])
 def get():
-    return jsonify(category_service.get_all()), 200
+    response = category_service.get_all()
+    return jsonify(response), 200
 
 
 @category_blueprint.route(prefix, methods=['POST'])
-@use_kwargs(CategorySchema(only=('name',)))
-def create(**kwargs):
-    request_obj = {'name': kwargs['name']}
-    category_service.create(**request_obj)
-    return category_service.get_by_name(**request_obj), 201
+def create():
+    schema = CategorySchema(only=('name',)).load(request.json)
+    name = schema['name']
+
+    category_service.create(name=name)
+    response = category_service.get_by_name(name=name)
+    return jsonify(response), 201
 
 
 @category_blueprint.route(prefix, methods=['PUT'])
-@use_kwargs(CategorySchema)
-def edit(**kwargs):
-    request_obj = {
-        'id': kwargs['id'],
-        'name': kwargs['name']
-    }
-    category_service.update(**request_obj)
-    return category_service.get_one(request_obj['id']), 202
+def edit():
+    schema = CategorySchema().load(request.json)
+    id = schema['id']
+    name = schema['name']
+
+    category_service.update(id=id, name=name)
+    response = category_service.get_one(id=id)
+    return jsonify(response), 202
 
 
 @category_blueprint.route(prefix, methods=['DELETE'])
-@use_kwargs(CategorySchema(only=('id',)))
-def delete(**kwargs):
-    request_obj = {'id': kwargs['id']}
-    response = category_service.get_one(**request_obj)
-    category_service.delete(**request_obj)
-    return response, 202
+def delete():
+    schema = CategorySchema(only=('id',)).load(request.json)
+    id = schema['id']
+
+    response = category_service.get_one(id=id)
+    category_service.delete(id=id)
+    return jsonify(response), 202

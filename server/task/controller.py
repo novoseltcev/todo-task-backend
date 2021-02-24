@@ -1,6 +1,5 @@
 # Основной модуль, работа с http
-from flask import Blueprint
-from flask_apispec import use_kwargs
+from flask import Blueprint, jsonify, request
 
 from . import service as task_service
 from .schema import TaskSchema
@@ -11,33 +10,36 @@ prefix = '/task/'
 
 
 @task_blueprint.route(prefix, methods=['POST'])
-@use_kwargs(TaskSchema(only=('title', 'category')))
-def create(**kwargs):
-    request_obj = {
-        'title': kwargs['title'],
-        'category': kwargs['category']
-    }
-    task_service.create(**request_obj)
+def create():
+    schema = TaskSchema(only=('title', 'category')).load(request.json)
+    title = schema['title']
+    category = schema['category']
+
+    task_service.create(title=title, category=category)
     return 204
 
 
 @task_blueprint.route(prefix, methods=['PUT'])
-@use_kwargs(TaskSchema)
-def edit(**kwargs):
+def edit():
+    schema = TaskSchema().load(request.json)
+    id = schema['id']
     request_obj = {
-        'id': kwargs['id'],
-        'title': kwargs['title'],
-        'status': kwargs['status'],
-        'category': kwargs['category']
+        'id': id,
+        'title': schema['title'],
+        'status': schema['status'],
+        'category': schema['category']
     }
+
     task_service.update(**request_obj)
-    return task_service.get_one(request_obj['id']), 202
+    response = task_service.get_one(id=id)
+    return jsonify(response), 202
 
 
 @task_blueprint.route(prefix, methods=['DELETE'])
-@use_kwargs(TaskSchema(only=('id',)))
-def delete(**kwargs):
-    request_obj = {'id': kwargs['id']}
-    response = task_service.get_one(**request_obj)
-    task_service.delete(**request_obj)
-    return response, 202
+def delete():
+    schema = TaskSchema(only=('id',)).load(request.json)
+    id = schema['id']
+
+    response = task_service.get_one(id=id)
+    task_service.delete(id=id)
+    return jsonify(response), 202

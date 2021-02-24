@@ -1,5 +1,4 @@
 from flask import Blueprint, request, make_response, jsonify
-from flask_apispec import use_kwargs
 
 from . import service as file_service
 from .schema import FileSchema
@@ -10,11 +9,12 @@ prefix = '/file/'
 
 
 @file_blueprint.route(prefix + 'download', methods=['POST'])
-@use_kwargs(FileSchema(only=('id',)))
-def open_file(**kwargs):
-    request_obj = {'id': kwargs['id']}
-    service_response = file_service.download(**request_obj)
-    return make_response(service_response)
+def open_file():
+    schema = FileSchema(only='id').load(request.json)
+    id = schema['id']
+
+    file_data = file_service.download(id=id)
+    return make_response(file_data)
 
 
 @file_blueprint.route(prefix, methods=['POST'])
@@ -24,20 +24,23 @@ def create():
         task = request.form['task']
     except Exception:
         raise ValueError("File hasn't been transfered from client")
-
-    request_obj = FileSchema(only=('name', 'task', 'data')).load({
+    filename = file.filename
+    request_json = {
         'task': task,
-        'name': file.filename,
-        'data': file.read(),
-    })
-    file_service.create(**request_obj)
-    return jsonify(request_obj['name']), 202
+        'name': filename,
+        'data': file.read()
+    }
+    schema = FileSchema(only=('name', 'task', 'data')).load(request_json)
+
+    file_service.create(**schema)
+    return jsonify(filename), 202
 
 
 @file_blueprint.route(prefix, methods=['DELETE'])
-@use_kwargs(FileSchema(only=('id',)))
-def delete(**kwargs):
-    request_obj = {'id': kwargs['id']}
-    response = file_service.get_one(**request_obj)
-    file_service.delete(**request_obj)
-    return jsonify(response['name']), 202
+def delete():
+    schema = FileSchema(only='id').load(request.json)
+    id = schema['id']
+
+    filename = file_service.get_one(id)['name']
+    file_service.delete(id)
+    return jsonify(filename), 202
