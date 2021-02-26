@@ -31,10 +31,11 @@ class UserRepository:
     def get_by_primary(self, id: int):
         return self.__get_by(id=id)
 
-    @staticmethod
-    def get_by_login_or_email(value: str):
-        query = User.query.filter_by(User.login == value, User.email == value)
-        return query.one()
+    def get_by_login(self, login: str):
+        return self.__get_by(all_rows=True, login=login)
+
+    def get_by_email(self, email: str):
+        return self.__get_by(all_rows=True, email=email)
 
     def assert_id(self, func):
         def wrapper(id, *args, **kwargs):
@@ -44,8 +45,8 @@ class UserRepository:
         return wrapper
 
     @session_handler
-    def insert(self, login: str, email: str, password: str, date):
-        user = User(login=login, email=email, password=password, reg_date=date)
+    def insert(self, login: str, email: str, password: str, reg_date):
+        user = User(login=login, email=email, password=password, reg_date=reg_date)
         DB_session.add(user)
 
     @session_handler

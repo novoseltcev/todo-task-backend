@@ -6,7 +6,7 @@ from .repository import FileRepository
 from .schema import FileSchema
 from .serializer import serialize_file
 
-from server.task import service as task_service
+from server.task.service import task_repository
 from server import config
 
 
@@ -46,9 +46,8 @@ def get_unique_path(name):
     return result
 
 
-# @task_service.task_repository.assert_id
 def create(task: int, name: str, data):
-    task_service.task_repository.get_by_primary(task)
+    task_repository.get_by_primary(task)
     path = get_unique_path(name)
     file_repository.insert(name, path, task)
     with open(path, 'wb+') as fp:

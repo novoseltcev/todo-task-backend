@@ -1,5 +1,6 @@
 # Основной модуль, работа с http
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 
 from . import service as task_service
 from .schema import TaskSchema
@@ -16,7 +17,7 @@ def create():
     category = schema['category']
 
     task_service.create(title=title, category=category)
-    return 204
+    return jsonify(title), 201
 
 
 @task_blueprint.route(prefix, methods=['PUT'])

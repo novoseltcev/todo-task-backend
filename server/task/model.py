@@ -2,7 +2,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from server import Base, engine, config
+from server import Base, config
 
 
 class Task(Base):

@@ -38,11 +38,13 @@ class TaskRepository:
     def get_by_foreign(self, category: int):
         return self.__get_by(all_rows=True, category=category)
 
-    def assert_id(self, func):
-        def wrapper(id, *args, **kwargs):
-            self.get_by_primary(id)
-            return func(id, *args, **kwargs)
-        return wrapper
+    def assert_id(self, field='id'):
+        def decorator(func):
+            def wrapper(*args, **kwargs):
+                self.get_by_primary(kwargs[field])
+                return func(*args, **kwargs)
+            return wrapper
+        return decorator
 
     @session_handler
     def insert(self, title: str, category: int):

@@ -7,6 +7,7 @@ from .category import model
 from .task import model
 from .file import model
 
+
 cwd = os.getcwd()
 
 Base.metadata.drop_all(bind=engine)

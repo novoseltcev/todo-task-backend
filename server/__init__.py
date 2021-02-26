@@ -24,11 +24,7 @@ Base = declarative_base()
 Base.query = DB_session.query_property()
 
 
-from . import initialize_db
-
-from .errors import handler
-from .index import index
-
+from .user import user_blueprint
 from .category import category_blueprint
 from .task import task_blueprint
 from .file import file_blueprint
@@ -37,5 +33,12 @@ from .file import file_blueprint
 app.register_blueprint(task_blueprint)
 app.register_blueprint(category_blueprint)
 app.register_blueprint(file_blueprint)
+app.register_blueprint(user_blueprint)
+
+
+from . import initialize_db
+
+from .errors import handler
+from .index import index
 
 __version__ = "0.3"

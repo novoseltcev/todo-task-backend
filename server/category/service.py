@@ -1,10 +1,8 @@
 from .repository import CategoryRepository
 from .serializer import serialize_category, CategorySchema
 
-from server.task.service import task_repository
-
-
 category_repository = CategoryRepository()
+from server.task.service import task_repository
 
 
 def get_all():

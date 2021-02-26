@@ -2,26 +2,25 @@
 from .repository import TaskRepository
 from .serializer import serialize_task
 
-from server.category import service as category_service
+task_repository = TaskRepository()
+from server.category.service import category_repository
 from server.file.service import file_repository
 
 
-task_repository = TaskRepository()
-
-
+@task_repository.assert_id
 def get_one(id: int):
     task = task_repository.get_by_primary(id)
     return serialize_task(task)
 
 
+@category_repository.assert_id('category')
 def create(title: str, category: int):
-    category_service.category_repository.get_by_primary(category)
     task_repository.insert(title, category)
 
 
+@category_repository.assert_id('category')
 @task_repository.assert_id
 def update(id: int, title: str, status: int, category: int):
-    category_service.category_repository.get_by_primary(category)
     task_repository.update(id, title, status, category)
 
 

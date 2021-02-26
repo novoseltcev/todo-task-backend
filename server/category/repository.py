@@ -1,6 +1,4 @@
 # Класс для работы с БД
-from sqlalchemy.orm.exc import MultipleResultsFound
-
 from server import DB_session
 
 from .model import Category
@@ -45,12 +43,13 @@ class CategoryRepository:
     def get_by_name(self, name: str):
         return self.__get_by(name=name)
 
-    def assert_id(self, func):
-        def wrapper(id, *args, **kwargs):
-            self.get_by_primary(id)
-            return func(id, *args, **kwargs)
-
-        return wrapper
+    def assert_id(self, field='id'):
+        def decorator(func):
+            def wrapper(*args, **kwargs):
+                self.get_by_primary(kwargs[field])
+                return func(*args, **kwargs)
+            return wrapper
+        return decorator
 
     @session_handler
     def insert(self, name: str):
