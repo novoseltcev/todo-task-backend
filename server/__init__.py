@@ -1,4 +1,4 @@
-import os
+from os import path, getcwd
 
 from flask import Flask
 from flask_login import LoginManager
@@ -17,7 +17,7 @@ app.config.from_object(config)
 
 login_manager = LoginManager(app)
 
-engine = create_engine('sqlite:///' + os.path.join(os.getcwd(), app.config['ROOT'], 'data', 'task.db'),
+engine = create_engine('sqlite:///' + path.join(getcwd(), app.config['ROOT'], 'data', 'task.db'),
                        echo=False)
 DB_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 Base = declarative_base()

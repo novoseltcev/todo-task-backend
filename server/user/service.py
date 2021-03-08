@@ -11,8 +11,8 @@ from .serializer import serialize_user
 user_repository = UserRepository()
 
 
-def get_profile(auth_method):
-    user = user_repository.get_by_login(auth_method)
+def get_profile(id):
+    user = user_repository.get_by_primary(id=id)
     return serialize_user(user)
 
 
