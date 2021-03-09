@@ -19,7 +19,7 @@ new Vue({
         },
         async createTask() {
             console.log(this.form_task)
-            const req = {"title": this.form_task.title, 'category': this.current_category}
+            const req = {"title": this.form_task.title, 'category_id': this.current_category, 'status': 0}
             this.last_added_task = await request('/task/', 'POST', req)
             await this.getData()
             this.form_task = ''
@@ -62,7 +62,7 @@ new Vue({
         },
 
         downloadFile(task) {
-            this.last_added_file = request('/file/download', 'GET', {"task": task.id})
+            this.last_added_file = request('/file/download', 'GET', {"task_id": task.id})
             // this.getData()
         },
         async createFile(id) {
@@ -75,10 +75,6 @@ new Vue({
         },
 
         async submitFile(id) {
-            // let formData = new FormData();
-            // console.log(this.form_file)
-            // formData.append('file', this.form_file);
-            // formData.append('id', id);
             this.last_added_file = await request('/file/', 'POST', this.form_file, 'multipart/form-data')
         },
 

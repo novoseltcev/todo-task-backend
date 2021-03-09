@@ -1,6 +1,6 @@
 # Серилазизация данных
-from .schema import FileSchema
-from .model import File
+from server.file.schema import FileSchema
+from server.file.model import File
 
 
 def serialize_file(file: File, many=False):

@@ -1,21 +1,26 @@
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm.exc import NoResultFound
-from marshmallow import ValidationError
 
 from server import app
+from server.errors.exc import *
 
 
-@app.errorhandler(ValueError)
-def value_error(error):
-    return error.args[0], 403
+@app.errorhandler(CategoryExistName)
+def integrity_error(err):
+    return {"error": err.__str__()}, 403
 
 
-@app.errorhandler(IntegrityError)
-def integrity_error(error):
-    return {"error": "value already exists"}, 422
+@app.errorhandler(TaskUnknownId)
+@app.errorhandler(CategoryUnknownId)
+@app.errorhandler(FileUnknownId)
+def id_error(err):
+    return {"error": str(err)}, 404
 
 
-@app.errorhandler(NoResultFound)
-@app.errorhandler(ValidationError)
-def validation_error(err):
-    return {"error": err.args[0]}, 422
+@app.errorhandler(InvalidSchema)
+def schema_error(err):
+    return {"error": str(err)}, 422
+
+
+@app.errorhandler(ForbiddenOperation)
+def forbidden_error(err):
+    return {"error": str(err)}, 401

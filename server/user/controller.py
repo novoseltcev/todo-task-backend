@@ -1,10 +1,10 @@
 from flask import Blueprint, request, jsonify, redirect, url_for
-from flask_login import login_user
+
 from marshmallow import ValidationError
 
-from server import login_manager
-from . import service as user_service
-from .schema import UserSchema
+from server.errors.exc import InvalidSchema
+from server.user import service as user_service
+from server.user.service import UserSchema
 
 
 user_blueprint = Blueprint('user', __name__)
@@ -13,7 +13,11 @@ prefix = '/user/'
 
 @user_blueprint.route(prefix, methods=['POST'])
 def login():
-    schema = UserSchema().load(request.json)
+    try:
+        schema = UserSchema().load(request.json)
+    except ValidationError:
+        raise InvalidSchema()
+
     password = schema['password']
     auth_method = UserSchema.get_auth_method(schema)
 
@@ -25,7 +29,11 @@ def login():
 
 @user_blueprint.route(prefix, methods=['DELETE'])
 def sign_out():
-    schema = UserSchema(only=('id',)).load(request.json)
+    try:
+        schema = UserSchema(only=('id',)).load(request.json)
+    except ValidationError:
+        raise InvalidSchema()
+
     id = schema['id']
     user = user_service.get_profile(id=id)
     sign_out(user)
@@ -34,9 +42,13 @@ def sign_out():
 
 @user_blueprint.route(prefix + 'register', methods=['POST'])
 def register():
-    schema = UserSchema().load(request.json)
+    try:
+        schema = UserSchema().load(request.json)
+    except ValidationError:
+        raise InvalidSchema()
+
     user = user_service.create_account(**schema)
     if user is None:
         return jsonify(), 400
-    login_user(user[0])
+    # login_user(user[0])
     return redirect(url_for('index'))

@@ -21,7 +21,7 @@
           <ul v-if="categories.length">
             <ul v-for="category in categories">
                 <li>
-                    <form @submit.prevent="openCategory(category.id)">
+                    <form @submit.prevent="openCategory(category.self)">
                         <button type="submit">{{category.name}}</button>
                     </form>
                 </li>

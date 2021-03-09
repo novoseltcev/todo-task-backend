@@ -1,6 +1,6 @@
 # Серилазизация данных
-from .schema import UserSchema
-from .model import User
+from server.user.schema import UserSchema
+from server.user.model import User
 
 
 def serialize_user(user: User, many=False):

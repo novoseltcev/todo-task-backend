@@ -1,9 +1,10 @@
 # Основной модуль, работа с http
 from flask import Blueprint, jsonify, request
-from flask_login import login_required
+from marshmallow.exceptions import ValidationError
 
-from . import service as task_service
-from .schema import TaskSchema
+from server.errors.exc import InvalidSchema
+from server.task import service as task_service
+from server.task.service import TaskSchema
 
 
 task_blueprint = Blueprint('task', __name__)
@@ -12,35 +13,34 @@ prefix = '/task/'
 
 @task_blueprint.route(prefix, methods=['POST'])
 def create():
-    schema = TaskSchema(only=('title', 'category')).load(request.json)
-    title = schema['title']
-    category = schema['category']
+    try:
+        schema = TaskSchema(only=('title', 'category_id', 'status')).load(request.json)
+    except ValidationError:
+        raise InvalidSchema()
 
-    task_service.create(title=title, category=category)
-    return jsonify(title), 201
+    id = task_service.create(schema)
+    schema['id'] = id
+    return jsonify(schema), 201
 
 
 @task_blueprint.route(prefix, methods=['PUT'])
 def edit():
-    schema = TaskSchema().load(request.json)
-    id = schema['id']
-    request_obj = {
-        'id': id,
-        'title': schema['title'],
-        'status': schema['status'],
-        'category': schema['category']
-    }
+    try:
+        schema = TaskSchema().load(request.json)
+    except ValidationError:
+        raise InvalidSchema()
 
-    task_service.update(**request_obj)
-    response = task_service.get_one(id=id)
-    return jsonify(response), 202
+    task_service.update(schema)
+    return jsonify(schema), 202
 
 
 @task_blueprint.route(prefix, methods=['DELETE'])
 def delete():
-    schema = TaskSchema(only=('id',)).load(request.json)
-    id = schema['id']
+    try:
+        schema = TaskSchema(only=('id',)).load(request.json)
+    except ValidationError:
+        raise InvalidSchema()
 
-    response = task_service.get_one(id=id)
-    task_service.delete(id=id)
+    id = schema['id']
+    response = task_service.delete(id)
     return jsonify(response), 202

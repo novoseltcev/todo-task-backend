@@ -1,7 +1,9 @@
 from flask import Blueprint, jsonify, request
+from marshmallow.exceptions import ValidationError
 
-from . import service as category_service
-from .schema import CategorySchema
+from server.errors.exc import InvalidSchema
+from server.category import service as category_service
+from server.category.service import CategorySchema
 
 
 category_blueprint = Blueprint('category', __name__)
@@ -16,30 +18,34 @@ def get():
 
 @category_blueprint.route(prefix, methods=['POST'])
 def create():
-    schema = CategorySchema(only=('name',)).load(request.json)
-    name = schema['name']
+    try:
+        schema = CategorySchema(only=('name',)).load(request.json)
+    except ValidationError:
+        raise InvalidSchema()
 
-    category_service.create(name=name)
-    response = category_service.get_by_name(name=name)
-    return jsonify(response), 201
+    name = schema['name']
+    id = category_service.create(name)
+    return jsonify(id=id, name=name), 201
 
 
 @category_blueprint.route(prefix, methods=['PUT'])
 def edit():
-    schema = CategorySchema().load(request.json)
-    id = schema['id']
-    name = schema['name']
+    try:
+        schema = CategorySchema().load(request.json)
+    except ValidationError:
+        raise InvalidSchema()
 
-    category_service.update(id=id, name=name)
-    response = category_service.get_one(id=id)
-    return jsonify(response), 202
+    category_service.update(schema)
+    return jsonify(schema), 202
 
 
 @category_blueprint.route(prefix, methods=['DELETE'])
 def delete():
-    schema = CategorySchema(only=('id',)).load(request.json)
-    id = schema['id']
+    try:
+        schema = CategorySchema(only=('id',)).load(request.json)
+    except ValidationError:
+        raise InvalidSchema()
 
-    response = category_service.get_one(id=id)
-    category_service.delete(id=id)
+    id = schema['id']
+    response = category_service.delete(id)
     return jsonify(response), 202

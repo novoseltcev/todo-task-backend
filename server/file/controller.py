@@ -1,7 +1,9 @@
 from flask import Blueprint, request, make_response, jsonify
+from marshmallow.exceptions import ValidationError
 
-from . import service as file_service
-from .schema import FileSchema
+from server.errors.exc import InvalidSchema
+from server.file import service as file_service
+from server.file.service import FileSchema
 
 
 file_blueprint = Blueprint('file', __name__)
@@ -10,9 +12,12 @@ prefix = '/file/'
 
 @file_blueprint.route(prefix + 'download', methods=['POST'])
 def open_file():
-    schema = FileSchema(only='id').load(request.json)
-    id = schema['id']
+    try:
+        schema = FileSchema(only='id').load(request.json)
+    except ValidationError:
+        raise InvalidSchema()
 
+    id = schema['id']
     file_data = file_service.download(id=id)
     return make_response(file_data)
 
@@ -21,26 +26,23 @@ def open_file():
 def create():
     try:
         file = request.files['file']
-        task = request.form['task']
-    except Exception:
-        raise ValueError("File hasn't been transfered from client")
-    filename = file.filename
-    request_json = {
-        'task': task,
-        'name': filename,
-        'data': file.read()
-    }
-    schema = FileSchema(only=('name', 'task', 'data')).load(request_json)
+        request.json['name'] = file.filename
+        request.json['data'] = file.read()
+        schema = FileSchema(only=('name', 'task', 'data')).load(request.json)
+    except ValueError or ValidationError:
+        raise InvalidSchema()
 
     file_service.create(**schema)
-    return jsonify(filename), 202
+    return jsonify(filename=schema['name']), 202
 
 
 @file_blueprint.route(prefix, methods=['DELETE'])
 def delete():
-    schema = FileSchema(only='id').load(request.json)
-    id = schema['id']
+    try:
+        schema = FileSchema(only='id').load(request.json)
+    except ValidationError:
+        raise InvalidSchema()
 
-    filename = file_service.get_one(id)['name']
-    file_service.delete(id)
-    return jsonify(filename), 202
+    id = schema['id']
+    filename = file_service.delete(id)
+    return jsonify(filename=filename), 202

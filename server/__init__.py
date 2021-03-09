@@ -1,21 +1,25 @@
-from os import path, getcwd
+from os import path, getcwd, environ
+from dotenv import load_dotenv
+
 
 from flask import Flask
-from flask_login import LoginManager
+from flask_jwt_extended import JWTManager
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
-from .config import Config
+from server.config import Config
 
 
+load_dotenv('.env')
 config = Config()
 app = Flask(__name__)
-app.template_folder = os.path.join('static', 'templates')
+app.template_folder = path.join('static', 'templates')
 app.config.from_object(config)
+app.config['SECRET_KEY'] = environ.get('SECRET_KEY')
 
-login_manager = LoginManager(app)
+jwt_manager = JWTManager()
 
 engine = create_engine('sqlite:///' + path.join(getcwd(), app.config['ROOT'], 'data', 'task.db'),
                        echo=False)
@@ -24,10 +28,10 @@ Base = declarative_base()
 Base.query = DB_session.query_property()
 
 
-from .user import user_blueprint
-from .category import category_blueprint
-from .task import task_blueprint
-from .file import file_blueprint
+from server.user import user_blueprint
+from server.category import category_blueprint
+from server.task import task_blueprint
+from server.file import file_blueprint
 
 
 app.register_blueprint(task_blueprint)
@@ -36,9 +40,9 @@ app.register_blueprint(file_blueprint)
 app.register_blueprint(user_blueprint)
 
 
-from . import initialize_db
+from server import initialize_db
 
-from .errors import handler
-from .index import index
+from server.errors import handler
+from server.index import index
 
 __version__ = "0.3"

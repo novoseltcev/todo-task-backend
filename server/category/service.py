@@ -1,43 +1,37 @@
-from .repository import CategoryRepository
-from .serializer import serialize_category, CategorySchema
-
-category_repository = CategoryRepository()
-from server.task.service import task_repository
+from server.category.repository import CategoryRepository
+from server.category.serializer import serialize_category, CategorySchema
+from server.errors.exc import ForbiddenOperation
+from server.task.service import TaskRepository
 
 
 def get_all():
-    cat = category_repository.get_all()
+    cat = CategoryRepository.get_all()
     return serialize_category(cat, many=True)
 
 
-def get_one(id: int):
-    category = category_repository.get_by_primary(id)
-    return serialize_category(category)
-
-
 def get_by_name(name: str):
-    category = category_repository.get_by_name(name)
+    category = CategoryRepository.get_by_name(name)
     return serialize_category(category)
 
 
 def create(name: str):
-    category_repository.insert(name)
+    category = CategoryRepository.insert(name)
+    return category.id
 
 
-@category_repository.assert_id
-def update(id: int, name: str):
-    if id == 1:
-        raise ValueError("ban on changing the main category")
-    category_repository.update(id, name)
+def update(schema):
+    if schema['id'] == 1:
+        raise ForbiddenOperation("ban on changing the main category")
+    CategoryRepository.update(schema)
 
 
-@category_repository.assert_id
 def delete(id: int):
     if id == 1:
-        raise ValueError("ban on delete the main category")
+        raise ForbiddenOperation("ban on delete the main category")
 
-    tasks_by_category = task_repository.get_by_foreign(id)
+    tasks_by_category = TaskRepository.get_by_category_id(id)
     for task in tasks_by_category:
-        task_repository.delete(task.id)
+        TaskRepository.delete(task.id)
 
-    category_repository.delete(id)
+    category = CategoryRepository.delete(id)
+    return serialize_category(category)

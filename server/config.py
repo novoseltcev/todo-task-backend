@@ -3,7 +3,6 @@ from datetime import timedelta
 
 
 class Config:
-    SECRET_KEY = os.urandom(20).hex()
     USE_PERMANENT_SESSION = True
     PERMANENT_SESSION_LIFETIME = timedelta(days=5)
     task_title_len = 25

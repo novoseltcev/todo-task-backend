@@ -1,6 +1,6 @@
 # Серилазизация данных
-from .schema import TaskSchema
-from .model import Task
+from server.task.schema import TaskSchema
+from server.task.model import Task
 
 
 def serialize_task(task: Task, many=False):

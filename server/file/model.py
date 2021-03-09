@@ -11,4 +11,4 @@ class File(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(config.filename_len))
     path = Column(String(config.files_dir_len + config.filename_len), unique=True)
-    task = Column(Integer, ForeignKey('tasks.id'))
+    task_id = Column(Integer, ForeignKey('tasks.id'))

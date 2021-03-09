@@ -1,6 +1,6 @@
 # Серилазизация данных
-from .model import Category
-from .schema import CategorySchema
+from server.category.model import Category
+from server.category.schema import CategorySchema
 
 
 def serialize_category(cat: Category, many=False):

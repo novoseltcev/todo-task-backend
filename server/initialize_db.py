@@ -1,11 +1,6 @@
 import os
 
-from . import engine, Base
-
-from .user import model
-from .category import model
-from .task import model
-from .file import model
+from server import engine, Base
 
 
 cwd = os.getcwd()
