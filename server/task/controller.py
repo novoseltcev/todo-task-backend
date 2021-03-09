@@ -14,7 +14,7 @@ prefix = '/task/'
 @task_blueprint.route(prefix, methods=['POST'])
 def create():
     try:
-        schema = TaskSchema(only=('title', 'category_id', 'status')).load(request.json)
+        schema = TaskSchema(only=('title', 'category_id')).load(request.json)
     except ValidationError:
         raise InvalidSchema()
 

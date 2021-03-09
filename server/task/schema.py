@@ -6,7 +6,7 @@ from server import config
 class TaskSchema(Schema):
     id = fields.Integer(required=True)
     title = fields.String(required=True)
-    status = fields.Integer(default=0)
+    status = fields.Boolean(default=False)
     category_id = fields.Integer(default=1)
     files = fields.List(fields.Nested('FileSchema'), dump_only=True)
 

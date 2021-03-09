@@ -4,8 +4,8 @@ new Vue({
     el: '#app',
     data: {
             table: [
-                {"id": 0, "name": "ToDo"},
-                {"id": 1, "name": "Done"},
+                {"status": false, "name": "ToDo"},
+                {"status": true, "name": "Done"},
             ],
             form_task: {'title': ''},
             form_file: {},
@@ -19,10 +19,10 @@ new Vue({
         },
         async createTask() {
             console.log(this.form_task)
-            const req = {"title": this.form_task.title, 'category_id': this.current_category, 'status': 0}
+            const req = {"title": this.form_task.title, 'category_id': this.current_category}
             this.last_added_task = await request('/task/', 'POST', req)
             await this.getData()
-            this.form_task = ''
+            this.form_task.title = ''
         },
         async deleteTask(id) {
             this.last_deleted_task = await request('/task/', 'DELETE', {"id": id})
@@ -32,7 +32,7 @@ new Vue({
             const data = {
                 'id': task.id,
                 'title': task.title,
-                'status': (task.status + 1) % 2,
+                'status': !task.status,
                 'category': task.category
             }
             this.last_edited_task = await request('/task/', 'PUT', data)

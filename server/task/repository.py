@@ -42,6 +42,7 @@ class TaskRepository:
             raise TaskUnknownId(id)
 
     @classmethod
+    @session_handler
     def delete(cls, id: int):
         task = cls.get_by_id(id)
         DB_session.delete(task)
