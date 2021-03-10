@@ -1,36 +1,34 @@
 from datetime import datetime
+
+from sqlalchemy.exc import IntegrityError
+from flask_jwt_extended import create_access_token
+from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from server.errors.exc import LoginError, RegistrationError
 from server.user.repository import UserRepository
 from server.user.serializer import serialize_user, UserSchema
 
 
-def get_profile(id):
-    user = UserRepository.get_by_id(id=id)
-    return serialize_user(user)
-
-
 def create_account(login: str, email: str, password: str):
-    checked_user1 = UserRepository.get_by_login(login)
-    checked_user2 = UserRepository.get_by_email(email)
-    if len(checked_user1) == 0 and len(checked_user2) == 0:
-        password_hash = generate_password_hash(password)
-        reg_date = datetime.now()
-
-        response_obj = {
-            'login': login,
-            'email': email,
-            'password': password_hash,
-            'reg_date': reg_date
-        }
-        UserRepository.insert(**response_obj)
-        user = UserRepository.get_by_login(login)
-        return user
+    password_hash = generate_password_hash(password)
+    reg_date = datetime.now()
+    try:
+        user = UserRepository.insert(login, email, password_hash, reg_date)
+        access_token = create_access_token(identity=user.id)
+        return access_token
+    except IntegrityError:
+        raise RegistrationError()
 
 
-def login(password: str, auth_method):
-    user = UserRepository.get_by_login(auth_method)
+def login(schema):
+    try:
+        user = UserRepository.get_by_login(schema['login'])
+        result = check_password_hash(user.password, schema['password'])
+        if not result:
+            raise LoginError()
+    except NoResultFound:
+        raise LoginError()
 
-    result = check_password_hash(user.password, password)
-    if result:
-        return user
+    access_token = create_access_token(identity=user.id)
+    return access_token

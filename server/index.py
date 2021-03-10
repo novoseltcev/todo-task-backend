@@ -1,12 +1,14 @@
 from os import path, getcwd
 
 from flask import send_from_directory
+from flask_jwt_extended import jwt_required
 
 from server import app
 from server import DB_session
 
 
 @app.route("/")
+@jwt_required()
 def index():
     return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), 'index.html')
 

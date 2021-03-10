@@ -4,34 +4,29 @@ from server.errors.exc import ForbiddenOperation
 from server.task.service import TaskRepository
 
 
-def get_all():
-    cat = CategoryRepository.get_all()
+def get_all(user_id):
+    cat = CategoryRepository.get_by_user_id(user_id)
     return serialize_category(cat, many=True)
 
 
-def get_by_name(name: str):
-    category = CategoryRepository.get_by_name(name)
-    return serialize_category(category)
-
-
-def create(name: str):
-    category = CategoryRepository.insert(name)
+def create(name: str, user_id: int):
+    category = CategoryRepository.insert(name, user_id)
     return category.id
 
 
-def update(schema):
+def update(schema, user_id):
     if schema['id'] == 1:
         raise ForbiddenOperation("ban on changing the main category")
-    CategoryRepository.update(schema)
+    CategoryRepository.update(schema, user_id)
 
 
-def delete(id: int):
+def delete(id: int, user_id: int):
     if id == 1:
         raise ForbiddenOperation("ban on delete the main category")
 
+    category = CategoryRepository.delete(id, user_id)
     tasks_by_category = TaskRepository.get_by_category_id(id)
     for task in tasks_by_category:
         TaskRepository.delete(task.id)
 
-    category = CategoryRepository.delete(id)
     return serialize_category(category)

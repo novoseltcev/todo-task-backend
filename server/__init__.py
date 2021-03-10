@@ -1,9 +1,9 @@
-from os import path, getcwd, environ
+from datetime import timedelta
+from os import path, environ
 
 from dotenv import load_dotenv
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 
 from sqlalchemy import create_engine
@@ -18,10 +18,11 @@ app = Flask(__name__)
 app.template_folder = path.join('static', 'templates')
 app.config.from_object(config)
 app.config['SECRET_KEY'] = environ.get('SECRET_KEY')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["JWT_SECRET_KEY"] = environ.get("JWT_SECRET_KEY")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=15)
 app.config['SQLALCHEMY_DATABASE_URL'] = environ.get('DATABASE_URL')
 
-jwt_manager = JWTManager()
+jwt = JWTManager(app)
 
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URL'], echo=False)
 
@@ -29,19 +30,23 @@ DB_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind
 Base = declarative_base()
 Base.query = DB_session.query_property()
 
+
 from server.user import user_blueprint
 from server.category import category_blueprint
 from server.task import task_blueprint
 from server.file import file_blueprint
+
 
 app.register_blueprint(task_blueprint)
 app.register_blueprint(category_blueprint)
 app.register_blueprint(file_blueprint)
 app.register_blueprint(user_blueprint)
 
+
 from server import initialize_db
 
 from server.errors import handler
 from server.index import index
 
-__version__ = "0.3"
+
+__version__ = "0.5"

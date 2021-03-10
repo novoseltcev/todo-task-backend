@@ -12,7 +12,8 @@ new Vue({
             categories: [
                 ],
             current_category: 1,
-        },
+            auth_token: ""
+    },
     methods: {
         async getData() {
             this.categories = await request('/category/all')
@@ -92,6 +93,10 @@ async function request(url, method = 'GET', data = null, type= 'application/json
     try {
         const headers = {}
         let body
+
+        if (!this.auth_token) {
+            headers['Authorization'] = "Bearer " + this.auth_token
+        }
 
         if (data) {
             headers['Content-type'] = type

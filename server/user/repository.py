@@ -21,18 +21,18 @@ class UserRepository:
 
     @staticmethod
     def get_by_login(login: str):
-        return User.query.filter_by(login=login).all()
+        return User.query.filter_by(login=login).one()
 
     @staticmethod
     def get_by_email(email: str):
-        return User.query.filter_by(email=email).all()
+        return User.query.filter_by(email=email).one()
 
     @staticmethod
     @session_handler
     def insert(login: str, email: str, password: str, reg_date):
         user = User(login=login, email=email, password=password, reg_date=reg_date)
         DB_session.add(user)
-        return user.id
+        return user
 
     @staticmethod
     @session_handler

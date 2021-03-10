@@ -28,7 +28,17 @@ class CategoryExistName(Exception):
 
 class InvalidSchema(Exception):
     def __str__(self):
-        return "Invalid values"
+        return "Invalid schema: " + str(self.args[0])
+
+
+class LoginError(Exception):
+    def __str__(self):
+        return "Invalid login or password"
+
+
+class RegistrationError(Exception):
+    def __str__(self):
+        return ""  # TODO - sss
 
 
 class ForbiddenOperation(Exception):

@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, redirect, url_for
+from flask_jwt_extended import create_access_token, jwt_required
 
 from marshmallow import ValidationError
 
@@ -11,44 +12,23 @@ user_blueprint = Blueprint('user', __name__)
 prefix = '/user/'
 
 
-@user_blueprint.route(prefix, methods=['POST'])
+@user_blueprint.route(prefix + 'login', methods=['POST'])
 def login():
     try:
-        schema = UserSchema().load(request.json)
-    except ValidationError:
-        raise InvalidSchema()
+        schema = UserSchema(only=('login', 'password')).load(request.json)
+    except ValidationError as e:
+        raise InvalidSchema(e.args[0])
 
-    password = schema['password']
-    auth_method = UserSchema.get_auth_method(schema)
-
-    if user_service.login(password=password, auth_method=auth_method):
-        return redirect(url_for('index'))
-
-    return jsonify(), 400
-
-
-@user_blueprint.route(prefix, methods=['DELETE'])
-def sign_out():
-    try:
-        schema = UserSchema(only=('id',)).load(request.json)
-    except ValidationError:
-        raise InvalidSchema()
-
-    id = schema['id']
-    user = user_service.get_profile(id=id)
-    sign_out(user)
-    return redirect(url_for('login'))
+    token = user_service.login(schema)
+    return jsonify(access_token=token)
 
 
 @user_blueprint.route(prefix + 'register', methods=['POST'])
 def register():
     try:
-        schema = UserSchema().load(request.json)
-    except ValidationError:
-        raise InvalidSchema()
+        schema = UserSchema(only=('login', 'email', 'password')).load(request.json)
+    except ValidationError as e:
+        raise InvalidSchema(e.args[0])
 
-    user = user_service.create_account(**schema)
-    if user is None:
-        return jsonify(), 400
-    # login_user(user[0])
-    return redirect(url_for('index'))
+    token = user_service.create_account(**schema)
+    return jsonify(access_token=token)
