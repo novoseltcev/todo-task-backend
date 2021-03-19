@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 from flask import Flask
 from flask_jwt_extended import JWTManager
+import redis
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -19,10 +20,14 @@ app.template_folder = path.join('static', 'templates')
 app.config.from_object(config)
 app.config['SECRET_KEY'] = environ.get('SECRET_KEY')
 app.config["JWT_SECRET_KEY"] = environ.get("JWT_SECRET_KEY")
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=15)
 app.config['SQLALCHEMY_DATABASE_URL'] = environ.get('DATABASE_URL')
 
 jwt = JWTManager(app)
+jwt_redis_blocklist = redis.StrictRedis(host="localhost", port=6379, db=0, decode_responses=True)
+
+
+from server import jwt_auth
+
 
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URL'], echo=False)
 
@@ -44,9 +49,8 @@ app.register_blueprint(user_blueprint)
 
 
 from server import initialize_db
-
 from server.errors import handler
-from server.index import index
+from server.views import *
 
 
 __version__ = "0.5"

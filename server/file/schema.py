@@ -6,13 +6,13 @@ from server import config
 
 class FileSchema(Schema):
     id = fields.Integer(required=True)
+    id_task = fields.Integer(required=True)
     name = fields.String(required=True)
     path = fields.String(required=True, dump_only=True)
-    task_id = fields.Integer(required=True)
     data = fields.Raw(load_only=True)
 
     @validates('id')
-    @validates('task_id')
+    @validates('id_task')
     def validate_id_or_task(self, value):
         if value < 1:
             raise ValidationError('field must be greater or equal 1')

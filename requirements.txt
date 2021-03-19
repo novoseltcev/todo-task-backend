@@ -6,3 +6,4 @@ Werkzeug~=1.0.1
 apispec~=4.3.0
 celery~=5.0.5
 python-dotenv~=0.15.0
+redis~=3.5.3

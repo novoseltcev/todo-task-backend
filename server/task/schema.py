@@ -5,9 +5,9 @@ from server import config
 
 class TaskSchema(Schema):
     id = fields.Integer(required=True)
+    id_category = fields.Integer(default=1)
     title = fields.String(required=True)
     status = fields.Boolean(default=False)
-    category_id = fields.Integer(default=1)
     files = fields.List(fields.Nested('FileSchema'), dump_only=True)
 
     @staticmethod
@@ -30,7 +30,7 @@ class TaskSchema(Schema):
     def validate_id(self, value):
         self.validates_int_field(value, 'id')
 
-    @validates('category_id')
+    @validates('id_category')
     def validate_category(self, value):
         self.validates_int_field(value, 'category')
 

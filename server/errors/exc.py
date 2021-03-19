@@ -44,3 +44,18 @@ class RegistrationError(Exception):
 class ForbiddenOperation(Exception):
     def __str__(self):
         return "Forbidden operation - ", str(self.args[0])
+
+
+class ExpiredToken(Exception):
+    def __str__(self):
+        return "Expired JWT"
+
+
+class InvalidToken(Exception):
+    def __str__(self):
+        return "Invalid JWT"
+
+
+class TokenInBlockList(Exception):
+    def __str__(self):
+        return "JWT in blocklist"

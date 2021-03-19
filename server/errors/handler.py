@@ -1,6 +1,7 @@
+from jwt import InvalidTokenError
 from sqlalchemy.exc import IntegrityError
 
-from server import app
+from server import app, jwt
 from server.errors.exc import *
 
 
@@ -24,3 +25,18 @@ def schema_error(err):
 @app.errorhandler(ForbiddenOperation)
 def forbidden_error(err):
     return {"error": str(err)}, 401
+
+
+@jwt.invalid_token_loader
+def invalid_token_handler(jwt_header):
+    return {"error": str(InvalidToken())}, 401
+
+
+@jwt.expired_token_loader
+def expired_token_handler(jwt_header, jwt_payload):
+    return {"error": str(ExpiredToken())}, 401
+
+
+@jwt.revoked_token_loader
+def revoked_token_handler(jwt_header, jwt_payload):
+    return {"error": str(TokenInBlockList())}, 401

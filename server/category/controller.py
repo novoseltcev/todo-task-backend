@@ -14,47 +14,48 @@ prefix = '/category/'
 @category_blueprint.route(prefix + 'all', methods=['GET'])
 @jwt_required()
 def get():
-    user_id = get_jwt_identity()
-    response = category_service.get_all(user_id)
+    id_user = get_jwt_identity()
+
+    response = category_service.get_all(id_user)
     return jsonify(response), 200
 
 
 @category_blueprint.route(prefix, methods=['POST'])
 @jwt_required()
 def create():
-    user_id = get_jwt_identity()
+    id_user = get_jwt_identity()
     try:
         schema = CategorySchema(only=('name',)).load(request.json)
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
 
     name = schema['name']
-    id = category_service.create(name, user_id)
+    id = category_service.create(id_user, name)
     return jsonify(id=id, name=name), 201
 
 
 @category_blueprint.route(prefix, methods=['PUT'])
 @jwt_required()
 def edit():
-    user_id = get_jwt_identity()
+    id_user = get_jwt_identity()
     try:
         schema = CategorySchema().load(request.json)
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
 
-    category_service.update(schema, user_id)
+    category_service.update(id_user, schema)
     return jsonify(schema), 202
 
 
 @category_blueprint.route(prefix, methods=['DELETE'])
 @jwt_required()
 def delete():
-    user_id = get_jwt_identity()
+    id_user = get_jwt_identity()
     try:
         schema = CategorySchema(only=('id',)).load(request.json)
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
 
     id = schema['id']
-    response = category_service.delete(id, user_id)
+    response = category_service.delete(id_user, id)
     return jsonify(response), 202

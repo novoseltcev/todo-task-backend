@@ -15,8 +15,7 @@ def create_account(login: str, email: str, password: str):
     reg_date = datetime.now()
     try:
         user = UserRepository.insert(login, email, password_hash, reg_date)
-        access_token = create_access_token(identity=user.id)
-        return access_token
+        return user
     except IntegrityError:
         raise RegistrationError()
 
@@ -30,5 +29,13 @@ def login(schema):
     except NoResultFound:
         raise LoginError()
 
-    access_token = create_access_token(identity=user.id)
-    return access_token
+    return user
+
+
+def change_profile(user_id, schema):
+    user = UserRepository.get_by_id(user_id)
+    if not check_password_hash(user.password, schema['password']) or user.email != schema['email']:
+        UserRepository.update(schema, user_id)
+    else:
+        raise
+    return serialize_user(user)

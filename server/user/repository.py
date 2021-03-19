@@ -2,7 +2,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from server import DB_session
 from server.errors.exc import UserUnknownId
-from server.index import session_handler
+from server.views import session_handler
 from server.user.model import User
 
 

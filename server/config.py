@@ -11,3 +11,7 @@ class Config:
     files_dir_len = 0
     UPLOAD_FOLDER = os.path.join('data', 'files')
     ROOT = 'server'
+
+    JWT_TOKEN_LOCATION = ['headers', 'cookies']
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=15)

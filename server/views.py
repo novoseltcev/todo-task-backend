@@ -13,6 +13,24 @@ def index():
     return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), 'index.html')
 
 
+@app.route('/login')
+def login():
+    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), 'login.html')
+    # TODO-add login.html
+
+
+@app.route('/register')
+def register():
+    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), 'register.html')
+    # TODO-add register.html
+
+
+@app.route('/recovery')
+def recovery():
+    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), 'recovery.html')
+    # TODO-add recover.html
+
+
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     DB_session.remove()

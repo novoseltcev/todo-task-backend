@@ -14,32 +14,32 @@ files_dir = config.UPLOAD_FOLDER
 root_dir = config.ROOT
 
 
-def get_one(id: int):
-    file = FileRepository.get_by_id(id)
+def get_one(id_user, id):
+    file = FileRepository.get_by_id(id_user, id)
     return serialize_file(file)
 
 
-def download(id: int):
-    file = FileRepository.get_by_id(id)
+def download(id_user, id):
+    file = FileRepository.get_by_id(id_user, id)
     path = file.path
     name = file.name
     full_path = os.path.join(os.getcwd(), path)
     return send_file(full_path, attachment_filename=name, as_attachment=True)
 
 
-def create(task_id: int, name: str, data):
-    TaskRepository.get_by_id(task_id)
+def create(id_user, id_task, name: str, data):
+    TaskRepository.get_by_id(id_user, id_task)
     path = str(uuid4())
-    file = FileRepository.insert(name, path, task_id)
+    file = FileRepository.insert(id_user, name, path, id_task)
     with open(path, 'wb+') as fp:
         fp.write(data)
     return file.id
 
 
-def delete(id: int):
-    path = FileRepository.get_by_id(id).path
+def delete(id_user, id):
+    path = FileRepository.get_by_id(id_user, id).path
     full_path = os.path.join(os.getcwd(), path)
 
     os.remove(full_path)
-    file = FileRepository.delete(id)
+    file = FileRepository.delete(id_user, id)
     return serialize_file(file)
