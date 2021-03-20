@@ -1,7 +1,7 @@
 # Валидация данных, простая сериализация
 from marshmallow import Schema, fields, validates, ValidationError
 
-from server import config
+from server import Config
 
 
 class CategorySchema(Schema):
@@ -22,4 +22,4 @@ class CategorySchema(Schema):
 
     @validates('name')
     def validate_filename(self, value):
-        self.validate_text_field(value, config.category_name_len)
+        self.validate_text_field(value, Config.category_name_len)

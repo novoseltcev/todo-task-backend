@@ -1,6 +1,3 @@
-from jwt import InvalidTokenError
-from sqlalchemy.exc import IntegrityError
-
 from server import app, jwt
 from server.errors.exc import *
 

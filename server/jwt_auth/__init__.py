@@ -1,3 +1,5 @@
+from flask import redirect
+
 from server import jwt, jwt_redis_blocklist
 
 
@@ -9,8 +11,13 @@ def check_if_token_is_revoked(jwt_header, jwt_payload):
 
 
 @jwt.user_identity_loader
-def user_identity_lookup(user):
+def user_identity_handler(user):
     try:
         return user.id
     except AttributeError:
         return user
+
+
+# @jwt.unauthorized_loader
+# def unauthorized_handler(jwt_header):
+#     return redirect('/login')

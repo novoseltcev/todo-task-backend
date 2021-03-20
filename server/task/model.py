@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 
-from server import Base, config
+from server import Base
+from server.config import Config
 
 
 class Task(Base):
@@ -9,7 +10,7 @@ class Task(Base):
     id = Column(Integer, primary_key=True)
     id_user = Column(Integer, ForeignKey('users.id'), nullable=False)
     id_category = Column(Integer, ForeignKey('categories.id'), nullable=False)
-    title = Column(String(config.task_title_len), nullable=False)
+    title = Column(String(Config.task_title_len), nullable=False)
     status = Column(Boolean, default=False)
 
     files = relationship('File', order_by='File.name')

@@ -8,14 +8,15 @@ from server import DB_session
 
 
 @app.route("/")
-@jwt_required()
+# @jwt_required()
 def index():
     return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), 'index.html')
 
 
 @app.route('/login')
+@jwt_required()
 def login():
-    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), 'login.html')
+    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), 'index.html')
     # TODO-add login.html
 
 

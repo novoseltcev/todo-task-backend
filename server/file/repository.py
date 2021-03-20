@@ -23,7 +23,7 @@ class FileRepository:
     @staticmethod
     @session_handler
     def insert(id_user, name: str, path: str, id_task: int):
-        file = File(name=name, path=path, id_task=id_task)
+        file = File(id_user=id_user, name=name, path=path, id_task=id_task)
         DB_session.add(file)
         return file
 

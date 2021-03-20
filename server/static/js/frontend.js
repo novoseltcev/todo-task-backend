@@ -9,10 +9,8 @@ new Vue({
             ],
             form_task: {'title': ''},
             form_file: {},
-            categories: [
-                ],
-            current_category: 1,
-            auth_token: ""
+            categories: [],
+            current_category: 1
     },
     methods: {
         async getData() {
@@ -20,7 +18,7 @@ new Vue({
         },
         async createTask() {
             console.log(this.form_task)
-            const req = {"title": this.form_task.title, 'category_id': this.current_category}
+            const req = {"title": this.form_task.title, 'id_category': this.current_category}
             this.last_added_task = await request('/task/', 'POST', req)
             await this.getData()
             this.form_task.title = ''
@@ -62,26 +60,14 @@ new Vue({
             await this.getData()
         },
 
-        downloadFile(task) {
-            this.last_added_file = request('/file/download', 'GET', {"task_id": task.id})
-            // this.getData()
-        },
-        async createFile(id) {
-            this.last_added_file = await request('/file/', 'POST', {"id": id, 'file': file}, 'multipart/form-data')
-            await this.getData()
+        async downloadFile(task) {
+            this.last_added_file = request('/file/download', 'GET', {"id_task": task.id})
         },
         async deleteFile(id) {
             this.last_deleted_file = await request('/file/', 'DELETE', {"id": id})
             await this.getData()
         },
 
-        async submitFile(id) {
-            this.last_added_file = await request('/file/', 'POST', this.form_file, 'multipart/form-data')
-        },
-
-        submitFile2(event) {
-            this.form_file = event.target.files
-        }
 
     },
     created: function () {
@@ -92,20 +78,12 @@ new Vue({
 async function request(url, method = 'GET', data = null, type= 'application/json') {
     try {
         const headers = {}
-        let body
+        let body;
 
-        if (!this.auth_token) {
-            headers['Authorization'] = "Bearer " + this.auth_token
-        }
-
+        headers['Authorization'] = "Bearer " + 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjE2MjQ5NTY5LCJqdGkiOiJiMzBmMmRiMC1jNjE0LTQ3NzgtODFhNC0zMjVkOWEwMDE0ZjIiLCJuYmYiOjE2MTYyNDk1NjksInR5cGUiOiJhY2Nlc3MiLCJzdWIiOjEsImNzcmYiOiI5ODljOGM1Ny02MzFhLTQ5YjEtOTJkYy1kOWRmZDIwNmM5NmMiLCJleHAiOjE2MTYyNTA0Njl9.hudpEoS5FqZj3Yk7eCXILlmrBrlNIv5OOi0HqBRpY7c'
         if (data) {
             headers['Content-type'] = type
-            if (type !== 'application/json') {
-                body = new FormData()
-                body.append('file', data)
-            } else {
-                body = JSON.stringify(data)
-            }
+            body = JSON.stringify(data)
             console.log(data)
         }
 

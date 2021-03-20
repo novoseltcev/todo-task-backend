@@ -21,23 +21,25 @@ def open_file():
         raise InvalidSchema(e.args[0])
 
     id = schema['id']
-    file_data = file_service.download(id_user, id)
+    filepath = file_service.get_path(id_user, id)
+    file_data = file_service.download.delay(filepath)
     return make_response(file_data)
 
 
 @file_blueprint.route(prefix, methods=['POST'])
-@jwt_required()
+# @jwt_required()
 def create():
-    id_user = get_jwt_identity()
+    # id_user = get_jwt_identity()  # TODO - js not work
+    id_user = 1
     try:
         file = request.files['file']
-        request.json['name'] = file.filename
-        request.json['data'] = file.read()
-        schema = FileSchema(only=('name', 'id_task', 'data')).load(request.json)
+        data = file.read()
+        schema = FileSchema(only=('name', 'data')).load({'name': file.filename, 'data': data})  # TODO-'id_task',
+        schema['id_task'] = 1
     except ValueError or ValidationError as e:
         raise InvalidSchema(e.args[0])
 
-    file_service.create(id_user, **schema)
+    file_service.upload(id_user, **schema)
     return jsonify(filename=schema['name']), 202
 
 
@@ -51,5 +53,5 @@ def delete():
         raise InvalidSchema(e.args[0])
 
     id = schema['id']
-    filename = file_service.delete(id_user, id)
-    return jsonify(filename=filename), 202
+    file = file_service.delete.delay(id_user, id)
+    return jsonify(file), 202
