@@ -3,7 +3,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, jwt_re
 
 from marshmallow import ValidationError
 
-from server import config
+from server import Config
 from server.jwt_auth import jwt_redis_blocklist
 from server.errors.exc import InvalidSchema
 from server.user import service as user_service
@@ -51,7 +51,7 @@ def register():
 @jwt_required()
 def logout():
     jti = get_jwt()["jti"]
-    jwt_redis_blocklist.set(jti, "", ex=config.JWT_ACCESS_TOKEN_EXPIRES)
+    jwt_redis_blocklist.set(jti, "", ex=Config.JWT_ACCESS_TOKEN_EXPIRES)
     return jsonify(msg="Access token revoked")
 
 
@@ -59,13 +59,13 @@ def logout():
 def recovery():
     pass
 
-
-@user_blueprint.route(prefix + 'profile')
-@jwt_required()
-def profile():
-    user = get_jwt_identity()
-    account = user_service.get_profile(user)
-    return account
+#
+# @user_blueprint.route(prefix + 'profile')
+# @jwt_required()
+# def profile():
+#     user = get_jwt_identity()
+#     account = user_service.get_profile(user)
+#     return account
 
 
 @user_blueprint.route(prefix + 'profile', methods=['PUT'])

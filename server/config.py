@@ -11,6 +11,8 @@ class Config:
     USE_PERMANENT_SESSION = True
     PERMANENT_SESSION_LIFETIME = timedelta(days=5)
 
+    CORS_ALLOWED_ORIGINS = ['http//localhost:5000']
+
     JWT_TOKEN_LOCATION = ['headers', 'cookies']
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=15)
@@ -18,8 +20,6 @@ class Config:
     SECRET_KEY = environ.get('SECRET_KEY')
     JWT_SECRET_KEY = environ.get("JWT_SECRET_KEY")
     SQLALCHEMY_DATABASE_URL = environ.get('DATABASE_URL')
-    CELERY_BROKER_URL = environ.get('CELERY_BROKER_URL')
-    result_backend = environ.get('CELERY_RESULT_BACKEND ')
 
     AWS_ACCESS_KEY = environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_KEY = environ.get('AWS_SECRET_KEY')

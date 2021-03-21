@@ -5,6 +5,7 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from redis import StrictRedis
 from celery import Celery
+from flask_cors import CORS
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -28,36 +29,15 @@ s3 = aws_session.resource('s3')
 s3_bucket = s3.Bucket(Config.AWS_BUCKET_NAME)
 
 
-def create_celery_app(flask_app):
-    celery_app = Celery(__name__,
-                        broker=Config.CELERY_BROKER_URL,
-                        backend=Config.result_backend
-                        )
-
-    celery_app.conf.task_routes = {
-        'mail.*': {'queue': 'mail'},
-        'cloud_s3.*': {'queue': 's3'}
-    }
-    celery_app.conf.update(app.config)
-
-    TaskBase = celery_app.Task
-
-    class TaskContext(TaskBase):
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return TaskBase.__call__(self, *args, **kwargs)
-
-    celery_app.Task = TaskContext
-    return celery_app
-
-
 app = Flask(__name__)
 app.template_folder = path.join('static', 'templates')
 app.config.from_object(Config)
 
-celery = create_celery_app(app)
-
 jwt = JWTManager(app)
+
+cors = CORS(resourses={
+    r"/*": {'origins': Config.CORS_ALLOWED_ORIGINS}
+})
 
 from server.user import user_blueprint
 from server.category import category_blueprint

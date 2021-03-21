@@ -18,7 +18,7 @@ class FileRepository:
 
     @staticmethod
     def get_by_task_id(id_user, id_task: int):
-        return File.query.filter_by(id=id, id_user=id_user).all()
+        return File.query.filter_by(id=id_task, id_user=id_user).all()
 
     @staticmethod
     @session_handler

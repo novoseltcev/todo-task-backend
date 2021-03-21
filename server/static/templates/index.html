@@ -50,10 +50,10 @@
                                     </form>
                                 </div>
                                 <div style="width: 50px; display: inline-block;" v-for="file in task.files">
-                                    <form action="/file/download" method="POST" enctype="multipart/form-data" @submit="downloadFile(file.id)">
+                                    <form @submit="downloadFile(file)">
                                         <button type="submit">{{file.name}}</button>
                                     </form>
-                                    <form @submit.prevent="deleteFile(file.id)">
+                                    <form @submit.prevent="deleteFile(file)">
                                         <button class="btn btn-danger" type="submit">Удалить</button>
                                     </form>
                                 </div>

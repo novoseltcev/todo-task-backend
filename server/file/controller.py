@@ -16,20 +16,19 @@ prefix = '/file/'
 def open_file():
     id_user = get_jwt_identity()
     try:
-        schema = FileSchema(only='id').load(request.json)
+        schema = FileSchema(only=('id', )).load(request.json)
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
 
     id = schema['id']
-    filepath = file_service.get_path(id_user, id)
-    file_data = file_service.download.delay(filepath)
+    file_data = file_service.download(id_user, id)
     return make_response(file_data)
 
 
 @file_blueprint.route(prefix, methods=['POST'])
 # @jwt_required()
 def create():
-    # id_user = get_jwt_identity()  # TODO - js not work
+    # id_user = get_jwt_identity()  # TODO - Vue.js not work
     id_user = 1
     try:
         file = request.files['file']
@@ -48,10 +47,11 @@ def create():
 def delete():
     id_user = get_jwt_identity()
     try:
-        schema = FileSchema(only='id').load(request.json)
+        schema = FileSchema(only=('id',)).load(request.json)
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
 
     id = schema['id']
-    file = file_service.delete.delay(id_user, id)
+    file = file_service.delete(id_user, id)
+    print(file)
     return jsonify(file), 202
