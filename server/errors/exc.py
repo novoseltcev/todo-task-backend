@@ -59,3 +59,8 @@ class InvalidToken(Exception):
 class TokenInBlockList(Exception):
     def __str__(self):
         return "JWT in blocklist"
+
+
+class NoContentError(Exception):
+    def __str__(self):
+        return "Required a file"

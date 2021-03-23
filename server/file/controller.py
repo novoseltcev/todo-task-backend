@@ -21,7 +21,7 @@ def open_file():
         raise InvalidSchema(e.args[0])
 
     id = schema['id']
-    file_data = file_service.download(id_user, id)
+    file_data = file_service.s3_download.delay(id_user, id).get()
     return make_response(file_data)
 
 
@@ -34,12 +34,21 @@ def create():
         file = request.files['file']
         data = file.read()
         schema = FileSchema(only=('name', 'data')).load({'name': file.filename, 'data': data})  # TODO-'id_task',
-        schema['id_task'] = 1
+        # schema['id_task'] = request.json['id_task']
     except ValueError or ValidationError as e:
         raise InvalidSchema(e.args[0])
 
-    file_service.upload(id_user, **schema)
-    return jsonify(filename=schema['name']), 202
+    id_task = 1
+    name = schema['name']
+    data = schema['data']
+    path = file_service.generate_path(name)
+    id = file_service.create(id_user, id_task, name, path, data)
+    try:
+        celery_process = file_service.s3_upload.delay(path)
+    except Exception as e:
+        file_service.delete(id_user, id)
+        raise e
+    return jsonify(msg='Uploading ' + schema['name'], id=id, proccess_id=celery_process.id), 202
 
 
 @file_blueprint.route(prefix, methods=['DELETE'])
@@ -53,5 +62,11 @@ def delete():
 
     id = schema['id']
     file = file_service.delete(id_user, id)
-    print(file)
     return jsonify(file), 202
+
+
+@file_blueprint.route(prefix + 'uploading_status/<int:uuid>')
+def uploading(uuid):  # TODO -
+    uuid = int(uuid)
+    result = file_service.check_uploading(uuid, path)
+    return jsonify(result)

@@ -36,3 +36,6 @@ class Config:
     MAIL_USERNAME = environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = 'flask@example.com'
+
+    CELERY_BROKER_URL = environ.get('CELERY_BROKER_URL')
+    backend_result = environ.get('CELERY_RESULT_BACKEND')

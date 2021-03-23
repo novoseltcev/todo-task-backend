@@ -1,3 +1,4 @@
+import os
 from os import path
 
 import boto3
@@ -28,7 +29,6 @@ aws_session = boto3.Session(
 s3 = aws_session.resource('s3')
 s3_bucket = s3.Bucket(Config.AWS_BUCKET_NAME)
 
-
 app = Flask(__name__)
 app.template_folder = path.join('static', 'templates')
 app.config.from_object(Config)
@@ -38,6 +38,34 @@ jwt = JWTManager(app)
 cors = CORS(resourses={
     r"/*": {'origins': Config.CORS_ALLOWED_ORIGINS}
 })
+
+
+def make_celery(flask_app):
+    celery_app = Celery(flask_app.name,
+                        broker=flask_app.config['CELERY_BROKER_URL'],
+                        backend=Config.backend_result
+                        )
+    celery_app.conf.update(flask_app.config)
+
+    celery_app.task_routes = {
+        's3_cloud.*': {'queue': 's3'},
+        'email.*': {'queue': 'email'}
+    }
+
+    task_base = celery_app.Task
+
+    class ContextTask(task_base):
+        abstract = True
+
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return task_base.__call__(self, *args, **kwargs)
+
+    celery_app.Task = ContextTask
+    return celery_app
+
+
+celery = make_celery(app)
 
 from server.user import user_blueprint
 from server.category import category_blueprint
@@ -54,4 +82,4 @@ from server import initialize_db
 from server.errors import handler
 from server import jwt_auth
 
-__version__ = "0.5"
+__version__ = "0.7"

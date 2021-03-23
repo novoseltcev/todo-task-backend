@@ -37,3 +37,8 @@ def expired_token_handler(jwt_header, jwt_payload):
 @jwt.revoked_token_loader
 def revoked_token_handler(jwt_header, jwt_payload):
     return {"error": str(TokenInBlockList())}, 401
+
+
+@app.errorhandler(NoContentError)
+def no_content_handler(err):
+    return {'msg': str(NoContentError)}, 204

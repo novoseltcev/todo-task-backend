@@ -2,6 +2,7 @@
 from marshmallow import Schema, fields, validates, ValidationError
 
 from server.config import Config
+from server.errors.exc import NoContentError
 
 
 class FileSchema(Schema):
@@ -30,3 +31,8 @@ class FileSchema(Schema):
     @validates('path')
     def validate_filename(self, value):
         self.validate_text_field(value, Config.files_dir_len + Config.filename_len)
+
+    @validates('data')
+    def validate_data(self, value: bin):
+        if value.__len__() == 0:
+            raise NoContentError()
