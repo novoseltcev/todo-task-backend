@@ -9,8 +9,9 @@ class FileSchema(Schema):
     id = fields.Integer(required=True)
     id_task = fields.Integer(required=True)
     name = fields.String(required=True)
-    path = fields.String(required=True, dump_only=True)
+    path = fields.String(required=True)
     data = fields.Raw(load_only=True)
+    uuid = fields.String(load_only=True)
 
     @validates('id')
     @validates('id_task')

@@ -1,6 +1,6 @@
 from sqlalchemy.orm.exc import NoResultFound
 
-from server import DB_session
+from server import sqlalchemy_session
 from server.errors.exc import UserUnknownId
 from server.views import session_handler
 from server.user.model import User
@@ -31,23 +31,21 @@ class UserRepository:
     @session_handler
     def insert(login: str, email: str, password: str, reg_date):
         user = User(login=login, email=email, password=password, reg_date=reg_date)
-        DB_session.add(user)
+        sqlalchemy_session.add(user)
         return user
 
     @staticmethod
     @session_handler
     def update(schema: dict):
         id = schema['id']
-        try:
-            q = User.query.filter_by(id=id)
-            q.one()
-            q.update(schema)
-        except NoResultFound:
+        q = User.query.filter_by(id=id)
+        if q.first() is None:
             raise UserUnknownId(id)
+        q.update(schema)
 
     @classmethod
     @session_handler
     def delete(cls, id: int):
         user = cls.get_by_id(id)
-        DB_session.delete(user)
+        sqlalchemy_session.delete(user)
         return user

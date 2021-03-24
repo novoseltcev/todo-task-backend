@@ -16,12 +16,14 @@ prefix = '/file/'
 def open_file():
     id_user = get_jwt_identity()
     try:
-        schema = FileSchema(only=('id', )).load(request.json)
+        id = FileSchema(only=('id', )).load(request.json)['id']
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
 
-    id = schema['id']
-    file_data = file_service.s3_download.delay(id_user, id).get()
+    file = file_service.get_file(id_user, id)
+    name = file['name']
+    path = file['path']
+    file_data = file_service.s3_download(name, path)
     return make_response(file_data)
 
 
@@ -44,11 +46,11 @@ def create():
     path = file_service.generate_path(name)
     id = file_service.create(id_user, id_task, name, path, data)
     try:
-        celery_process = file_service.s3_upload.delay(path)
+        async_process = file_service.s3_upload.delay(path)
     except Exception as e:
         file_service.delete(id_user, id)
         raise e
-    return jsonify(msg='Uploading ' + schema['name'], id=id, proccess_id=celery_process.id), 202
+    return jsonify(msg='Uploading ' + schema['name'], id=id, path=path, uuid=async_process.id), 202
 
 
 @file_blueprint.route(prefix, methods=['DELETE'])
@@ -56,17 +58,22 @@ def create():
 def delete():
     id_user = get_jwt_identity()
     try:
-        schema = FileSchema(only=('id',)).load(request.json)
+        id = FileSchema(only=('id',)).load(request.json)['id']
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
 
-    id = schema['id']
     file = file_service.delete(id_user, id)
     return jsonify(file), 202
 
 
-@file_blueprint.route(prefix + 'uploading_status/<int:uuid>')
-def uploading(uuid):  # TODO -
-    uuid = int(uuid)
-    result = file_service.check_uploading(uuid, path)
+@file_blueprint.route(prefix + 'uploading_status')
+@jwt_required()
+def uploading():  # TODO -
+    id_user = get_jwt_identity()
+    try:
+        schema = FileSchema(only=('id', 'path', 'uuid')).load(request.json)
+    except ValidationError as e:
+        raise InvalidSchema(e.args[0])
+
+    result = file_service.check_uploading(id_user, **schema)
     return jsonify(result)

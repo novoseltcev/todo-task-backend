@@ -11,13 +11,12 @@ category_blueprint = Blueprint('category', __name__)
 prefix = '/category/'
 
 
-@category_blueprint.route(prefix + 'all', methods=['GET'])
+@category_blueprint.route('/categories/')
 @jwt_required()
 def get():
     id_user = get_jwt_identity()
-
     response = category_service.get_all(id_user)
-    return jsonify(response), 200
+    return jsonify(response)
 
 
 @category_blueprint.route(prefix, methods=['POST'])
@@ -25,11 +24,10 @@ def get():
 def create():
     id_user = get_jwt_identity()
     try:
-        schema = CategorySchema(only=('name',)).load(request.json)
+        name = CategorySchema(only=('name',)).load(request.json)['name']
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
 
-    name = schema['name']
     id = category_service.create(id_user, name)
     return jsonify(id=id, name=name), 201
 
@@ -52,10 +50,9 @@ def edit():
 def delete():
     id_user = get_jwt_identity()
     try:
-        schema = CategorySchema(only=('id',)).load(request.json)
+        id = CategorySchema(only=('id',)).load(request.json)['id']
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
 
-    id = schema['id']
     response = category_service.delete(id_user, id)
     return jsonify(response), 202

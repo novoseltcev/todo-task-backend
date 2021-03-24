@@ -1,4 +1,3 @@
-import os
 from os import path
 
 import boto3
@@ -16,9 +15,9 @@ from server.config import Config
 
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URL, echo=False)
 
-DB_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+sqlalchemy_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 Base = declarative_base()
-Base.query = DB_session.query_property()
+Base.query = sqlalchemy_session.query_property()
 
 jwt_redis_blocklist = StrictRedis(host="localhost", port=6379, db=0, decode_responses=True)
 
@@ -26,6 +25,7 @@ aws_session = boto3.Session(
     aws_access_key_id=Config.AWS_ACCESS_KEY,
     aws_secret_access_key=Config.AWS_SECRET_KEY
 )
+
 s3 = aws_session.resource('s3')
 s3_bucket = s3.Bucket(Config.AWS_BUCKET_NAME)
 
@@ -45,9 +45,8 @@ def make_celery(flask_app):
                         broker=flask_app.config['CELERY_BROKER_URL'],
                         backend=Config.backend_result
                         )
-    celery_app.conf.update(flask_app.config)
 
-    celery_app.task_routes = {
+    celery_app.conf.task_routes = {
         's3_cloud.*': {'queue': 's3'},
         'email.*': {'queue': 'email'}
     }
@@ -67,11 +66,14 @@ def make_celery(flask_app):
 
 celery = make_celery(app)
 
+
 from server.user import user_blueprint
+from server.role import role_blueprint
 from server.category import category_blueprint
 from server.task import task_blueprint
 from server.file import file_blueprint
 
+app.register_blueprint(role_blueprint)
 app.register_blueprint(task_blueprint)
 app.register_blueprint(category_blueprint)
 app.register_blueprint(file_blueprint)

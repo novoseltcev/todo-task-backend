@@ -1,13 +1,14 @@
 from datetime import datetime
 
 from sqlalchemy.exc import IntegrityError
-from flask_jwt_extended import create_access_token
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from server.errors.exc import LoginError, RegistrationError
 from server.user.repository import UserRepository
 from server.user.serializer import serialize_user, UserSchema
+
+from server.category import service as category_service
 
 
 def create_account(login: str, email: str, password: str):
@@ -39,3 +40,17 @@ def change_profile(user_id, schema):
     else:
         raise
     return serialize_user(user)
+
+
+def delete_account(user_id):
+    user = UserRepository.delete(user_id)
+    categories_by_user = user.categories
+    for category in categories_by_user:
+        category_service.delete(user_id, category.id)
+
+    return serialize_user(user)
+
+
+def get_all():
+    users = UserRepository.get_all()
+    return serialize_user(users, many=True)

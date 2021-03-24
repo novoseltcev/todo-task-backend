@@ -1,6 +1,9 @@
-from flask import redirect
+from functools import wraps
 
-from server import jwt, jwt_redis_blocklist
+from flask import redirect, jsonify
+from flask_jwt_extended import verify_jwt_in_request, get_jwt
+
+from server import jwt, jwt_redis_blocklist, Config
 
 
 @jwt.token_in_blocklist_loader
@@ -21,3 +24,33 @@ def user_identity_handler(user):
 @jwt.unauthorized_loader
 def unauthorized_handler(jwt_header):
     return redirect('/login')
+
+
+def admin_required():
+    def wrapper(fn):
+        @wraps(fn)
+        def decorator(*args, **kwargs):
+            verify_jwt_in_request()
+            claims = get_jwt()
+            if claims('role', 0) in Config.admin_roles:
+                return fn(*args, **kwargs)
+            else:
+                return jsonify(msg="Admins only!"), 403
+        return decorator
+    return wrapper
+
+
+def owner_required():
+    def wrapper(fn):
+        @wraps(fn)
+        def decorator(*args, **kwargs):
+            verify_jwt_in_request()
+            claims = get_jwt()
+            if claims.get('role', 0) in Config.owner_roles:
+                return fn(*args, **kwargs)
+            else:
+                return jsonify(msg="Owners only!"), 403
+
+        return decorator
+
+    return wrapper

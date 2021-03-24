@@ -21,6 +21,10 @@ class UserUnknownId(UnknownId):
     name = "user"
 
 
+class RoleUnknownId(UnknownId):
+    name = "role"
+
+
 class CategoryExistName(Exception):
     def __str__(self):
         return "Category name " + str(self.args[0]) + " already exist"

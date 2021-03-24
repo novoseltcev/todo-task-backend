@@ -1,7 +1,11 @@
 from server.category.repository import CategoryRepository
 from server.category.serializer import serialize_category, CategorySchema
-from server.errors.exc import ForbiddenOperation
-from server.task.service import TaskRepository
+from server.task import service as task_service
+
+
+def get(id_user, id):
+    cat = CategoryRepository.get_by_id(id_user, id)
+    return serialize_category(cat)
 
 
 def get_all(id_user: int):
@@ -19,12 +23,9 @@ def update(id_user, schema):
 
 
 def delete(id_user: int, id: int):
-    if id == 1:
-        raise ForbiddenOperation("ban on delete the main category")
-
     category = CategoryRepository.delete(id_user, id)
-    tasks_by_category = TaskRepository.get_by_category_id(id_user, id)
+    tasks_by_category = category.tasks
     for task in tasks_by_category:
-        TaskRepository.delete(id_user, task.id)
+        task_service.delete(id_user, task.id)
 
     return serialize_category(category)

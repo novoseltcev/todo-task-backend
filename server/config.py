@@ -8,6 +8,8 @@ load_dotenv('.env')
 
 
 class Config:
+    admin_roles = ('admin', 'owner')
+    owner_roles = ('owner', )
     USE_PERMANENT_SESSION = True
     PERMANENT_SESSION_LIFETIME = timedelta(days=5)
 

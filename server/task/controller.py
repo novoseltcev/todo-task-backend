@@ -44,10 +44,9 @@ def edit():
 def delete():
     id_user = get_jwt_identity()
     try:
-        schema = TaskSchema(only=('id',)).load(request.json)
+        id = TaskSchema(only=('id',)).load(request.json)['id']
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
 
-    id = schema['id']
     response = task_service.delete(id_user, id)
     return jsonify(response), 202

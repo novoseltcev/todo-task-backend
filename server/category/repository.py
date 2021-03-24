@@ -3,7 +3,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 
 
-from server import DB_session
+from server import sqlalchemy_session
 from server.errors.exc import CategoryUnknownId, CategoryExistName, ForbiddenOperation
 from server.views import session_handler
 from server.category.model import Category
@@ -26,7 +26,7 @@ class CategoryRepository:
     def insert(id_user, name: str):
         try:
             category = Category(name=name, id_user=id_user)
-            DB_session.add(category)
+            sqlalchemy_session.add(category)
             return category
         except IntegrityError:
             raise CategoryExistName(name)
@@ -35,16 +35,14 @@ class CategoryRepository:
     @session_handler
     def update(id_user, schema):
         id = schema['id']
-        try:
-            q = Category.query.filter_by(id=id, id_user=id_user)
-            q.one()
-            q.update(schema)
-        except NoResultFound:
+        q = Category.query.filter_by(id=id, id_user=id_user)
+        if q.first() is None:
             raise CategoryUnknownId(id)
+        q.update(schema)
 
     @classmethod
     @session_handler
     def delete(cls, id_user, id: int, user_id: int):
         category = cls.get_by_id(id_user, id)
-        DB_session.delete(category)
+        sqlalchemy_session.delete(category)
         return category

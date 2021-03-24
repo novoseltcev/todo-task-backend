@@ -4,10 +4,12 @@ from flask_jwt_extended import create_access_token, create_refresh_token, jwt_re
 from marshmallow import ValidationError
 
 from server import Config
-from server.jwt_auth import jwt_redis_blocklist
+from server.jwt_auth import jwt_redis_blocklist, admin_required, owner_required
 from server.errors.exc import InvalidSchema
 from server.user import service as user_service
+from server.user.serializer import serialize_user
 from server.user.service import UserSchema
+from server.role.service import RoleRepository
 
 
 user_blueprint = Blueprint('user', __name__)
@@ -31,7 +33,9 @@ def login():
         raise InvalidSchema(e.args[0])
 
     user = user_service.login(schema)
-    access_token = create_access_token(identity=user, fresh=True)
+    user_role = RoleRepository.get_by_id(user.id_role)
+    additional_claims = {'role': user_role.name}
+    access_token = create_access_token(identity=user, additional_claims=additional_claims, fresh=True)
     refresh_token = create_refresh_token(identity=user)
     return jsonify(access_token=access_token, refresh_token=refresh_token)
 
@@ -78,3 +82,43 @@ def change_profile():
         raise InvalidSchema(e.args[0])
     user = user_service.change_profile(user, schema)
     return user
+
+
+@user_blueprint.route('/admin/users/')
+@admin_required()
+def get_all():
+    users = user_service.get_all()
+    return serialize_user(users, many=True)
+
+
+@user_blueprint.route('/admin' + prefix, methods=['POST'])
+@owner_required()
+def create():
+    try:
+        schema = UserSchema(only=('login', 'email', 'password')).load(request.json)
+    except ValidationError as e:
+        raise InvalidSchema(e.args[0])
+
+    return user_service.create_account(**schema)
+
+
+@user_blueprint.route('/admin' + prefix, methods=['PUT'])
+@owner_required()
+def update():
+    try:
+        schema = UserSchema().load(request.json)
+    except ValidationError as e:
+        raise InvalidSchema(e.args[0])
+    user_service.UserRepository.update(schema)
+
+
+@user_blueprint.route('/admin' + prefix, methods=['DELETE'])
+@owner_required()
+def delete():
+    try:
+        id = UserSchema(only=('id',)).load(request.json)['id']
+    except ValidationError as e:
+        raise InvalidSchema(e.args[0])
+
+    return user_service.delete_account(id)
+

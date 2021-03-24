@@ -44,14 +44,14 @@ new Vue({
         },
 
         async getData() {
-            const result = await this.request('/category/all')
+            const result = await this.request('/categories/')
             if (result.error) {
                 const result_refresh = await this.request('/user/refresh', 'GET', null, true)
                 if (result_refresh.access_token) {
                     this.access_token = result_refresh.access_token
-                    this.categories =await this.request('/category/all')
+                    this.categories =await this.request('/categories/')
                 } else {
-                    throw DOMException('aaaaaaa')
+                    throw DOMException('')
                 }
             } else {
                 this.categories = result

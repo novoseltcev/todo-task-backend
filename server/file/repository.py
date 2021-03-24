@@ -1,4 +1,4 @@
-from server import DB_session
+from server import sqlalchemy_session
 from server.errors.exc import FileUnknownId
 from server.views import session_handler
 from server.file.model import File
@@ -24,12 +24,12 @@ class FileRepository:
     @session_handler
     def insert(id_user, name: str, path: str, id_task: int):
         file = File(id_user=id_user, name=name, path=path, id_task=id_task)
-        DB_session.add(file)
+        sqlalchemy_session.add(file)
         return file
 
     @classmethod
     @session_handler
     def delete(cls, id_user, id: int):
         file = cls.get_by_id(id_user, id)
-        DB_session.delete(file)
+        sqlalchemy_session.delete(file)
         return file

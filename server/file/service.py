@@ -8,7 +8,7 @@ from server import s3_bucket, celery
 from server.file.repository import FileRepository
 from server.file.serializer import serialize_file, FileSchema
 
-from server.task.service import TaskRepository
+from server.task import service as task_service
 
 
 def get_file(id_user, id):
@@ -19,7 +19,6 @@ def get_file(id_user, id):
     return {'name': name, 'path': path, 'id_task': id_task}
 
 
-@celery.task(routes='s3_cloud.download')
 def s3_download(name, path):
     s3_file = s3_bucket.Object(key=path)
     tmp_path = os.path.join(os.getcwd(), 'server', 'tmp', path)
@@ -38,7 +37,7 @@ def generate_path(name):
 
 
 def create(id_user, id_task, name, path, data):
-    TaskRepository.get_by_id(id_user, id_task)
+    task_service.get(id_user, id_task)
     id = FileRepository.insert(id_user, name, path, id_task).id
 
     tmp_path = os.path.join(os.getcwd(), 'server', 'tmp', path)
@@ -47,7 +46,7 @@ def create(id_user, id_task, name, path, data):
     return id
 
 
-@celery.task(routes='s3_cloud.upload')
+@celery.task(name='s3_cloud.upload')
 def s3_upload(path):
     s3_file = s3_bucket.Object(key=path)
     tmp_path = os.path.join(os.getcwd(), 'server', 'tmp', path)
@@ -55,8 +54,13 @@ def s3_upload(path):
         s3_file.upload_fileobj(fp)
 
 
-def check_uploading(uuid, path):
+def check_uploading(id_user, id, path, uuid):
     result = AsyncResult(uuid)
+    if result.failed():
+        FileRepository.delete(id_user, id)
+        tmp_path = os.path.join(os.getcwd(), 'server', 'tmp', path)
+        os.remove(tmp_path)
+
     if result.successful():
         tmp_path = os.path.join(os.getcwd(), 'server', 'tmp', path)
         os.remove(tmp_path)
@@ -64,10 +68,8 @@ def check_uploading(uuid, path):
 
 
 def delete(id_user, id):
-    path = FileRepository.get_by_id(id_user, id).path
-
-    s3_file = s3_bucket.Object(key=path)
-    s3_file.delete()
-
     file = FileRepository.delete(id_user, id)
+
+    s3_file = s3_bucket.Object(key=file.path)
+    s3_file.delete()
     return serialize_file(file)
