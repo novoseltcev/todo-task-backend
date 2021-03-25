@@ -1,5 +1,8 @@
 from os import path
 
+from apispec import APISpec
+from apispec.ext.marshmallow import MarshmallowPlugin
+from apispec_webframeworks.flask import FlaskPlugin
 import boto3
 from flask import Flask
 from flask_jwt_extended import JWTManager
@@ -64,16 +67,23 @@ def make_celery(flask_app):
     return celery_app
 
 
+def make_docs(flask_app):
+    spec = APISpec(
+        title="Swagger TODOTaskManager",
+        version="1.0.0",
+        openapi_version="3.0.2",
+        plugins=[FlaskPlugin(), MarshmallowPlugin()])
+    return spec
+
+
 celery = make_celery(app)
 
 
 from server.user import user_blueprint
-from server.role import role_blueprint
 from server.category import category_blueprint
 from server.task import task_blueprint
 from server.file import file_blueprint
 
-app.register_blueprint(role_blueprint)
 app.register_blueprint(task_blueprint)
 app.register_blueprint(category_blueprint)
 app.register_blueprint(file_blueprint)

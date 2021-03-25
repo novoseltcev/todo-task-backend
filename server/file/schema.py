@@ -8,6 +8,8 @@ from server.errors.exc import NoContentError
 class FileSchema(Schema):
     id = fields.Integer(required=True)
     id_task = fields.Integer(required=True)
+    id_user = fields.Integer(required=False)
+
     name = fields.String(required=True)
     path = fields.String(required=True)
     data = fields.Raw(load_only=True)

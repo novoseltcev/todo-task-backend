@@ -5,7 +5,7 @@ from marshmallow.exceptions import ValidationError
 from server.errors.exc import InvalidSchema
 from server.category import service as category_service
 from server.category.service import CategorySchema
-
+from server.jwt_auth import admin_required
 
 category_blueprint = Blueprint('category', __name__)
 prefix = '/category/'
@@ -17,6 +17,18 @@ def get():
     id_user = get_jwt_identity()
     response = category_service.get_all(id_user)
     return jsonify(response)
+
+
+@category_blueprint.route('/admin/categories/')
+@admin_required('owner')
+def get_4_admin():
+    try:
+        id_user = CategorySchema(only=('id_user',)).load(request.json)['id_user']
+    except ValidationError as e:
+        raise InvalidSchema(e.args[0])
+
+    response = category_service.get_all(id_user)
+    return jsonify(response), 201
 
 
 @category_blueprint.route(prefix, methods=['POST'])
@@ -55,4 +67,16 @@ def delete():
         raise InvalidSchema(e.args[0])
 
     response = category_service.delete(id_user, id)
+    return jsonify(response), 202
+
+
+@category_blueprint.route('/admin/category/', methods=['DELETE'])
+@admin_required('owner')
+def delete_4_admin():
+    try:
+        schema = CategorySchema(only=('id', 'id_user')).load(request.json)
+    except ValidationError as e:
+        raise InvalidSchema(e.args[0])
+
+    response = category_service.delete(**schema)
     return jsonify(response), 202

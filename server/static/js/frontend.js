@@ -14,6 +14,8 @@ new Vue({
             token_type: 'Bearer ',
             access_token: "",
             refresh_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYxNjI4NDExOCwianRpIjoiMWUzN2ExOGQtNzdmNy00OGRlLWIyZDQtYjRjMDJmMmQ5YmIxIiwibmJmIjoxNjE2Mjg0MTE4LCJ0eXBlIjoicmVmcmVzaCIsInN1YiI6MSwiY3NyZiI6ImJlMzE4ZjExLWI4YzMtNGRjMi04ODJmLTE4M2JjNjYxNmExZiIsImV4cCI6MTYxNzU4MDExOH0.JL9hdPVdcGzKXJQa19p23-Fb9PpSV9XPrB6_JtBEpRg"
+            ,
+            current_user: {"admin": true, "email": "st.a.novoseltcev@gmail.com"}
     },
     methods: {
         async request(url, method = 'GET', data = null, refresh=false) {

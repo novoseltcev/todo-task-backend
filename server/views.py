@@ -14,21 +14,20 @@ def index():
 
 
 @app.route('/login')
-@jwt_required()
 def login():
-    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), 'index.html')
+    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'),  path.join('auth', 'login.html'))
     # TODO-add login.html
 
 
 @app.route('/register')
 def register():
-    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), 'register.html')
+    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), path.join('auth', 'register.html'))
     # TODO-add register.html
 
 
 @app.route('/recovery')
 def recovery():
-    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), 'recovery.html')
+    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), path.join('auth', 'recovery.html'))
     # TODO-add recover.html
 
 

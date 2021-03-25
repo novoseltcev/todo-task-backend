@@ -6,6 +6,8 @@ from server import Config
 
 class CategorySchema(Schema):
     id = fields.Integer(required=True)
+    id_user = fields.Integer(required=False)
+
     name = fields.String(required=True)
     tasks = fields.List(fields.Nested('TaskSchema'), dump_only=True)
 

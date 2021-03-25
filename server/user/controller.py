@@ -1,15 +1,14 @@
-from flask import Blueprint, request, jsonify, redirect, send_from_directory
+from flask import Blueprint, request, jsonify, redirect
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
 
 from marshmallow import ValidationError
 
 from server import Config
-from server.jwt_auth import jwt_redis_blocklist, admin_required, owner_required
+from server.jwt_auth import jwt_redis_blocklist, admin_required
 from server.errors.exc import InvalidSchema
 from server.user import service as user_service
 from server.user.serializer import serialize_user
 from server.user.service import UserSchema
-from server.role.service import RoleRepository
 
 
 user_blueprint = Blueprint('user', __name__)
@@ -33,8 +32,7 @@ def login():
         raise InvalidSchema(e.args[0])
 
     user = user_service.login(schema)
-    user_role = RoleRepository.get_by_id(user.id_role)
-    additional_claims = {'role': user_role.name}
+    additional_claims = {'role': user.role.name}
     access_token = create_access_token(identity=user, additional_claims=additional_claims, fresh=True)
     refresh_token = create_refresh_token(identity=user)
     return jsonify(access_token=access_token, refresh_token=refresh_token)
@@ -85,17 +83,17 @@ def change_profile():
 
 
 @user_blueprint.route('/admin/users/')
-@admin_required()
+@admin_required('owner', 'admin')
 def get_all():
     users = user_service.get_all()
     return serialize_user(users, many=True)
 
 
 @user_blueprint.route('/admin' + prefix, methods=['POST'])
-@owner_required()
+@admin_required('owner')
 def create():
     try:
-        schema = UserSchema(only=('login', 'email', 'password')).load(request.json)
+        schema = UserSchema(only=('login', 'email', 'password', 'role')).load(request.json)
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
 
@@ -103,7 +101,7 @@ def create():
 
 
 @user_blueprint.route('/admin' + prefix, methods=['PUT'])
-@owner_required()
+@admin_required('owner')
 def update():
     try:
         schema = UserSchema().load(request.json)
@@ -113,7 +111,7 @@ def update():
 
 
 @user_blueprint.route('/admin' + prefix, methods=['DELETE'])
-@owner_required()
+@admin_required('owner')
 def delete():
     try:
         id = UserSchema(only=('id',)).load(request.json)['id']
@@ -121,4 +119,3 @@ def delete():
         raise InvalidSchema(e.args[0])
 
     return user_service.delete_account(id)
-

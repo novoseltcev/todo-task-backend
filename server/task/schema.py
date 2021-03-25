@@ -6,6 +6,8 @@ from server.config import Config
 class TaskSchema(Schema):
     id = fields.Integer(required=True)
     id_category = fields.Integer(default=1)
+    id_user = fields.Integer(required=False)
+
     title = fields.String(required=True)
     status = fields.Boolean(default=False)
     files = fields.List(fields.Nested('FileSchema'), dump_only=True)

@@ -6,3 +6,4 @@ celery~=5.0.5
 python-dotenv~=0.15.0
 redis~=3.5.3
 boto3~=1.17.33
+apispec~=4.3.0

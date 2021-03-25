@@ -5,7 +5,7 @@ from marshmallow.exceptions import ValidationError
 from server.errors.exc import InvalidSchema
 from server.file import service as file_service
 from server.file.service import FileSchema
-
+from server.jwt_auth import admin_required
 
 file_blueprint = Blueprint('file', __name__)
 prefix = '/file/'
@@ -77,3 +77,15 @@ def uploading():  # TODO -
 
     result = file_service.check_uploading(id_user, **schema)
     return jsonify(result)
+
+
+@file_blueprint.route('/admin/file/', methods=['DELETE'])
+@admin_required('owner')
+def delete_4_admin():
+    try:
+        schema = FileSchema(only=('id', 'id_user')).load(request.json)
+    except ValidationError as e:
+        raise InvalidSchema(e.args[0])
+
+    response = file_service.delete(**schema)
+    return jsonify(response), 202
