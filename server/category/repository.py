@@ -1,10 +1,7 @@
-# Класс для работы с БД
-from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 
-
 from server import sqlalchemy_session
-from server.errors.exc import CategoryUnknownId, CategoryExistName, ForbiddenOperation
+from server.errors.exc import CategoryUnknownId, CategoryExistName
 from server.views import session_handler
 from server.category.model import Category
 
@@ -13,9 +10,9 @@ class CategoryRepository:
     @staticmethod
     def get_by_id(id_user, id: int):
         category = Category.query.filter_by(id=id, id_user=id_user).first()
-        if category:
-            return category
-        raise CategoryUnknownId(id)
+        if category is None:
+            raise CategoryUnknownId(id)
+        return category
 
     @staticmethod
     def get_by_user_id(id_user: int):
@@ -42,7 +39,7 @@ class CategoryRepository:
 
     @classmethod
     @session_handler
-    def delete(cls, id_user, id: int, user_id: int):
+    def delete(cls, id_user, id: int):
         category = cls.get_by_id(id_user, id)
         sqlalchemy_session.delete(category)
         return category

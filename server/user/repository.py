@@ -1,5 +1,3 @@
-from sqlalchemy.orm.exc import NoResultFound
-
 from server import sqlalchemy_session
 from server.errors.exc import UserUnknownId
 from server.views import session_handler
@@ -16,8 +14,8 @@ class UserRepository:
     def get_by_id(id: int):
         user = User.query.get(id)
         if user:
-            return user
-        raise UserUnknownId(id)
+            raise UserUnknownId(id)
+        return user
 
     @staticmethod
     def get_by_login(login: str):

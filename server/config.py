@@ -8,8 +8,7 @@ load_dotenv('.env')
 
 
 class Config:
-    admin_roles = ('admin', 'owner')
-    owner_roles = ('owner', )
+
     USE_PERMANENT_SESSION = True
     PERMANENT_SESSION_LIFETIME = timedelta(days=5)
 
@@ -27,17 +26,19 @@ class Config:
     AWS_SECRET_KEY = environ.get('AWS_SECRET_KEY')
     AWS_BUCKET_NAME = environ.get('AWS_BUCKET_NAME')
 
+    # MAIL_SERVER = 'smtp.googlemail.com'
+    # MAIL_PORT = 587
+    # MAIL_USE_TLS = True
+    # MAIL_USERNAME = environ.get('MAIL_USERNAME')
+    # MAIL_PASSWORD = environ.get('MAIL_PASSWORD')
+    # MAIL_DEFAULT_SENDER = 'flask@example.com'
+
+    CELERY_BROKER_URL = environ.get('CELERY_BROKER_URL')
+    backend_result = environ.get('CELERY_RESULT_BACKEND')
+
     task_title_len = 25
     category_name_len = 15
     filename_len = 228
     files_dir_len = 0
-
-    MAIL_SERVER = 'smtp.googlemail.com'
-    MAIL_PORT = 587
-    MAIL_USE_TLS = True
-    MAIL_USERNAME = environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = environ.get('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = 'flask@example.com'
-
-    CELERY_BROKER_URL = environ.get('CELERY_BROKER_URL')
-    backend_result = environ.get('CELERY_RESULT_BACKEND')
+    admin_roles = ('admin', 'owner')
+    owner_roles = ('owner', )

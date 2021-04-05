@@ -24,7 +24,7 @@ def refresh():
     return jsonify(access_token=access_token)
 
 
-@user_blueprint.route(prefix + 'login', methods=['POST'])
+@user_blueprint.route('/login', methods=['POST'])
 def login():
     try:
         schema = UserSchema(only=('login', 'password')).load(request.json)
@@ -38,7 +38,7 @@ def login():
     return jsonify(access_token=access_token, refresh_token=refresh_token)
 
 
-@user_blueprint.route(prefix + 'register', methods=['POST'])
+@user_blueprint.route('/register', methods=['POST'])
 def register():
     try:
         schema = UserSchema(only=('login', 'email', 'password')).load(request.json)
@@ -57,7 +57,7 @@ def logout():
     return jsonify(msg="Access token revoked")
 
 
-@user_blueprint.route(prefix + 'recovery')
+@user_blueprint.route('/recovery')
 def recovery():
     pass
 

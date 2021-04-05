@@ -4,18 +4,16 @@ new Vue({
     el: '#app',
     data: {
             table: [
-                {"status": false, "name": "ToDo"},
-                {"status": true, "name": "Done"},
+                {status: false, name: "ToDo"},
+                {status: true, name: "Done"},
             ],
-            form_task: {'title': ''},
+            form_task: {title: ''},
+            form_login: {username: '', password: ''},
             form_file: {},
             categories: [],
             current_category: 1,
-            token_type: 'Bearer ',
-            access_token: "",
-            refresh_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYxNjI4NDExOCwianRpIjoiMWUzN2ExOGQtNzdmNy00OGRlLWIyZDQtYjRjMDJmMmQ5YmIxIiwibmJmIjoxNjE2Mjg0MTE4LCJ0eXBlIjoicmVmcmVzaCIsInN1YiI6MSwiY3NyZiI6ImJlMzE4ZjExLWI4YzMtNGRjMi04ODJmLTE4M2JjNjYxNmExZiIsImV4cCI6MTYxNzU4MDExOH0.JL9hdPVdcGzKXJQa19p23-Fb9PpSV9XPrB6_JtBEpRg"
-            ,
-            current_user: {"admin": true, "email": "st.a.novoseltcev@gmail.com"}
+            tokens: {type: 'Bearer ', access_token: "", refresh_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYxNzY2NDgyNCwianRpIjoiMjIwMDJmNGYtNDlhZC00ZWU0LWFiM2ItNWEzYmIzYmUzNzU0IiwibmJmIjoxNjE3NjY0ODI0LCJ0eXBlIjoicmVmcmVzaCIsInN1YiI6MSwiY3NyZiI6IjQ5MWFiMDgzLWQ1ODUtNDA4Yy04OWQxLWFmZWJiNTI2YWIzYyIsImV4cCI6MTYxODk2MDgyNH0.owJD2nVQ9TNJyy8kC7mAnWgEdct0Qcew9jraCTwT6hc"},
+            current_user: {admin: true, username: "st-a-novoseltcev"}
     },
     methods: {
         async request(url, method = 'GET', data = null, refresh=false) {
@@ -23,9 +21,9 @@ new Vue({
                 const headers = {}
                 let body
                 if (!refresh) {
-                    headers['Authorization'] = this.token_type + this.access_token
+                    headers['Authorization'] = this.tokens.type + this.tokens.access_token
                 } else {
-                    headers['Authorization'] = this.token_type + this.refresh_token
+                    headers['Authorization'] = this.tokens.type + this.tokens.refresh_token
                 }
 
                 if (data) {
@@ -50,10 +48,10 @@ new Vue({
             if (result.error) {
                 const result_refresh = await this.request('/user/refresh', 'GET', null, true)
                 if (result_refresh.access_token) {
-                    this.access_token = result_refresh.access_token
+                    this.tokens.access_token = result_refresh.access_token
                     this.categories =await this.request('/categories/')
                 } else {
-                    throw DOMException('')
+                    throw new DOMException('')
                 }
             } else {
                 this.categories = result
@@ -111,7 +109,13 @@ new Vue({
             await this.getData()
         },
 
-
+        userLogin() {
+            const req = {"login": this.form_login.username, 'password': this.form_login.password}
+            this.token = this.request('/login', 'POST', req);
+            this.form_login.username = ''
+            this.form_login.password = ''
+            this.request('/')
+        }
     },
     created: function () {
         this.getData();

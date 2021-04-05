@@ -12,6 +12,6 @@ objs = s3_bucket.objects.all()
 for obj in objs:
     obj.delete()
 
-with open(os.path.join(cwd, 'server', 'inserts.sql')) as inserts_file:
-    for insert in inserts_file:
+with open(os.path.join(cwd, 'server', 'dev', 'inserts.sql')) as inserts:
+    for insert in inserts:
         engine.execute(insert)

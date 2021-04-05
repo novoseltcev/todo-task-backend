@@ -69,7 +69,7 @@ def check_uploading(id_user, id, path, uuid):
 
 def delete(id_user, id):
     file = FileRepository.delete(id_user, id)
-
+    print("fghj: ", file.path)
     s3_file = s3_bucket.Object(key=file.path)
     s3_file.delete()
     return serialize_file(file)

@@ -12,9 +12,9 @@ class FileRepository:
     @staticmethod
     def get_by_id(id_user, id: int):
         file = File.query.filter_by(id=id, id_user=id_user).first()
-        if file:
-            return file
-        raise FileUnknownId(id)
+        if file is None:
+            raise FileUnknownId(id)
+        return file
 
     @staticmethod
     def get_by_task_id(id_user, id_task: int):
