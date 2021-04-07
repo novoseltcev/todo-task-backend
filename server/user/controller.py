@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, redirect
+from flask import Blueprint, request, jsonify, redirect, session
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
 
 from marshmallow import ValidationError
@@ -9,6 +9,7 @@ from server.errors.exc import InvalidSchema
 from server.user import service as user_service
 from server.user.serializer import serialize_user
 from server.user.service import UserSchema
+from server.async_tasks.email import confirm_registration, mail_redis_tokenlist
 
 
 user_blueprint = Blueprint('user', __name__)
@@ -44,7 +45,7 @@ def register():
         schema = UserSchema(only=('login', 'email', 'password')).load(request.json)
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
-
+    confirm_registration.delay()
     user_service.create_account(**schema)
     return redirect('/login')
 
@@ -68,6 +69,11 @@ def recovery():
 #     user = get_jwt_identity()
 #     account = user_service.get_profile(user)
 #     return account
+
+
+@user_blueprint.route(prefix + 'confirm_email/<string:token>')
+def confirm(token):
+    return jsonify("success")  # TODO
 
 
 @user_blueprint.route(prefix + 'profile', methods=['PUT'])

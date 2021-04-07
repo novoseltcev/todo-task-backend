@@ -4,7 +4,7 @@ from uuid import uuid4
 from flask import send_file
 from celery.result import AsyncResult
 
-from server import s3_bucket, celery
+from server import s3_bucket
 from server.file.repository import FileRepository
 from server.file.serializer import serialize_file, FileSchema
 
@@ -46,14 +46,6 @@ def create(id_user, id_task, name, path, data):
     return id
 
 
-@celery.task(name='s3_cloud.upload')
-def s3_upload(path):
-    s3_file = s3_bucket.Object(key=path)
-    tmp_path = os.path.join(os.getcwd(), 'server', 'tmp', path)
-    with open(tmp_path, 'rb') as fp:
-        s3_file.upload_fileobj(fp)
-
-
 def check_uploading(id_user, id, path, uuid):
     result = AsyncResult(uuid)
     if result.failed():
@@ -69,7 +61,6 @@ def check_uploading(id_user, id, path, uuid):
 
 def delete(id_user, id):
     file = FileRepository.delete(id_user, id)
-    print("fghj: ", file.path)
     s3_file = s3_bucket.Object(key=file.path)
     s3_file.delete()
     return serialize_file(file)

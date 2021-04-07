@@ -1,39 +1,34 @@
-from os import path, getcwd
+import os
 
-from flask import send_from_directory
+from flask import send_from_directory, Blueprint
 from flask_jwt_extended import jwt_required
 
-from server import app
 from server import sqlalchemy_session
 
+view_blueprint = Blueprint('views', __name__)
 
-@app.route("/")
+template_folder = os.path.join(os.getcwd(), 'server', 'static', 'templates')
+
+
+@view_blueprint.route("/")
 # @jwt_required()
 def index():
-    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), 'index.html')
+    return send_from_directory(template_folder, 'index.html')
 
 
-@app.route('/login')
+@view_blueprint.route('/login')
 def login():
-    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'),  path.join('auth', 'login.html'))
-    # TODO-add login.html
+    return send_from_directory(template_folder, os.path.join('auth', 'login.html'))
 
 
-@app.route('/register')
+@view_blueprint.route('/register')
 def register():
-    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), path.join('auth', 'register.html'))
-    # TODO-add register.html
+    return send_from_directory(template_folder, os.path.join('auth', 'register.html'))  # TODO-add register.html
 
 
-@app.route('/recovery')
+@view_blueprint.route('/recovery')
 def recovery():
-    return send_from_directory(path.join(getcwd(), 'server', 'static', 'templates'), path.join('auth', 'recovery.html'))
-    # TODO-add recover.html
-
-
-@app.teardown_appcontext
-def shutdown_session(exception=None):
-    sqlalchemy_session.remove()
+    return send_from_directory(template_folder, os.path.join('auth', 'recovery.html'))  # TODO-add recover.html
 
 
 def session_handler(func):

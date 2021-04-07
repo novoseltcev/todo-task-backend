@@ -6,6 +6,7 @@ from server.errors.exc import InvalidSchema
 from server.file import service as file_service
 from server.file.service import FileSchema
 from server.jwt_auth import admin_required
+from server.async_tasks import s3_cloud
 
 file_blueprint = Blueprint('file', __name__)
 prefix = '/file/'
@@ -46,7 +47,7 @@ def create():
     path = file_service.generate_path(name)
     id = file_service.create(id_user, id_task, name, path, data)
     try:
-        async_process = file_service.s3_upload.delay(path)
+        async_process = s3_cloud.upload.delay(path)
     except Exception as e:
         file_service.delete(id_user, id)
         raise e

@@ -12,7 +12,10 @@ new Vue({
             form_file: {},
             categories: [],
             current_category: 1,
-            tokens: {type: 'Bearer ', access_token: "", refresh_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYxNzY2NDgyNCwianRpIjoiMjIwMDJmNGYtNDlhZC00ZWU0LWFiM2ItNWEzYmIzYmUzNzU0IiwibmJmIjoxNjE3NjY0ODI0LCJ0eXBlIjoicmVmcmVzaCIsInN1YiI6MSwiY3NyZiI6IjQ5MWFiMDgzLWQ1ODUtNDA4Yy04OWQxLWFmZWJiNTI2YWIzYyIsImV4cCI6MTYxODk2MDgyNH0.owJD2nVQ9TNJyy8kC7mAnWgEdct0Qcew9jraCTwT6hc"},
+            tokens: {type: 'Bearer ',
+                access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjE3ODAwNjk5LCJqdGkiOiIzODBkNDJjZC0zMjc1LTRmNWMtYTY5MS03OTc0ZTcxZWEyMDYiLCJuYmYiOjE2MTc4MDA2OTksInR5cGUiOiJhY2Nlc3MiLCJzdWIiOjEsImNzcmYiOiIyODZmZGIyYy1mN2M2LTRkYmUtODFhNy05Y2Y3YzY5NGJmM2UiLCJleHAiOjE2MTc4MDE1OTksInJvbGUiOiJvd25lciJ9.y7sSivjfBjeBP4CVAI9lRiHCulQkWmx2QAqoH4HbRwM",
+                refresh_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYxNzY2NDgyNCwianRpIjoiMjIwMDJmNGYtNDlhZC00ZWU0LWFiM2ItNWEzYmIzYmUzNzU0IiwibmJmIjoxNjE3NjY0ODI0LCJ0eXBlIjoicmVmcmVzaCIsInN1YiI6MSwiY3NyZiI6IjQ5MWFiMDgzLWQ1ODUtNDA4Yy04OWQxLWFmZWJiNTI2YWIzYyIsImV4cCI6MTYxODk2MDgyNH0.owJD2nVQ9TNJyy8kC7mAnWgEdct0Qcew9jraCTwT6hc"
+            },
             current_user: {admin: true, username: "st-a-novoseltcev"}
     },
     methods: {
@@ -45,7 +48,7 @@ new Vue({
 
         async getData() {
             const result = await this.request('/categories/')
-            if (result.error) {
+            if (result.expired_error) {
                 const result_refresh = await this.request('/user/refresh', 'GET', null, true)
                 if (result_refresh.access_token) {
                     this.tokens.access_token = result_refresh.access_token
@@ -114,7 +117,7 @@ new Vue({
             this.token = this.request('/login', 'POST', req);
             this.form_login.username = ''
             this.form_login.password = ''
-            this.request('/')
+            window.location = '/'
         }
     },
     created: function () {

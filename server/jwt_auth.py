@@ -21,9 +21,9 @@ def user_identity_handler(user):
         return user
 
 
-@jwt.unauthorized_loader
-def unauthorized_handler(jwt_header):
-    return redirect('/login')
+# @jwt.unauthorized_loader
+# def unauthorized_handler(jwt_header):
+#     return redirect('/login')
 
 
 def admin_required(*roles):

@@ -7,14 +7,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from server.errors.exc import LoginError, RegistrationError
 from server.user.repository import UserRepository
 from server.user.serializer import serialize_user, UserSchema
-
 from server.category import service as category_service
+from server.async_tasks.email import confirm_registration
 
 
 def create_account(login: str, email: str, password: str):
     password_hash = generate_password_hash(password)
     reg_date = datetime.now()
     try:
+
         user = UserRepository.insert(login, email, password_hash, reg_date)
         return user
     except IntegrityError:
