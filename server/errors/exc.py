@@ -68,3 +68,8 @@ class TokenInBlockList(Exception):
 class NoContentError(Exception):
     def __str__(self):
         return "Required a file"
+
+
+class UnconfirmedEmailError(Exception):
+    def __str__(self):
+        return "Unconfirmed Email"

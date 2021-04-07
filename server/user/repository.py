@@ -13,13 +13,9 @@ class UserRepository:
     @session_handler
     def get_by_id(id: int):
         user = User.query.get(id)
-        if user:
+        if not user:
             raise UserUnknownId(id)
         return user
-
-    @staticmethod
-    def get_by_login(login: str):
-        return User.query.filter_by(login=login).one()
 
     @staticmethod
     def get_by_email(email: str):
@@ -27,8 +23,8 @@ class UserRepository:
 
     @staticmethod
     @session_handler
-    def insert(login: str, email: str, password: str, reg_date):
-        user = User(login=login, email=email, password=password, reg_date=reg_date)
+    def insert(email: str, password: str, reg_date):
+        user = User(email=email, password=password, reg_date=reg_date)
         sqlalchemy_session.add(user)
         return user
 
@@ -47,3 +43,9 @@ class UserRepository:
         user = cls.get_by_id(id)
         sqlalchemy_session.delete(user)
         return user
+
+    @classmethod
+    @session_handler
+    def confirm_email(cls, id: int):
+        user = cls.get_by_id(id)
+        user.confirmed_email = True

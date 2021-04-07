@@ -1,15 +1,15 @@
-from flask import Blueprint, request, jsonify, redirect, session
+from flask import Blueprint, request, jsonify, redirect, current_app
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
 
 from marshmallow import ValidationError
 
-from server import Config
+from server import mail_redis_tokenlist, Config
 from server.jwt_auth import jwt_redis_blocklist, admin_required
-from server.errors.exc import InvalidSchema
+from server.errors.exc import InvalidSchema, ForbiddenOperation
 from server.user import service as user_service
 from server.user.serializer import serialize_user
 from server.user.service import UserSchema
-from server.async_tasks.email import confirm_registration, mail_redis_tokenlist
+from server.async_tasks import email
 
 
 user_blueprint = Blueprint('user', __name__)
@@ -28,7 +28,7 @@ def refresh():
 @user_blueprint.route('/login', methods=['POST'])
 def login():
     try:
-        schema = UserSchema(only=('login', 'password')).load(request.json)
+        schema = UserSchema(only=('email', 'password')).load(request.json)
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
 
@@ -42,11 +42,12 @@ def login():
 @user_blueprint.route('/register', methods=['POST'])
 def register():
     try:
-        schema = UserSchema(only=('login', 'email', 'password')).load(request.json)
+        schema = UserSchema(only=('email', 'password')).load(request.json)
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
-    confirm_registration.delay()
-    user_service.create_account(**schema)
+
+    user = user_service.create_account(**schema)
+    email.confirm_registration.delay(serialize_user(user))
     return redirect('/login')
 
 
@@ -73,7 +74,13 @@ def recovery():
 
 @user_blueprint.route(prefix + 'confirm_email/<string:token>')
 def confirm(token):
-    return jsonify("success")  # TODO
+    id = mail_redis_tokenlist.get(token)
+    if id is None:
+        raise ForbiddenOperation()
+
+    user_service.confirm_email(id)
+    mail_redis_tokenlist.delete(token)
+    return redirect('/')
 
 
 @user_blueprint.route(prefix + 'profile', methods=['PUT'])

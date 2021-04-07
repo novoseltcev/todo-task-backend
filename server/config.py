@@ -27,8 +27,7 @@ class Config:
     AWS_SECRET_KEY = environ.get('AWS_SECRET_KEY')
     AWS_BUCKET_NAME = environ.get('AWS_BUCKET_NAME')
 
-    # TODO - setup config
-    MAIL_SERVER = 'smtp.googlemail.com'
+    MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
     MAIL_USERNAME = environ.get('MAIL_USERNAME')

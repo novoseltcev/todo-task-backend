@@ -40,8 +40,6 @@ celery.conf.task_routes = {
     'email.*': {'queue': 'email'}
 }
 
-from server import async_tasks
-
 
 def create_app():
     flask_app = Flask(__name__)
@@ -51,14 +49,14 @@ def create_app():
     jwt.init_app(flask_app)
     mail.init_app(flask_app)
 
-    task_base = celery.Task
+    TaskBase = celery.Task
 
-    class ContextTask(task_base):
+    class ContextTask(TaskBase):
         abstract = True
 
         def __call__(self, *args, **kwargs):
             with flask_app.app_context():
-                return task_base.__call__(self, *args, **kwargs)
+                return TaskBase.__call__(self, *args, **kwargs)
 
     celery.Task = ContextTask
 
@@ -67,6 +65,7 @@ def create_app():
         sqlalchemy_session.remove()
 
     from server import jwt_auth
+    from server.async_tasks import email, s3_cloud
 
     from server.errors.handler import error_blueprint
     from server.views import view_blueprint
@@ -77,7 +76,6 @@ def create_app():
 
     flask_app.register_blueprint(error_blueprint)
     flask_app.register_blueprint(view_blueprint)
-
     flask_app.register_blueprint(task_blueprint)
     flask_app.register_blueprint(category_blueprint)
     flask_app.register_blueprint(file_blueprint)
@@ -88,4 +86,5 @@ def create_app():
     return flask_app
 
 
+app = create_app()
 __version__ = "0.7"
