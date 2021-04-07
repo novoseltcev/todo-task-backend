@@ -1,4 +1,3 @@
-# Серилазизация данных
 from server.user.schema import UserSchema
 from server.user.model import User
 

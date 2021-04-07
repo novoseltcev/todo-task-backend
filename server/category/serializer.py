@@ -1,4 +1,3 @@
-# Серилазизация данных
 from server.category.model import Category
 from server.category.schema import CategorySchema
 

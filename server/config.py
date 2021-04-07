@@ -8,11 +8,12 @@ load_dotenv('.env')
 
 
 class Config:
-    DOMAIN = 'http//localhost:5000'
+    HOST = '127.0.0.1'
+    PORT = 5000
     USE_PERMANENT_SESSION = True
     PERMANENT_SESSION_LIFETIME = timedelta(days=5)
 
-    CORS_ALLOWED_ORIGINS = [DOMAIN]
+    CORS_ALLOWED_ORIGINS = ['http//' + HOST + ':' + str(PORT)]
 
     JWT_TOKEN_LOCATION = ['headers', 'cookies']
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)

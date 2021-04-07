@@ -1,4 +1,3 @@
-# Валидация данных, простая сериализация
 from marshmallow import Schema, fields, validates, ValidationError
 
 from server.config import Config

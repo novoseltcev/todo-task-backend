@@ -1,4 +1,3 @@
-# Серилазизация данных
 from server.file.schema import FileSchema
 from server.file.model import File
 

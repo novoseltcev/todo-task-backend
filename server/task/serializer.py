@@ -1,4 +1,3 @@
-# Серилазизация данных
 from server.task.schema import TaskSchema
 from server.task.model import Task
 

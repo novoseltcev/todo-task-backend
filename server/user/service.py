@@ -8,7 +8,6 @@ from server.errors.exc import LoginError, RegistrationError, UnconfirmedEmailErr
 from server.user.repository import UserRepository
 from server.user.serializer import serialize_user, UserSchema
 from server.category import service as category_service
-# from server.async_tasks.email import confirm_registration
 
 
 def create_account(email: str, password: str):
