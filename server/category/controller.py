@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 
+from server import BaseConfig
 from server.errors.exc import InvalidSchema
 from server.category import service as category_service
 from server.category.service import CategorySchema
@@ -20,7 +21,7 @@ def get():
 
 
 @category_blueprint.route('/admin/categories/')
-@admin_required('owner')
+@admin_required(BaseConfig.admin_roles)
 def get_4_admin():
     try:
         id_user = CategorySchema(only=('id_user',)).load(request.json)['id_user']
@@ -71,7 +72,7 @@ def delete():
 
 
 @category_blueprint.route('/admin/category/', methods=['DELETE'])
-@admin_required('owner')
+@admin_required(BaseConfig.admin_roles)
 def delete_4_admin():
     try:
         schema = CategorySchema(only=('id', 'id_user')).load(request.json)

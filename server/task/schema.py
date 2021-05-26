@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields, validates, ValidationError
 
-from server.config import Config
+from server.config import BaseConfig
 
 
 class TaskSchema(Schema):
@@ -38,7 +38,7 @@ class TaskSchema(Schema):
 
     @validates('title')
     def validate_filename(self, value):
-        max_size = Config.task_title_len
+        max_size = BaseConfig.task_title_len
         length = len(value)
         if length > max_size or length < 1:
             raise ValidationError('title should have size = {1, .., ' + str(max_size) + '}')

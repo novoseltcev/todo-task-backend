@@ -2,6 +2,7 @@ from flask import Blueprint, request, make_response, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 
+from server import BaseConfig
 from server.errors.exc import InvalidSchema
 from server.file import service as file_service
 from server.file.service import FileSchema
@@ -81,7 +82,7 @@ def uploading():  # TODO -
 
 
 @file_blueprint.route('/admin/file/', methods=['DELETE'])
-@admin_required('owner')
+@admin_required(BaseConfig.admin_roles)
 def delete_4_admin():
     try:
         schema = FileSchema(only=('id', 'id_user')).load(request.json)

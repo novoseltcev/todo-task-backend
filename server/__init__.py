@@ -12,8 +12,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
-from server.config import Config
+from server.config import BaseConfig, DevConfig  # , ProdConfig
+from server.routes import create_routes
 
+
+Config = DevConfig
+cors = CORS(resourses={r"/*": {'origins': BaseConfig.CORS_ALLOWED_ORIGINS}})
 
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URL, echo=False)
 sqlalchemy_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
@@ -32,8 +36,6 @@ jwt_redis_blocklist = StrictRedis(host="localhost", port=6379, db=0, decode_resp
 mail = Mail()
 mail_redis_tokenlist = StrictRedis(host="localhost", port=6379, db=3, decode_responses=True)
 
-cors = CORS(resourses={r"/*": {'origins': Config.CORS_ALLOWED_ORIGINS}})
-
 celery = Celery(__name__, broker=Config.CELERY_BROKER_URL, backend=Config.backend_result)
 celery.conf.task_routes = {
     's3_cloud.*': {'queue': 's3'},
@@ -41,14 +43,18 @@ celery.conf.task_routes = {
 }
 
 
-def create_app():
+def create_app(cfg):
+    from server import jwt_auth
+
     flask_app = Flask(__name__)
     flask_app.template_folder = os.path.join('static', 'templates')
-    flask_app.config.from_object(Config)
-
+    flask_app.config.from_object(cfg)
     jwt.init_app(flask_app)
-    mail.init_app(flask_app)
+    create_routes(flask_app)
+    if cfg == DevConfig:
+        from server import initialize_db
 
+    mail.init_app(flask_app)
     TaskBase = celery.Task
 
     class ContextTask(TaskBase):
@@ -59,32 +65,14 @@ def create_app():
                 return TaskBase.__call__(self, *args, **kwargs)
 
     celery.Task = ContextTask
+    from server import async_tasks
 
     @flask_app.teardown_appcontext
     def shutdown_session(exception=None):
         sqlalchemy_session.remove()
 
-    from server import jwt_auth
-    from server.async_tasks import email, s3_cloud
-
-    from server.errors.handler import error_blueprint
-    from server.views import view_blueprint
-    from server.user import user_blueprint
-    from server.category import category_blueprint
-    from server.task import task_blueprint
-    from server.file import file_blueprint
-
-    flask_app.register_blueprint(error_blueprint)
-    flask_app.register_blueprint(view_blueprint)
-    flask_app.register_blueprint(task_blueprint)
-    flask_app.register_blueprint(category_blueprint)
-    flask_app.register_blueprint(file_blueprint)
-    flask_app.register_blueprint(user_blueprint)
-
-    from server import initialize_db
-
     return flask_app
 
 
-app = create_app()
+app = create_app(DevConfig)
 __version__ = "0.7"

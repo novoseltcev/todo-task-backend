@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields, validates, ValidationError
 
-from server.config import Config
+from server.config import BaseConfig
 from server.errors.exc import NoContentError
 
 
@@ -12,7 +12,7 @@ class FileSchema(Schema):
     name = fields.String(required=True)
     path = fields.String(required=True)
     data = fields.Raw(load_only=True)
-    uuid = fields.String(load_only=True)
+    uuid = fields.UUID(load_only=True)
 
     @validates('id')
     @validates('id_task')
@@ -28,11 +28,11 @@ class FileSchema(Schema):
 
     @validates('name')
     def validate_filename(self, value):
-        self.validate_text_field(value, Config.filename_len)
+        self.validate_text_field(value, BaseConfig.filename_len)
 
     @validates('path')
     def validate_filename(self, value):
-        self.validate_text_field(value, Config.files_dir_len + Config.filename_len)
+        self.validate_text_field(value, BaseConfig.files_dir_len + BaseConfig.filename_len)
 
     @validates('data')
     def validate_data(self, value: bin):

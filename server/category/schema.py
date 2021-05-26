@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields, validates, ValidationError
 
-from server import Config
+from server import BaseConfig
 
 
 class CategorySchema(Schema):
@@ -23,4 +23,4 @@ class CategorySchema(Schema):
 
     @validates('name')
     def validate_filename(self, value):
-        self.validate_text_field(value, Config.category_name_len)
+        self.validate_text_field(value, BaseConfig.category_name_len)
