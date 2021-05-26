@@ -13,4 +13,4 @@ class Task(Base):
     title = Column(String(BaseConfig.task_title_len), nullable=False)
     status = Column(Boolean, default=False)
 
-    files = relationship('File', order_by='File.name')
+    files = relationship('File', order_by='File.name', cascade='all,delete')

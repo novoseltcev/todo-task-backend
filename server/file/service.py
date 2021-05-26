@@ -3,9 +3,10 @@ from uuid import uuid4
 
 from flask import send_file
 from celery.result import AsyncResult
+from sqlalchemy.event import listens_for
 
 from server import s3_bucket
-from server.file.repository import FileRepository
+from server.file.repository import FileRepository, File
 from server.file.serializer import serialize_file, FileSchema
 
 from server.task import service as task_service
@@ -48,19 +49,22 @@ def create(id_user, id_task, name, path, data):
 
 def check_uploading(id_user, id, path, uuid):
     result = AsyncResult(uuid)
+    tmp_path = os.path.join(os.getcwd(), 'server', 'tmp', path)
     if result.failed():
         FileRepository.delete(id_user, id)
-        tmp_path = os.path.join(os.getcwd(), 'server', 'tmp', path)
+
+    if result.successful() or result.failed():
         os.remove(tmp_path)
 
-    if result.successful():
-        tmp_path = os.path.join(os.getcwd(), 'server', 'tmp', path)
-        os.remove(tmp_path)
     return result.status
+
+
+@listens_for(File, 'before_delete')
+def clear_s3_bucket(mapper, connection, target):
+    s3_file = s3_bucket.Object(key=target.path)
+    s3_file.delete()
 
 
 def delete(id_user, id):
     file = FileRepository.delete(id_user, id)
-    s3_file = s3_bucket.Object(key=file.path)
-    s3_file.delete()
     return serialize_file(file)

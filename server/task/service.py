@@ -2,7 +2,6 @@ from server.task.repository import TaskRepository
 from server.task.serializer import serialize_task, TaskSchema
 
 from server.category import service as category_service
-from server.file import service as file_service
 
 
 def get(id_user, id):
@@ -22,8 +21,4 @@ def update(id_user, schema: dict):
 
 def delete(id_user: int, id: int):
     task = TaskRepository.delete(id_user, id)
-    files_by_task = task.files
-    for file in files_by_task:
-        file_service.delete(id_user, file.id)
-
     return serialize_task(task)

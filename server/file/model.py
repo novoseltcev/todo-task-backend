@@ -11,3 +11,4 @@ class File(Base):
     id_task = Column(Integer, ForeignKey('tasks.id'), nullable=False)
     name = Column(String(BaseConfig.filename_len), nullable=False)
     path = Column(String(BaseConfig.files_dir_len + BaseConfig.filename_len), unique=True, nullable=False)
+

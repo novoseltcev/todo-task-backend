@@ -30,7 +30,7 @@ def login(schema):
         if not user.confirmed_email:
             raise UnconfirmedEmailError(user.email)
     except NoResultFound:
-        raise LoginError()
+        raise LoginError('No User')
 
     return user
 

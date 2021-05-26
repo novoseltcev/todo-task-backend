@@ -34,6 +34,8 @@ class BaseConfig:
 
 
 class DevConfig(BaseConfig):
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=30)
+
     SECRET_KEY = environ.get('SECRET_KEY')
     JWT_SECRET_KEY = environ.get("JWT_SECRET_KEY")
     SQLALCHEMY_DATABASE_URL = environ.get('DATABASE_URL')

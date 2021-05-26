@@ -11,4 +11,4 @@ class Category(Base):
     id_user = Column(Integer, ForeignKey('users.id'), nullable=False)
     name = Column(String(BaseConfig.category_name_len), unique=True, nullable=False)
 
-    tasks = relationship('Task', order_by='Task.id')
+    tasks = relationship('Task', order_by='Task.id', cascade='all,delete')

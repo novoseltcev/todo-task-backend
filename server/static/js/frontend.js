@@ -13,8 +13,8 @@ new Vue({
             categories: [],
             current_category: 1,
             tokens: {type: 'Bearer ',
-                access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjE3ODAwNjk5LCJqdGkiOiIzODBkNDJjZC0zMjc1LTRmNWMtYTY5MS03OTc0ZTcxZWEyMDYiLCJuYmYiOjE2MTc4MDA2OTksInR5cGUiOiJhY2Nlc3MiLCJzdWIiOjEsImNzcmYiOiIyODZmZGIyYy1mN2M2LTRkYmUtODFhNy05Y2Y3YzY5NGJmM2UiLCJleHAiOjE2MTc4MDE1OTksInJvbGUiOiJvd25lciJ9.y7sSivjfBjeBP4CVAI9lRiHCulQkWmx2QAqoH4HbRwM",
-                refresh_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYxNzY2NDgyNCwianRpIjoiMjIwMDJmNGYtNDlhZC00ZWU0LWFiM2ItNWEzYmIzYmUzNzU0IiwibmJmIjoxNjE3NjY0ODI0LCJ0eXBlIjoicmVmcmVzaCIsInN1YiI6MSwiY3NyZiI6IjQ5MWFiMDgzLWQ1ODUtNDA4Yy04OWQxLWFmZWJiNTI2YWIzYyIsImV4cCI6MTYxODk2MDgyNH0.owJD2nVQ9TNJyy8kC7mAnWgEdct0Qcew9jraCTwT6hc"
+                access_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjIyMDMzOTc5LCJqdGkiOiJiN2I4ZGE4Mi1iNmNhLTQ0OTAtODNhMC0xYzJjYmY3NjVhNWUiLCJuYmYiOjE2MjIwMzM5NzksInR5cGUiOiJhY2Nlc3MiLCJzdWIiOjEsImNzcmYiOiI5NGRmZjg4Mi1kYzhjLTQ1YzgtYTg4NC0wNzE5MWMyMTE4OWQiLCJleHAiOjE2MjQ2MjU5NzksInJvbGUiOiJvd25lciJ9.K948jzWisgGaNt0SY7uF_3RD4hkmvfl4nrNIkNSM0gE",
+                refresh_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyMjAzMzk3OSwianRpIjoiZjAzMGNhOTctZTZlNi00ZWViLWFjMDQtODc4YmFlODc4NjAzIiwibmJmIjoxNjIyMDMzOTc5LCJ0eXBlIjoicmVmcmVzaCIsInN1YiI6MSwiY3NyZiI6IjUzZDFlY2E2LTMzMmUtNDdmZi1iODRmLTgzNjg5ZDAwMWQxOCIsImV4cCI6MTYyMzMyOTk3OX0.usW3BzooKCOKro0O4lyLzdc1dce507soa5R0xzVftm0"
             },
             current_user: {admin: true, username: "st-a-novoseltcev"}
     },

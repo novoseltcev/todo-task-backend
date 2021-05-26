@@ -1,6 +1,5 @@
 from server.category.repository import CategoryRepository
 from server.category.serializer import serialize_category, CategorySchema
-from server.task import service as task_service
 
 
 def get(id_user, id):
@@ -24,8 +23,4 @@ def update(id_user, schema):
 
 def delete(id_user: int, id: int):
     category = CategoryRepository.delete(id_user, id)
-    tasks_by_category = category.tasks
-    for task in tasks_by_category:
-        task_service.delete(id_user, task.id)
-
     return serialize_category(category)
