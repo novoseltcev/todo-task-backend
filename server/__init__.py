@@ -3,18 +3,16 @@ import os
 import boto3
 from celery import Celery
 from flask import Flask
-from flask_jwt_extended import JWTManager
-from redis import StrictRedis
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 from flask_mail import Mail
-
+from redis import StrictRedis
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 from server.config import BaseConfig, DevConfig  # , ProdConfig
 from server.routes import create_routes
-
 
 Config = DevConfig
 cors = CORS(resourses={r"/*": {'origins': BaseConfig.CORS_ALLOWED_ORIGINS}})
