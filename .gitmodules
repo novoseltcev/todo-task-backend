@@ -1,3 +1,6 @@
 [submodule "todo-task-frontend"]
 	path = todo-task-frontend
 	url = http://github.com/st-a-novoseltcev/todo-task-frontend
+[submodule "redis-deploy-server"]
+	path = redis-deploy-server
+	url = http://github.com/st-a-novoseltcev/redis-deploy-server
