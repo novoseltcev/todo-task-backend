@@ -1,9 +1,9 @@
-[submodule "todo-task-frontend"]
+[submodule "frontend"]
 	path = frontend
 	url = http://github.com/st-a-novoseltcev/todo-task-frontend
 [submodule "redis"]
-	path = redis-deploy-server
+	path = redis
 	url = http://github.com/st-a-novoseltcev/redis-deploy-server
 [submodule "postgreSQL"]
-	path = postgreSQL-deploy-server
+	path = postgreSQL
 	url = http://github.com/st-a-novoseltcev/postgreSQL-deploy-server
