@@ -1,4 +1,4 @@
 # Docs
 
 ## Components
-![Components](docs/ComponentsDiagram.png)
+![Components](ComponentsDiagram.png)
