@@ -1,7 +1,7 @@
 from server import sqlalchemy_session
 from server.errors.exc import UserUnknownId
 from server.views import session_handler
-from server.user.model import User
+from server.api.user.model import User
 
 
 class UserRepository:

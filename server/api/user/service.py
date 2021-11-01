@@ -5,9 +5,9 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from server.errors.exc import LoginError, RegistrationError, UnconfirmedEmailError
-from server.user.repository import UserRepository
-from server.user.serializer import serialize_user, UserSchema
-from server.category import service as category_service
+from server.api.user.repository import UserRepository
+from server.api.user.serializer import serialize_user
+from server.api.category import service as category_service
 
 
 def create_account(email: str, password: str):
@@ -23,7 +23,7 @@ def create_account(email: str, password: str):
 
 def login(schema):
     try:
-        user = UserRepository.get_by_email(schema['email'])
+        user = UserRepository.get_by_email(schema['mail'])
         result = check_password_hash(user.password, schema['password'])
         if not result:
             raise LoginError()
@@ -37,7 +37,7 @@ def login(schema):
 
 def change_profile(user_id, schema):
     user = UserRepository.get_by_id(user_id)
-    if check_password_hash(user.password, schema['password']) and user.email == schema['email']:
+    if check_password_hash(user.password, schema['password']) and user.email == schema['mail']:
         UserRepository.update(schema, user_id)
     else:
         raise LoginError()

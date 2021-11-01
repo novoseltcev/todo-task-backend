@@ -6,10 +6,10 @@ from celery.result import AsyncResult
 from sqlalchemy.event import listens_for
 
 from server import s3_bucket
-from server.file.repository import FileRepository, File
-from server.file.serializer import serialize_file, FileSchema
+from server.api.file.repository import FileRepository, File
+from server.api.file.serializer import serialize_file
 
-from server.task import service as task_service
+from server.api.task import service as task_service
 
 
 def get_file(id_user, id):

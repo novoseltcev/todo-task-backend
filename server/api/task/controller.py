@@ -5,8 +5,8 @@ from marshmallow.exceptions import ValidationError
 from server import BaseConfig
 from server.errors.exc import InvalidSchema
 from server.jwt_auth import admin_required
-from server.task import service as task_service
-from server.task.service import TaskSchema
+from server.api.task import service as task_service
+from server.api.task.service import TaskSchema
 
 
 task_blueprint = Blueprint('task', __name__)

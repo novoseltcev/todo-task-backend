@@ -3,7 +3,6 @@ from uuid import uuid4
 from flask import render_template
 
 from server import BaseConfig, mail_redis_tokenlist
-from server.async_tasks.email import send_message
 
 
 def html_confirm_registration(id, email):

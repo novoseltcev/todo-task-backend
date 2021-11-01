@@ -4,10 +4,10 @@ from marshmallow.exceptions import ValidationError
 
 from server import BaseConfig
 from server.errors.exc import InvalidSchema
-from server.file import service as file_service
-from server.file.service import FileSchema
+from server.api.file import service as file_service
+from server.api.file.service import FileSchema
 from server.jwt_auth import admin_required
-from server.async_tasks import s3_cloud
+from server.api.async_tasks import s3_cloud
 
 file_blueprint = Blueprint('file', __name__)
 prefix = '/file/'

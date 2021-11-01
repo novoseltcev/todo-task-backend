@@ -2,17 +2,16 @@ from flask import Blueprint, request, redirect
 from marshmallow import ValidationError
 
 from server import mail_redis_tokenlist, BaseConfig
-from server.user import service as user_service
-from server.email.schema import EmailSchema
+from server.api.user import service as user_service
+from server.api.mail.schema import EmailSchema
 from server.errors.exc import InvalidSchema, ForbiddenOperation
 from server.jwt_auth import admin_required
-from server.email import service as email_service
+from server.api.mail import service as email_service
+
+email_blueprint = Blueprint('mail', __name__)
 
 
-email_blueprint = Blueprint('email', __name__)
-
-
-@email_blueprint.route('/admin/email/', methods=['POST'])
+@email_blueprint.route('/admin/mail/', methods=['POST'])
 @admin_required(BaseConfig.admin_roles)
 def send_notification():
     try:

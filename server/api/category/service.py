@@ -1,5 +1,5 @@
-from server.category.repository import CategoryRepository
-from server.category.serializer import serialize_category, CategorySchema
+from server.api.category.repository import CategoryRepository
+from server.api.category.serializer import serialize_category
 
 
 def get(id_user, id):

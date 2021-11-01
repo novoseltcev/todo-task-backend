@@ -1,7 +1,7 @@
 from server import sqlalchemy_session
 from server.views import session_handler
 from server.errors.exc import TaskUnknownId
-from server.task.model import Task
+from server.api.task.model import Task
 
 
 class TaskRepository:

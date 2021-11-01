@@ -1,7 +1,7 @@
 from server import sqlalchemy_session
 from server.errors.exc import FileUnknownId
 from server.views import session_handler
-from server.file.model import File
+from server.api.file.model import File
 
 
 class FileRepository:

@@ -1,7 +1,7 @@
-from server.task.repository import TaskRepository
-from server.task.serializer import serialize_task, TaskSchema
+from server.api.task.repository import TaskRepository
+from server.api.task.serializer import serialize_task
 
-from server.category import service as category_service
+from server.api.category import service as category_service
 
 
 def get(id_user, id):

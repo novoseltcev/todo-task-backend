@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from server import sqlalchemy_session
 from server.errors.exc import CategoryUnknownId, CategoryExistName
 from server.views import session_handler
-from server.category.model import Category
+from server.api.category.model import Category
 
 
 class CategoryRepository:

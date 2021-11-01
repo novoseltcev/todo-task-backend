@@ -4,8 +4,8 @@ from marshmallow.exceptions import ValidationError
 
 from server import BaseConfig
 from server.errors.exc import InvalidSchema
-from server.category import service as category_service
-from server.category.service import CategorySchema
+from server.api.category import service as category_service
+from server.api.category.service import CategorySchema
 from server.jwt_auth import admin_required
 
 category_blueprint = Blueprint('category', __name__)

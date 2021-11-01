@@ -6,11 +6,10 @@ from marshmallow import ValidationError
 from server import BaseConfig
 from server.jwt_auth import jwt_redis_blocklist, admin_required
 from server.errors.exc import InvalidSchema
-from server.user import service as user_service
-from server.user.serializer import serialize_user
-from server.user.service import UserSchema
-from server.email import service as email_service
-
+from server.api.user import service as user_service
+from server.api.user.serializer import serialize_user
+from server.api.user.service import UserSchema
+from server.api.mail import service as email_service
 
 user_blueprint = Blueprint('user', __name__)
 prefix = '/user/'
@@ -27,7 +26,7 @@ def refresh():
 @user_blueprint.route('/login', methods=['POST'])
 def login():
     try:
-        schema = UserSchema(only=('email', 'password')).load(request.json)
+        schema = UserSchema(only=('mail', 'password')).load(request.json)
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
 
@@ -41,7 +40,7 @@ def login():
 @user_blueprint.route('/register', methods=['POST'])
 def register():
     try:
-        schema = UserSchema(only=('email', 'password')).load(request.json)
+        schema = UserSchema(only=('mail', 'password')).load(request.json)
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
 
@@ -69,7 +68,7 @@ def recovery():
 def change_profile():
     user = get_jwt_identity()
     try:
-        schema = UserSchema(only=('password', 'email')).load(request.json)
+        schema = UserSchema(only=('password', 'mail')).load(request.json)
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
     user = user_service.change_profile(user, schema)
@@ -87,7 +86,7 @@ def get_all():
 @admin_required(BaseConfig.owner_roles)
 def create():
     try:
-        schema = UserSchema(only=('login', 'email', 'password', 'role')).load(request.json)
+        schema = UserSchema(only=('login', 'mail', 'password', 'role')).load(request.json)
     except ValidationError as e:
         raise InvalidSchema(e.args[0])
     return user_service.create_account(**schema)
