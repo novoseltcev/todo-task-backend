@@ -12,7 +12,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from server.config import BaseConfig, DevConfig  # , ProdConfig
-from server.routes import create_routes
+from server.api import APIRouter
 
 Config = DevConfig
 cors = CORS(resourses={r"/*": {'origins': BaseConfig.CORS_ALLOWED_ORIGINS}})
@@ -37,7 +37,7 @@ mail_redis_tokenlist = StrictRedis(host="localhost", port=6379, db=3, decode_res
 celery = Celery(__name__, broker=Config.CELERY_BROKER_URL, backend=Config.backend_result)
 celery.conf.task_routes = {
     's3_cloud.*': {'queue': 's3'},
-    'email.*': {'queue': 'email'}
+    'mail.*': {'queue': 'mail'}
 }
 
 
@@ -47,8 +47,9 @@ def create_app(cfg):
     flask_app = Flask(__name__)
     flask_app.template_folder = os.path.join('static', 'templates')
     flask_app.config.from_object(cfg)
+    cors.init_app(flask_app)
     jwt.init_app(flask_app)
-    create_routes(flask_app)
+    APIRouter.init_app(flask_app)
     if cfg == DevConfig:
         from server import initialize_db
 
@@ -63,7 +64,7 @@ def create_app(cfg):
                 return TaskBase.__call__(self, *args, **kwargs)
 
     celery.Task = ContextTask
-    from server import async_tasks
+    from server.api import async_tasks
 
     @flask_app.teardown_appcontext
     def shutdown_session(exception=None):
@@ -73,4 +74,4 @@ def create_app(cfg):
 
 
 app = create_app(DevConfig)
-__version__ = "0.7"
+__version__ = "1.0"
