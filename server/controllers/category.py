@@ -1,11 +1,11 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, Response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 
 from server import BaseConfig
 from server.errors.exc import InvalidSchema
-from server.api.category import service as category_service
-from server.api.category.service import CategorySchema
+from server.services.category import service as category_service
+from server.services.category.service import CategorySchema
 from server.jwt_auth import admin_required
 
 category_blueprint = Blueprint('category', __name__)

@@ -1,13 +1,13 @@
-from flask import Blueprint, request, make_response, jsonify
+from flask import Blueprint, request, make_response, jsonify, Response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 
 from server import BaseConfig
 from server.errors.exc import InvalidSchema
-from server.api.file import service as file_service
-from server.api.file.service import FileSchema
+from server.services.file import service as file_service
+from server.services.file.service import FileSchema
 from server.jwt_auth import admin_required
-from server.api.async_tasks import s3_cloud
+from server.async_tasks import s3_cloud
 
 file_blueprint = Blueprint('file', __name__)
 prefix = '/file/'

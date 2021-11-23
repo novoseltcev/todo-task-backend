@@ -12,7 +12,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from server.config import BaseConfig, DevConfig  # , ProdConfig
-from server.api import APIRouter
+from server.controllers import api_blueprint
 
 Config = DevConfig
 cors = CORS(resourses={r"/*": {'origins': BaseConfig.CORS_ALLOWED_ORIGINS}})
@@ -49,7 +49,7 @@ def create_app(cfg):
     flask_app.config.from_object(cfg)
     cors.init_app(flask_app)
     jwt.init_app(flask_app)
-    APIRouter.init_app(flask_app)
+    flask_app.register_blueprint(api_blueprint)
     if cfg == DevConfig:
         from server import initialize_db
 
@@ -64,7 +64,7 @@ def create_app(cfg):
                 return TaskBase.__call__(self, *args, **kwargs)
 
     celery.Task = ContextTask
-    from server.api import async_tasks
+    from server import async_tasks
 
     @flask_app.teardown_appcontext
     def shutdown_session(exception=None):
