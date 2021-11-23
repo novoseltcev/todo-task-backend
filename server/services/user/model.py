@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Date, Enum, Boolean
 from sqlalchemy.orm import relationship
 
 from server import Base
-from server.api.user.schema import Role
+from server.services.user.schema import Role
 
 
 class User(Base):

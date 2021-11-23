@@ -11,9 +11,11 @@ class Role(enum.Enum):
 
 
 class UserSchema(Schema):
-    id = fields.Integer()
+    id = fields.Integer(required=True)
     email = fields.Email(required=True)
     password = fields.String(required=True, load_only=True)
     reg_date = fields.Date(dump_only=True)
     role = EnumField(Role)
     confirmed_email = fields.Boolean(dump_only=True)
+
+    uuid = fields.UUID(load_only=True, required=True)
