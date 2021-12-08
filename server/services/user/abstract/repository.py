@@ -1,9 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Tuple, NoReturn
 
-from marshmallow.fields import Email
-
-from server.services.user.model import User
+from server.services.user.entity import User
 
 
 class Users(ABC):
@@ -29,7 +27,7 @@ class Users(ABC):
 
     @classmethod
     @abstractmethod
-    def load_by_email(cls, email: Email) -> User:
+    def load_by_email(cls, email: str) -> User:
         pass
 
     @classmethod

@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
+from typing import NoReturn
 
-from .schema import UserSchema
-from .response import UserResponse
+from server.services.user.schema import UserSchema
+from server.services.user.response import UserResponse
 
 
-class UserService(ABC):
+class UserInteractor(ABC):
     @classmethod
     @abstractmethod
     def get(cls, schema: UserSchema) -> UserResponse:
@@ -17,25 +18,25 @@ class UserService(ABC):
 
     @classmethod
     @abstractmethod
-    def create(cls, schema: UserSchema) -> UserResponse:
+    def update(cls, schema: UserSchema) -> NoReturn:
         pass
 
     @classmethod
     @abstractmethod
-    def login(cls, schema: UserSchema) -> UserResponse:
+    def delete(cls, schema: UserSchema) -> NoReturn:
         pass
 
     @classmethod
     @abstractmethod
-    def edit(cls, schema: UserSchema) -> UserResponse:
+    def register(cls, schema: UserSchema) -> NoReturn:
         pass
 
     @classmethod
     @abstractmethod
-    def delete(cls, schema: UserSchema) -> UserResponse:
+    def login(cls, schema: UserSchema) -> NoReturn:
         pass
 
     @classmethod
     @abstractmethod
-    def confirm_email(cls, schema: UserSchema) -> UserResponse:
+    def confirm_email(cls, schema: UserSchema) -> NoReturn:
         pass

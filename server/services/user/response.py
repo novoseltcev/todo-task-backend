@@ -1,15 +1,18 @@
-from __future__ import annotations
 from typing import Tuple
 
-from server.services.user.schema import UserSchema
-from server.services.user.model import User
+from .schema import UserSchema
+from .entity import User
 
 
 class UserResponse(dict):
+    pass
+
+
+class UserSerializer:
     @staticmethod
-    def dump(user: User | Tuple[User], many=False):
-        return UserResponse(UserSchema(many=many).dump(user))
+    def dump(user: User) -> UserResponse:
+        return UserResponse(UserSchema(many=False).dump(user))
 
     @staticmethod
-    def success():
-        return UserResponse(success=True)
+    def dump_many(users: Tuple[User]) -> UserResponse:
+        return UserResponse(UserSchema(many=True).dump(users))
