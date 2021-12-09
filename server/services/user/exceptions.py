@@ -10,6 +10,10 @@ class InvalidPasswordError(UserException):
     pass
 
 
+class InvalidEmailError(UserException):
+    pass
+
+
 class AdminRequiredError(UserException):
     pass
 

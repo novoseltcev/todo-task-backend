@@ -1,6 +1,6 @@
+import re
 from datetime import date
 from enum import Enum
-from functools import wraps
 from typing import NoReturn, Callable
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -9,9 +9,8 @@ from .exceptions import *
 
 
 def authorized(func: Callable) -> Callable:
-    @wraps
-    def wrapped(self: User, value: str, password: str) -> NoReturn:
-        User.check_password(self, password)
+    def wrapped(self, value: str, password: str) -> NoReturn:
+        self.check_password(password)
         func(self, value)
 
     return wrapped
@@ -68,6 +67,10 @@ class User:
         return self._email
 
     @property
+    def password_hash(self):
+        return self._password
+
+    @property
     def role(self):
         return self._role
 
@@ -81,6 +84,8 @@ class User:
 
     @authorized
     def change_email(self, value: str) -> NoReturn:
+        if not re.match(r"\"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)\"?", value):
+            raise InvalidEmailError(value)
         self._email = value
         self._email_status = EmailStatus.NOT_CONFIRMED
 
@@ -93,7 +98,7 @@ class User:
             raise InvalidPasswordError()
 
     def check_email_confirm(self) -> NoReturn:
-        if self.email_status == EmailStatus.confirmed_email:
+        if self.email_status != EmailStatus.CONFIRMED:
             raise UnconfirmedEmailError(self.email)
 
     def confirm_email(self) -> NoReturn:
