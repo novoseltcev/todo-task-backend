@@ -41,12 +41,14 @@ class User:
     """
 
     def __init__(self,
+                 Id: int,
                  name: str,
                  email: str,
                  password: str,
                  registration_date: date,
                  role: Role,
                  email_status: EmailStatus):
+        self._id: int = Id
         self._name: str = name
         self._email: str = email
         self._password: str = password
@@ -55,8 +57,12 @@ class User:
         self._registration_date: date = registration_date
 
     @property
+    def id(self) -> int:
+        return self._id
+
+    @property
     def name(self) -> str:
-        return self.name
+        return self._name
 
     @name.setter
     def name(self, value: str) -> NoReturn:
@@ -67,11 +73,11 @@ class User:
         return self._email
 
     @property
-    def password_hash(self):
+    def password_hash(self) -> str:
         return self._password
 
     @property
-    def role(self):
+    def role(self) -> Role:
         return self._role
 
     @property
@@ -83,14 +89,14 @@ class User:
         return self._email_status
 
     @authorized
-    def change_email(self, value: str) -> NoReturn:
+    def update_email(self, value: str) -> NoReturn:
         if not re.match(r"\"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)\"?", value):
             raise InvalidEmailError(value)
         self._email = value
         self._email_status = EmailStatus.NOT_CONFIRMED
 
     @authorized
-    def change_password(self, value: str) -> NoReturn:
+    def update_password(self, value: str) -> NoReturn:
         self._password = generate_password_hash(value)
 
     def check_password(self, value: str) -> NoReturn:
@@ -112,12 +118,18 @@ class User:
             raise AdminRequiredError()
 
     @staticmethod
+    def set_id(user, Id: int) -> NoReturn:
+        if user.id == -1:
+            user._id = Id
+
+    @staticmethod
     def create(name: str, email: str, password: str, role=Role.USER):
         return User(
+            -1,
             name,
             email,
             generate_password_hash(password),
             date.today(),
             role,
-            EmailStatus.NOT_CONFIRMED
+            EmailStatus.NOT_CONFIRMED if role == role.USER else EmailStatus.REFUSED
         )

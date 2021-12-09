@@ -1,4 +1,4 @@
-from typing import NoReturn
+from typing import NoReturn, List
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
@@ -12,20 +12,12 @@ from .entity import User, LoginError, RegistrationError, ConfirmationError
 
 class UserService(UserInteractor):
     @classmethod
-    def register(cls, schema: UserSchema) -> NoReturn:
-        try:
-            user = User.create(name=schema.name, email=schema.email, password=schema.password)
-            Users.save(user)
-        except IntegrityError:
-            raise RegistrationError()
-
-    @classmethod
     def get(cls, schema: UserSchema) -> UserResponse:
         user = Users.load(schema.id)
         return UserSerializer.dump(user)
 
     @classmethod
-    def get_all(cls, schema: UserSchema) -> UserResponse:
+    def get_all(cls, schema: UserSchema) -> List[UserResponse]:
         user = Users.load(schema.id)
         user.admin_access()
         users = Users.load_all()
@@ -36,13 +28,21 @@ class UserService(UserInteractor):
         user = cls.check_access(schema)
         password = schema.password
         user.name = schema.name
-        user.change_email(schema.email, password)
-        user.change_password(password, password)
+        user.update_email(schema.email, password)
+        user.update_password(password, password)
         Users.save(user)
 
     @classmethod
     def delete(cls, schema: UserSchema) -> NoReturn:  # TODO
         Users.delete(schema.id)  # TODO - add refuse all data
+
+    @classmethod
+    def register(cls, schema: UserSchema) -> NoReturn:
+        try:
+            user = User.create(name=schema.name, email=schema.email, password=schema.password)
+            Users.save(user)
+        except IntegrityError:
+            raise RegistrationError()
 
     @classmethod
     def login(cls, schema: UserSchema) -> NoReturn:

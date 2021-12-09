@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List
 
 from .schema import UserSchema
 from .entity import User
@@ -11,8 +11,8 @@ class UserResponse(dict):
 class UserSerializer:
     @staticmethod
     def dump(user: User) -> UserResponse:
-        return UserResponse(UserSchema(many=False).dump(user))
+        return UserResponse(UserSchema().dump(user))
 
     @staticmethod
-    def dump_many(users: Tuple[User]) -> UserResponse:
-        return UserResponse(UserSchema(many=True).dump(users))
+    def dump_many(users: Tuple[User, ...]) -> List[UserResponse]:
+        return [UserResponse(user) for user in UserSchema(many=True).dump(users)]
