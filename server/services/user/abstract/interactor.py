@@ -7,9 +7,9 @@ from server.services.user.entity import User
 
 @dataclass(frozen=True)
 class UserInputData:
-    name:     str = None
-    email:    str = None
-    password: str = None
+    name:     str
+    email:    str
+    password: str
 
 
 class UserInteractor(ABC):
@@ -19,7 +19,7 @@ class UserInteractor(ABC):
         """Getting information about user account.
         :param id: unique identifier User in the system.
         :returns: User representation based on ID.
-        :raises IDError: the user is not found by ID.
+        :raises NotFoundError: the user is not found by ID.
         """
         pass
 
@@ -42,9 +42,7 @@ class UserInteractor(ABC):
         :param id: unique identifier User in the system.
         :param data: contains the user fields to be changed.
         :raises NotFoundError: the user is not found by ID.
-        :raises EmailError: email invalid or already in use.
-        :raises PasswordError: password invalid.
-        :raises NameError: name invalid.
+        :raises DataUniqueError: email or name already in use.
         """
         pass
 
@@ -63,8 +61,7 @@ class UserInteractor(ABC):
         """Register new user in the system.
         :param data: contains user data for registration.
         :raises EmailError: email invalid or already in use.
-        :raises PasswordError: password invalid.
-        :raises NameError: name invalid.
+        :raises DataUniqueError: email or name already in use.
         """
         pass
 
@@ -81,18 +78,17 @@ class UserInteractor(ABC):
 
     @classmethod
     @abstractmethod
-    def reset_password(cls, uuid: int, password: int) -> NoReturn:
+    def reset_password(cls, uuid: str, password: str) -> NoReturn:
         """Reset user password by uuid with new password.
         :param uuid: a unique public key to confirm the action.
         :param password: a new password by user account.
         :raises NotFoundError: the user is not found by UUID.
-        :raises PasswordError: password invalid.
         """
         pass
 
     @classmethod
     @abstractmethod
-    def confirm_email(cls, uuid: int) -> NoReturn:
+    def confirm_email(cls, uuid: str) -> NoReturn:
         """Confirm user email by uuid.
         :param uuid: a unique public key to confirm the action.
         :raises NotFoundError: the user is not found by UUID.
