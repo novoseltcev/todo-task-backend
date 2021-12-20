@@ -48,30 +48,34 @@ def load_wrapper(func):
 class UsersMock(UserRepo, Mock):
     @classmethod
     @load_wrapper
-    def load(cls, user_id):
+    def from_id(cls, user_id):
         return users_by_id[user_id]
 
     @classmethod
-    def load_all(cls):
+    def all(cls):
         return users
 
     @classmethod
     @load_wrapper
-    def load_by_uuid(cls, token):
+    def from_uuid(cls, token):
         return users_by_uuid[token]
 
     @classmethod
     @load_wrapper
-    def load_by_email(cls, email):
+    def from_email(cls, email):
         return users_by_email[email]
 
     @classmethod
     @load_wrapper
-    def load_by_name(cls, name):
+    def from_name(cls, name):
         return users_by_name[name]
 
     @classmethod
-    def save(cls, user):
+    def create(cls, user):
+        pass
+
+    @classmethod
+    def update(cls, id: int, user: User) -> NoReturn:
         pass
 
     @classmethod
@@ -106,7 +110,12 @@ class UserServiceTestCase(TestCase):
                 self.assertRaises(NotFoundError, UserService.get_accounts, admin_id)
 
     def test_update_account(self):  # TODO
-        pass
+        for id in range(-1, 100):
+            if id in users_by_id.keys():
+                user = users_by_id[id]
+                UserService.update_account(id, UserInputData(name=user.name))
+            else:
+                self.assertRaises(NotFoundError, UserService.update_account, id, UserInputData)
         # UserService.update_account
 
     def test_delete_account(self):
@@ -121,35 +130,36 @@ class UserServiceTestCase(TestCase):
         # UserService.register
 
     def test_login_by_name(self):
-        self.assertRaises(LoginError, UserService.login, UserInputData())
-        self.assertRaises(LoginError, UserService.login, UserInputData(password="invalid"))
-        self.assertRaises(LoginError, UserService.login, UserInputData(password="password"))
-        self.assertRaises(LoginError, UserService.login, UserInputData(name="invalid"))
-        self.assertRaises(LoginError, UserService.login, UserInputData(name="invalid", password="password"))
-        self.assertRaises(LoginError, UserService.login, UserInputData(name="invalid", password="invalid"))
+        self.assertRaises(LoginError, UserService.login, UserInputData(name="invalid", password="password", email=""))
+        self.assertRaises(LoginError, UserService.login, UserInputData(name="invalid", password="invalid", email=""))
         for name in users_by_name:
             user = users_by_name[name]
-            self.assertRaises(LoginError, UserService.login, UserInputData(name=name))
-            self.assertRaises(LoginError, UserService.login, UserInputData(name=name, email=user.email))
+            self.assertRaises(LoginError, UserService.login, UserInputData(name=name, password="invalid", email=user.email))
+            self.assertRaises(LoginError, UserService.login, UserInputData(name=name, password="invalid", email=""))
             if user.email_status == EmailStatus.CONFIRMED:
-                self.assertEqual(UserService.login(UserInputData(name=name, password="password")), user.id)
+                self.assertEqual(UserService.login(UserInputData(name=name, password="password", email="")), user.id)
+                self.assertEqual(UserService.login(UserInputData(name=name, password="password", email=user.email)), user.id)
             else:
                 self.assertRaises(
                     UnconfirmedEmailError,
                     UserService.login,
-                    UserInputData(name=name, password="password")
+                    UserInputData(name=name, password="password", email="")
                 )
 
     def test_login_by_email(self):
-        self.assertRaises(LoginError, UserService.login, UserInputData(email="invalid"))
-        self.assertRaises(LoginError, UserService.login, UserInputData(email="invalid", password="password"))
-        self.assertRaises(LoginError, UserService.login, UserInputData(email="invalid", password="invalid"))
+        self.assertRaises(LoginError, UserService.login, UserInputData(email="invalid", password="password", name=""))
+        self.assertRaises(LoginError, UserService.login, UserInputData(email="invalid", password="invalid", name=""))
         for email in users_by_email:
-            self.assertRaises(LoginError, UserService.login, UserInputData(email=email))
             user = users_by_email[email]
+            self.assertRaises(LoginError, UserService.login, UserInputData(email=email, password="invalid", name=""))
+            self.assertRaises(LoginError, UserService.login, UserInputData(email=email, password="invalid", name=user.name))
             if user.email_status == EmailStatus.CONFIRMED:
                 self.assertEqual(
-                    UserService.login(UserInputData(email=email, password="password")),
+                    UserService.login(UserInputData(email=email, password="password", name="")),
+                    user.id
+                )
+                self.assertEqual(
+                    UserService.login(UserInputData(email=email, password="password", name=user.name)),
                     user.id
                 )
             else:

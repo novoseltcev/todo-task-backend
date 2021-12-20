@@ -16,22 +16,21 @@ class UserService(UserInteractor):
 
     @classmethod
     def get_account(cls, id):
-        return cls.Users.load(id)
+        return cls.Users.from_id(id)
 
     @classmethod
     def get_accounts(cls, admin_id):
-        user = cls.Users.load(admin_id)
+        user = cls.Users.from_id(admin_id)
         user.admin_access()
-        return cls.Users.load_all()
+        return cls.Users.all()
 
     @classmethod
     def update_account(cls, id, data):
-        user = cls.Users.load(id)
-        password = data.password
+        user = cls.Users.from_id(id)
         user.name = data.name
+        user.update_password(data.password)
         user.update_email(data.email)
-        user.update_password(password)
-        cls.Users.save(user)
+        cls.Users.update(id, user)
 
     @classmethod
     def delete_account(cls, id):
@@ -40,28 +39,28 @@ class UserService(UserInteractor):
     @classmethod
     def register(cls, data):
         user = User.create(name=data.name, email=data.email, password=data.password)
-        cls.Users.save(user)
+        cls.Users.create(user)
 
     @classmethod
     def login(cls, data):
-        if data.email is None and data.name is None or data.password is None:
-            raise LoginError()
         try:
-            user = cls.Users.load_by_email(data.email) if data.name is None else cls.Users.load_by_name(data.name)
+            user = cls.Users.from_email(data.email) if data.name is None else cls.Users.from_name(data.name)
             user.check_password(data.password)
             user.check_email_confirm()
             return user.id
-        except NotFoundError or PasswordError:
+        except (NotFoundError, PasswordError):
             raise LoginError("Not found account")
         except UnconfirmedEmailError:
             raise UnconfirmedEmailError("Account not confirmed")
 
     @classmethod
     def reset_password(cls, uuid, password):
-        ...
+        user = cls.Users.from_uuid(uuid)
+        user.update_password(password)
+        cls.Users.update(user.id, user)
 
     @classmethod
     def confirm_email(cls, uuid):
-        user = cls.Users.load_by_uuid(uuid)
+        user = cls.Users.from_uuid(uuid)
         user.confirm_email()
-        cls.Users.save(user)
+        cls.Users.update(user.id, user)
