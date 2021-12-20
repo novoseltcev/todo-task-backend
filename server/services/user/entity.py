@@ -1,19 +1,13 @@
-import re
-from datetime import date
-from enum import Enum
-from typing import NoReturn, Callable
+from __future__ import annotations
 
+import re
+from dataclasses import dataclass
+from datetime import date, datetime
+from enum import Enum
+from typing import NoReturn
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from .exceptions import *
-
-
-def authorized(func: Callable) -> Callable:
-    def wrapped(self, value: str, password: str) -> NoReturn:
-        self.check_password(password)
-        func(self, value)
-
-    return wrapped
+from .exc import *
 
 
 class Role(Enum):
@@ -28,80 +22,57 @@ class EmailStatus(Enum):
     REFUSED = 'refused'
 
 
+@dataclass
 class User:
-    """
-    User business-entity.\n
+    """User business-entity.🐙
     Fields:
-        name: str\n
-        email: str\n
-        password: str\n
-        role: Role[USER | ADMIN | OWNER]\n
-        registration_date: datetime.date\n
-        email_status: EmailStatus
+        name (str): Unique username of the user.
+        email (str): User's email address.
+        _password (str): Encoded user password.
+        _role (Role): The role of the user that determines the levels of access to business logic.
+        _email_status (EmailStatus): The status of the user's email, which restricts access to the system only to confirmed users.
+        _registration_date (Date, read_only): The date of the user's registration in the system.
     """
-
-    def __init__(self,
-                 Id: int,
-                 name: str,
-                 email: str,
-                 password: str,
-                 registration_date: date,
-                 role: Role,
-                 email_status: EmailStatus):
-        self._id: int = Id
-        self._name: str = name
-        self._email: str = email
-        self._password: str = password
-        self._role: Role = role
-        self._email_status: EmailStatus = email_status
-        self._registration_date: date = registration_date
+    name: str
+    email: str
+    _password: str
+    _role: Role
+    _email_status: EmailStatus
+    _registration_date: datetime.date
+    _id: int = ...
 
     @property
-    def id(self) -> int:
+    def id(self):
         return self._id
 
     @property
-    def name(self) -> str:
-        return self._name
-
-    @name.setter
-    def name(self, value: str) -> NoReturn:
-        self._name = value
-
-    @property
-    def email(self) -> str:
-        return self._email
-
-    @property
-    def password_hash(self) -> str:
+    def password(self):
         return self._password
 
     @property
-    def role(self) -> Role:
+    def role(self):
         return self._role
 
     @property
-    def registration_date(self) -> date:
-        return self._registration_date
-
-    @property
-    def email_status(self) -> EmailStatus:
+    def email_status(self):
         return self._email_status
 
-    @authorized
+    @property
+    def registration_date(self):
+        return self._registration_date
+
     def update_email(self, value: str) -> NoReturn:
         if not re.match(r"\"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)\"?", value):
-            raise InvalidEmailError(value)
-        self._email = value
+            raise EmailError(value)
+        self.email = value
         self._email_status = EmailStatus.NOT_CONFIRMED
 
-    @authorized
-    def update_password(self, value: str) -> NoReturn:
+    def update_password(self, value: str):
         self._password = generate_password_hash(value)
 
     def check_password(self, value: str) -> NoReturn:
-        if not check_password_hash(self._password, value):
-            raise InvalidPasswordError()
+        if not check_password_hash(self.password, value):
+            raise PasswordError()
 
     def check_email_confirm(self) -> NoReturn:
         if self.email_status != EmailStatus.CONFIRMED:
@@ -114,22 +85,20 @@ class User:
         self._email_status = EmailStatus.REFUSED
 
     def admin_access(self) -> NoReturn:
-        if self.role not in (Role.ADMIN, Role.OWNER):
+        if self._role not in (Role.ADMIN, Role.OWNER) or self._email_status != EmailStatus.CONFIRMED:
             raise AdminRequiredError()
 
     @staticmethod
-    def set_id(user, Id: int) -> NoReturn:
-        if user.id == -1:
-            user._id = Id
-
-    @staticmethod
-    def create(name: str, email: str, password: str, role=Role.USER):
+    def create(name: str, email: str, password: str, role=Role.USER) -> User:
         return User(
-            -1,
             name,
             email,
             generate_password_hash(password),
-            date.today(),
             role,
-            EmailStatus.NOT_CONFIRMED if role == role.USER else EmailStatus.REFUSED
+            {
+                role.USER: EmailStatus.NOT_CONFIRMED,
+                role.ADMIN: EmailStatus.REFUSED,
+                role.OWNER: EmailStatus.CONFIRMED
+            }[role],
+            date.today()
         )

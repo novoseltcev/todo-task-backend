@@ -1,7 +1,8 @@
-from .interactor import UserInteractor
-from .repository import Users
+from .interactor import UserInteractor, UserInputData
+from .repository import UserRepo
 
 __all__ = [
     'UserInteractor',
-    'Users'
+    'UserRepo',
+    'UserInputData',
 ]

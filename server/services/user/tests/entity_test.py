@@ -4,43 +4,13 @@ from server.services.user.entity import *
 
 
 class UserEntityTestCase(unittest.TestCase):
-    def test_property_id(self):
-        user = User.create(
-            "name",
-            "example@domen.com",
-            "password"
-        )
-        self.assertEqual(-1, user.id)
-        User.set_id(user, 1)
-        self.assertNotEqual(-1, user.id)
-        self.assertEqual(1, user.id)
-
-    def test_property_name(self):
-        user = User.create(
-            "name",
-            "example@domen.com",
-            "password"
-        )
-        self.assertEqual("name", user.name)
-        user.name = "new name"
-        self.assertNotEqual("name", user.name)
-        self.assertEqual("new name", user.name)
-
-    def test_property_email(self):
-        user = User.create(
-            "name",
-            "example@domen.com",
-            "password"
-        )
-        self.assertEqual("example@domen.com", user.email)
-
     def test_property_password(self):
         user = User.create(
             "name",
             "example@domen.com",
             "password"
         )
-        self.assertTrue(check_password_hash(user.password_hash, "password"))
+        self.assertTrue(check_password_hash(user.password, "password"))
 
     def test_property_email_status(self):
         user = User.create(
@@ -76,10 +46,9 @@ class UserEntityTestCase(unittest.TestCase):
             "password"
         )
         self.assertEqual("example@domen.com", user.email)
-        user.update_email("st.a.novoseltcev@gmail.com", "password")
+        user.update_email("st.a.novoseltcev@gmail.com")
         self.assertEqual("st.a.novoseltcev@gmail.com", user.email)
-        self.assertRaises(InvalidEmailError, user.update_email, "invalid_email", "password")
-        self.assertRaises(InvalidPasswordError, user.update_email, "st.a.novoseltcev@gmail.com", "invalid_password")
+        self.assertRaises(EmailError, user.update_email, "invalid_email")
 
     def test_change_password(self):
         user = User.create(
@@ -87,9 +56,8 @@ class UserEntityTestCase(unittest.TestCase):
             "example@domen.com",
             "old_password"
         )
-        user.update_password("new_password", "old_password")
-        self.assertTrue(check_password_hash(user.password_hash, "new_password"))
-        self.assertRaises(InvalidPasswordError, user.update_password, "new2_password", "old_password")
+        user.update_password("new_password")
+        self.assertTrue(check_password_hash(user.password, "new_password"))
 
     def test_confirm_email(self):
         user = User.create(
@@ -125,6 +93,14 @@ class UserEntityTestCase(unittest.TestCase):
             "password",
             Role.ADMIN
         )
+        self.assertRaises(AdminRequiredError, user.admin_access)
+        user = User.create(
+            "name",
+            "example@domen.com",
+            "password",
+            Role.ADMIN
+        )
+        user.confirm_email()
         user.admin_access()
         user = User.create(
             "name",
@@ -133,7 +109,3 @@ class UserEntityTestCase(unittest.TestCase):
             Role.OWNER
         )
         user.admin_access()
-
-
-if __name__ == '__main__':
-    unittest.main()

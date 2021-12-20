@@ -1,69 +1,67 @@
-from typing import NoReturn, List
-
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm.exc import NoResultFound
-
-from .abstract import UserInteractor, Users
-from .response import UserSerializer, UserResponse, UserSchema
-from .entity import User, LoginError, RegistrationError, ConfirmationError
-
-# from server.repositories.user import UserRepository as Users
+from .abstract import (
+    UserInteractor,
+    UserRepo,
+)
+from .entity import (
+    User,
+    LoginError,
+    NotFoundError,
+    PasswordError,
+    UnconfirmedEmailError,
+)
 
 
 class UserService(UserInteractor):
-    @classmethod
-    def get(cls, schema: UserSchema) -> UserResponse:
-        user = Users.load(schema.id)
-        return UserSerializer.dump(user)
+    Users: UserRepo = UserRepo
 
     @classmethod
-    def get_all(cls, schema: UserSchema) -> List[UserResponse]:
-        user = Users.load(schema.id)
+    def get_account(cls, id):
+        return cls.Users.load(id)
+
+    @classmethod
+    def get_accounts(cls, admin_id):
+        user = cls.Users.load(admin_id)
         user.admin_access()
-        users = Users.load_all()
-        return UserSerializer.dump_many(users)
+        return cls.Users.load_all()
 
     @classmethod
-    def update(cls, schema: UserSchema) -> NoReturn:
-        user = cls.check_access(schema)
-        password = schema.password
-        user.name = schema.name
-        user.update_email(schema.email, password)
-        user.update_password(password, password)
-        Users.save(user)
+    def update_account(cls, id, data):
+        user = cls.Users.load(id)
+        password = data.password
+        user.name = data.name
+        user.update_email(data.email)
+        user.update_password(password)
+        cls.Users.save(user)
 
     @classmethod
-    def delete(cls, schema: UserSchema) -> NoReturn:  # TODO
-        Users.delete(schema.id)  # TODO - add refuse all data
+    def delete_account(cls, id):
+        cls.Users.delete(id)
 
     @classmethod
-    def register(cls, schema: UserSchema) -> NoReturn:
-        try:
-            user = User.create(name=schema.name, email=schema.email, password=schema.password)
-            Users.save(user)
-        except IntegrityError:
-            raise RegistrationError()
+    def register(cls, data):
+        user = User.create(name=data.name, email=data.email, password=data.password)
+        cls.Users.save(user)
 
     @classmethod
-    def login(cls, schema: UserSchema) -> NoReturn:
-        try:
-            user = Users.load_by_email(schema.email)
-            user.check_password(schema.password)
-            user.check_email_confirm()
-        except NoResultFound:
+    def login(cls, data):
+        if data.email is None and data.name is None or data.password is None:
             raise LoginError()
-
-    @classmethod
-    def confirm_email(cls, schema: UserSchema) -> NoReturn:
         try:
-            user = Users.load_by_uuid(schema.uuid)
-            user.confirm_email()
-            Users.save(user)
-        except NoResultFound:
-            raise ConfirmationError(schema.uuid)
+            user = cls.Users.load_by_email(data.email) if data.name is None else cls.Users.load_by_name(data.name)
+            user.check_password(data.password)
+            user.check_email_confirm()
+            return user.id
+        except NotFoundError or PasswordError:
+            raise LoginError("Not found account")
+        except UnconfirmedEmailError:
+            raise UnconfirmedEmailError("Account not confirmed")
 
     @classmethod
-    def check_access(cls, schema: UserSchema) -> User:
-        user = Users.load_by_email(schema.email)
-        user.check_password(schema.password)
-        return user
+    def reset_password(cls, uuid, password):
+        ...
+
+    @classmethod
+    def confirm_email(cls, uuid):
+        user = cls.Users.load_by_uuid(uuid)
+        user.confirm_email()
+        cls.Users.save(user)
