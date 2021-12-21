@@ -1,21 +1,24 @@
 from abc import ABC, abstractmethod
-from typing import NoReturn, Tuple
+from typing import NoReturn, Tuple, Type
 from dataclasses import dataclass
 
+from .repository import UserRepo
 from server.services.user.entity import User
 
 
 @dataclass(frozen=True)
 class UserInputData:
-    name:     str
-    email:    str
+    name: str
+    email: str
     password: str
 
 
 class UserInteractor(ABC):
-    @classmethod
+    def __init__(self, repo_adapter: Type[UserRepo]):
+        self.users = repo_adapter
+
     @abstractmethod
-    def get_account(cls, id: int) -> User:
+    def get_account(self, id: int) -> User:
         """Getting information about user account.
         :param id: unique identifier User in the system.
         :returns: User representation based on ID.
@@ -23,9 +26,8 @@ class UserInteractor(ABC):
         """
         pass
 
-    @classmethod
     @abstractmethod
-    def get_accounts(cls, admin_id: int) -> Tuple[User, ...]:
+    def get_accounts(self, admin_id: int) -> Tuple[User, ...]:
         """Getting information about user accounts.
             Admin access required!!!
         :param admin_id: unique identifier User in the system.
@@ -35,9 +37,8 @@ class UserInteractor(ABC):
         """
         pass
 
-    @classmethod
     @abstractmethod
-    def update_account(cls, id: int, data: UserInputData) -> NoReturn:
+    def update_account(self, id: int, data: UserInputData) -> NoReturn:
         """Update the user account based on the data received.
         :param id: unique identifier User in the system.
         :param data: contains the user fields to be changed.
@@ -46,18 +47,16 @@ class UserInteractor(ABC):
         """
         pass
 
-    @classmethod
     @abstractmethod
-    def delete_account(cls, id: int) -> NoReturn:
+    def delete_account(self, id: int) -> NoReturn:
         """Delete user account from the system
         :param id: unique identifier User in the system.
         :raises NotFoundError: the user is not found by ID.
         """
         pass
 
-    @classmethod
     @abstractmethod
-    def register(cls, data: UserInputData) -> NoReturn:
+    def register(self, data: UserInputData) -> NoReturn:
         """Register new user in the system.
         :param data: contains user data for registration.
         :raises EmailError: email invalid or already in use.
@@ -67,9 +66,20 @@ class UserInteractor(ABC):
 
     @classmethod
     @abstractmethod
-    def login(cls, data: UserInputData) -> int:
+    def login_by_name(cls, data: UserInputData) -> int:
         """Login in the system by email or name
-        :param data: contains user data(email or name, password) for authorization.
+        :param data: contains user data(name, password) for authorization.
+        :returns: ID of an authorized user.
+        :raises LoginError: the user was not found to match the transmitted data.
+        :raises UnconfirmedEmailError: the user doesn't confirm email.
+        """
+        pass
+
+    @classmethod
+    @abstractmethod
+    def login_by_email(cls, data: UserInputData) -> int:
+        """Login in the system by email or name
+        :param data: contains user data(email, password) for authorization.
         :returns: ID of an authorized user.
         :raises LoginError: the user was not found to match the transmitted data.
         :raises UnconfirmedEmailError: the user doesn't confirm email.
@@ -94,3 +104,4 @@ class UserInteractor(ABC):
         :raises NotFoundError: the user is not found by UUID.
         """
         pass
+

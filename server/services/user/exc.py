@@ -10,6 +10,10 @@ class UnconfirmedEmailError(UserException):
     pass
 
 
+class DataUniqueError(UserException):
+    pass
+
+
 class EmailError(UserException):
     pass
 

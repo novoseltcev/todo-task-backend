@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 from datetime import date, datetime
 from enum import Enum
@@ -62,8 +61,6 @@ class User:
         return self._registration_date
 
     def update_email(self, value: str) -> NoReturn:
-        if not re.match(r"\"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)\"?", value):
-            raise EmailError(value)
         self.email = value
         self._email_status = EmailStatus.NOT_CONFIRMED
 
@@ -71,7 +68,7 @@ class User:
         self._password = generate_password_hash(value)
 
     def check_password(self, value: str) -> NoReturn:
-        if not check_password_hash(self.password, value):
+        if not check_password_hash(self._password, value):
             raise PasswordError()
 
     def check_email_confirm(self) -> NoReturn:

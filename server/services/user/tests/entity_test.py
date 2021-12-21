@@ -48,7 +48,7 @@ class UserEntityTestCase(unittest.TestCase):
         self.assertEqual("example@domen.com", user.email)
         user.update_email("st.a.novoseltcev@gmail.com")
         self.assertEqual("st.a.novoseltcev@gmail.com", user.email)
-        self.assertRaises(EmailError, user.update_email, "invalid_email")
+        self.assertEqual(EmailStatus.NOT_CONFIRMED, user.email_status)
 
     def test_change_password(self):
         user = User.create(
