@@ -4,7 +4,7 @@ from functools import wraps
 from unittest import TestCase
 from unittest.mock import Mock
 
-from server.services.user import UserService, UserRepo, UserInputData
+from server.services.user import UserService, UserRepository, UserInputData
 from server.services.user.entity import *
 
 
@@ -53,7 +53,7 @@ invalid_id = (
 )
 
 
-class UsersMock(UserRepo, Mock):
+class UsersMock(UserRepository, Mock):
     @classmethod
     def all(cls):
         return deepcopy(users)

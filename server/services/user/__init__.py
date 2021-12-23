@@ -1,11 +1,11 @@
-from .abstract import UserInteractor, UserRepo, UserInputData
+from .interactor import UserInteractor, UserRepository, UserInputData
 from .service import UserService, User
 from .entity import User
 from .exc import *
 
 __all__ = [
     'UserInteractor',
-    'UserRepo',
+    'UserRepository',
     'UserInputData',
     'User',
     'UserService',
