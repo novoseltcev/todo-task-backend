@@ -1,4 +1,4 @@
-from .abstract import UserInteractor
+from .interactor import UserInteractor
 from .entity import (
     User,
     LoginError,

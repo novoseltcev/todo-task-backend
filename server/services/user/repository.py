@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Tuple, NoReturn
 
-from server.services.user.entity import User
+from .entity import User
 
 
-class UserRepo(ABC):
+class UserRepository(ABC):
     @classmethod
     @abstractmethod
     def all(cls) -> Tuple[User, ...]:
