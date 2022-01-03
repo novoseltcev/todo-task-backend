@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Category:
+class Folder:
     name: str
     _user_id: int
     _id:  int = ...
@@ -14,6 +14,3 @@ class Category:
     @property
     def user_id(self):
         return self._user_id
-
-
-class Category
