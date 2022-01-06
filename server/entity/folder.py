@@ -7,6 +7,7 @@ from task import Task
 
 @dataclass
 class Folder:
+    """"""
     name: str
     _user: User
     tasks: Tuple[Task, ...] = ...

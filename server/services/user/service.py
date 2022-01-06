@@ -1,5 +1,5 @@
 from .interactor import UserInteractor
-from .entity import (
+from server.entity import (
     User,
     LoginError,
     NotFoundError,
@@ -19,9 +19,8 @@ class UserService(UserInteractor):
 
     def update_account(self, id, data):
         user = self.users.from_id(id)
-        user.name = data.name
-        user.update_password(data.password)
-        user.update_email(data.email)
+        user.password = data.password
+        user.email = data.email
         self.users.update(id, user)
 
     def delete_account(self, id):

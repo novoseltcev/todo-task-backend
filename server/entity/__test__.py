@@ -1,6 +1,13 @@
 import unittest
 
-from user_entity import *
+from user_entity import (
+    User,
+    Role,
+    EmailStatus,
+    UserAccessError,
+    PasswordError,
+    UnconfirmedEmailError,
+)
 
 
 class UserEntityTestCase(unittest.TestCase):

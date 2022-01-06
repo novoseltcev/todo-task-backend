@@ -1,7 +1,7 @@
 from marshmallow import Schema, SchemaOpts, fields, validate, RAISE, INCLUDE
 from marshmallow_enum import EnumField
 
-from .entity import Role, EmailStatus
+from server.entity.user_entity import Role, EmailStatus
 
 
 class UserSchema(Schema):

@@ -5,6 +5,7 @@ from user_entity import User
 
 @dataclass(frozen=True)
 class File:
+    """"""
     name: str
     path: str
     _user: User

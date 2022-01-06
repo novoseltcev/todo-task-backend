@@ -136,6 +136,7 @@ class UserServiceTestCase(TestCase):
     def test_update_account(self):
         def next_user(id: int):
             return users_by_id.get(id + 1, users[0])
+
         User.update_password = Mock()
         for id, user in users_by_id.items():
             name, email, password = user.name, user.email, user.password

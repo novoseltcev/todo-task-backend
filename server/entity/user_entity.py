@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class PasswordHash:
+    """"""
     @staticmethod
     def generate(value: str) -> str:
         return generate_password_hash(value)
@@ -17,12 +18,14 @@ class PasswordHash:
 
 
 class Role(Enum):
+    """"""
     USER = 'user'
     ADMIN = 'admin'
     OWNER = 'owner'
 
 
 class EmailStatus(Enum):
+    """"""
     NOT_CONFIRMED = 'not_confirmed'
     CONFIRMED = 'confirmed'
     REFUSED = 'refused'
