@@ -1,7 +1,7 @@
 from typing import Tuple, List
 
 from .schema import UserSchema
-from server.entity import User
+from ..business import User
 
 
 class UserResponse(dict):

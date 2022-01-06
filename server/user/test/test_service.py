@@ -1,11 +1,12 @@
 import uuid
 from copy import deepcopy, copy
+from datetime import date
 from functools import wraps
 from unittest import TestCase
 from unittest.mock import Mock
 
-from server.services.user import UserService, UserRepository, UserInputData
-from server.entity.user_entity import *
+from server.user.business import *
+from server.user.business.entity import PasswordHash, PasswordError, UserAccessError, UnconfirmedEmailError
 from server.exec import *
 
 

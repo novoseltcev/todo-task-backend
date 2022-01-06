@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
 from typing import NoReturn, Tuple
 
-from server.entity import Folder
+from .entity import Folder
 
 
 class FolderRepository(ABC):
     @abstractmethod
-    def from_id(self, id: int) -> Folder:
+    def from_id(self, folder_id: int) -> Folder:
         """Load folder by id from the system.
-        :param id: the ID by which the folder is searched in the system.
+        :param folder_id: the ID by which the folder is searched in the system.
         :return: Folder business-entity.
         :raises NotFoundError: the folder was not found by ID.
         :raises InvalidUserError: the user was not found by ID, or the current user is not the owner of the folder.
@@ -34,9 +34,9 @@ class FolderRepository(ABC):
         pass
 
     @abstractmethod
-    def update(self, id: int, folder: Folder) -> NoReturn:
+    def update(self, folder_id: int, folder: Folder) -> NoReturn:
         """Update folder by id from Folder representation.
-        :param id: the ID by which the folder is searched in the system.
+        :param folder_id: the ID by which the folder is searched in the system.
         :param folder: data for updating an existing folder.
         :raises NotFoundError: the folder was not found by ID.
         :raises InvalidUserError: the user was not found by ID, or the current user is not the owner of the folder.
@@ -45,9 +45,9 @@ class FolderRepository(ABC):
         pass
 
     @abstractmethod
-    def delete(self, id: int) -> NoReturn:
+    def delete(self, folder_id: int) -> NoReturn:
         """Delete folder by id.
-        :param id: the ID by which the folder is searched in the system.
+        :param folder_id: the ID by which the folder is searched in the system.
         :raises NotFoundError: the folder was not found by ID.
         :raises InvalidUserError: the user was not found by ID, or the current user is not the owner of the folder.
         """

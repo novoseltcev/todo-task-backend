@@ -3,7 +3,7 @@ from typing import NoReturn, Tuple, Type
 from dataclasses import dataclass
 
 from .repository import UserRepository
-from server.entity import User
+from .entity import User
 
 
 @dataclass(frozen=True)

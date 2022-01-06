@@ -1,5 +1,5 @@
 from .interactor import UserInteractor
-from server.entity import (
+from .entity import (
     User,
     PasswordError,
     UnconfirmedEmailError,
@@ -32,10 +32,10 @@ class UserService(UserInteractor):
 
     def login_by_name(self, data):
         try:
-            user = self.users.from_name(data.name)
+            user_id, user = self.users.from_name(data.name)
             user.check_password(data.password)
             user.check_email()
-            return user.id
+            return user_id
         except (NotFoundError, PasswordError):
             raise LoginError("Not found account")
         except UnconfirmedEmailError:
@@ -43,21 +43,21 @@ class UserService(UserInteractor):
 
     def login_by_email(self, data):
         try:
-            user = self.users.from_email(data.email)
+            user_id, user = self.users.from_email(data.email)
             user.check_password(data.password)
             user.check_email()
-            return user.id
+            return user_id
         except (NotFoundError, PasswordError):
             raise LoginError("Not found account")
         except UnconfirmedEmailError:
             raise UnconfirmedEmailError("Account not confirmed")
 
     def reset_password(self, uuid, password):
-        user = self.users.from_uuid(uuid)
+        user_id, user = self.users.from_uuid(uuid)
         user.password = password
-        self.users.update(user.id, user)
+        self.users.update(user_id, user)
 
     def confirm_email(self, uuid):
-        user = self.users.from_uuid(uuid)
+        user_id, user = self.users.from_uuid(uuid)
         user.confirm()
-        self.users.update(user.id, user)
+        self.users.update(user_id, user)

@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Tuple
 
-from .user_entity import User
-from .file import File
+from server.user import User
+from server.file import File
 
 
 @dataclass

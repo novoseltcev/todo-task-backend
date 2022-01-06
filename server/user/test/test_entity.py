@@ -1,9 +1,7 @@
 import unittest
 
-from user_entity import (
-    User,
-    Role,
-    EmailStatus,
+from server.user.business.entity import (
+    User, Role, EmailStatus,
     UserAccessError,
     PasswordError,
     UnconfirmedEmailError,

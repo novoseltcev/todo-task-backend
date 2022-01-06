@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Tuple, NoReturn
 
-from server.entity import User
+from .entity import User
 
 
 class UserRepository(ABC):
