@@ -19,9 +19,9 @@ class FolderInteractor(ABC):
         self.categories = repository
 
     @abstractmethod
-    def get(self, id: int, user_id: int) -> Folder:
+    def get(self, folder_id: int, user_id: int) -> Folder:
         """Getting information about folder.
-        :param id: unique Category identifier.
+        :param folder_id: unique Category identifier.
         :param user_id: unique User identifier.
         :return: Folder representation based on ID.
         :raises NotFoundError: the folder was not found by ID.
@@ -49,9 +49,9 @@ class FolderInteractor(ABC):
         pass
 
     @abstractmethod
-    def update(self, id: int, user_id: int, data: FolderInputData) -> NoReturn:
+    def update(self, folder_id: int, user_id: int, data: FolderInputData) -> NoReturn:
         """Updating the folder based on the received data.
-        :param id: unique Category identifier.
+        :param folder_id: unique Category identifier.
         :param user_id: unique User identifier.
         :param data: contains the folder's fields to be changed.
         :raises NotFoundError: the folder was not found by ID.
@@ -60,9 +60,9 @@ class FolderInteractor(ABC):
         pass
 
     @abstractmethod
-    def delete(self, id: int, user_id: int) -> NoReturn:
+    def delete(self, folder_id: int, user_id: int) -> NoReturn:
         """Deleting the folder from the system.
-        :param id: unique Category identifier.
+        :param folder_id: unique Category identifier.
         :param user_id: unique User identifier.
         :raises NotFoundError: the folder was not found by ID.
         :raises InvalidUserError: the user was not found by ID, or the current user is not the owner of the folder.
