@@ -5,18 +5,18 @@ from unittest import TestCase
 from unittest.mock import Mock
 
 from server.services.user import UserService, UserRepository, UserInputData
-from server.services.user.entity import *
+from server.entity.user_entity import *
+from server.exec import *
 
 
-def example_user(id: int, name: str, status: EmailStatus, role: Role):
+def example_user(name: str, status: EmailStatus, role: Role):
     user = User(
         name,
         f'{name}@domen.com',
-        generate_password_hash("password"),
+        PasswordHash.generate("password"),
         role,
         status,
-        datetime.fromisocalendar(2020, 10, 4),
-        id
+        date(2020, 10, 4)
     )
     return user
 
@@ -32,18 +32,17 @@ def load_wrapper(func):
     return wrapper
 
 
-users = (
-    example_user(1, "st.a.novoseltcev", EmailStatus.CONFIRMED, Role.OWNER),
-    example_user(2, "admin", EmailStatus.CONFIRMED, Role.ADMIN),
-    example_user(3, "new_admin", EmailStatus.REFUSED, Role.ADMIN),
-    example_user(4, "conf_user", EmailStatus.CONFIRMED, Role.USER),
-    example_user(5, "ref_user", EmailStatus.REFUSED, Role.USER),
-    example_user(6, "new_user", EmailStatus.NOT_CONFIRMED, Role.USER),
-)
-users_by_id = {user.id: user for user in users}
-users_by_name = {user.name: user for user in users}
-users_by_email = {user.email: user for user in users}
-users_by_uuid = {uuid.uuid4(): user for user in users}
+users_by_id = {
+    1: example_user("st.a.novoseltcev", EmailStatus.CONFIRMED, Role.OWNER),
+    2: example_user("admin", EmailStatus.CONFIRMED, Role.ADMIN),
+    3: example_user("new_admin", EmailStatus.REFUSED, Role.ADMIN),
+    4: example_user("conf_user", EmailStatus.CONFIRMED, Role.USER),
+    5: example_user("ref_user", EmailStatus.REFUSED, Role.USER),
+    6: example_user("new_user", EmailStatus.NOT_CONFIRMED, Role.USER),
+}
+users_by_name = {user.name: user for user in users_by_id.values()}
+users_by_email = {user.email: user for user in users_by_id.values()}
+users_by_uuid = {uuid.uuid4(): user for user in users_by_id.values()}
 
 invalid_id = (
     -1,
@@ -56,7 +55,7 @@ invalid_id = (
 class UsersMock(UserRepository, Mock):
     @classmethod
     def all(cls):
-        return deepcopy(users)
+        return deepcopy(users_by_id)
 
     @classmethod
     @load_wrapper
@@ -126,16 +125,16 @@ class UserServiceTestCase(TestCase):
     def test_get_accounts(self):
         for admin_id, user in users_by_id.items():
             if user.email_status == EmailStatus.CONFIRMED and user.role in (Role.OWNER, Role.ADMIN):
-                self.assertEqual(users, self.service.get_accounts(admin_id=admin_id))
+                self.assertEqual(users_by_id, self.service.get_accounts(admin_id=admin_id))
             else:
-                self.assertRaises(AdminRequiredError, self.service.get_accounts, admin_id)
+                self.assertRaises(UserAccessError, self.service.get_accounts, admin_id)
 
         for admin_id in invalid_id:
             self.assertRaises(NotFoundError, self.service.get_accounts, admin_id)
 
     def test_update_account(self):
-        def next_user(id: int):
-            return users_by_id.get(id + 1, users[0])
+        def next_user(_id: int):
+            return users_by_id.get(_id + 1, users_by_id[0])
 
         User.update_password = Mock()
         for id, user in users_by_id.items():
@@ -167,7 +166,7 @@ class UserServiceTestCase(TestCase):
             self.assertRaises(NotFoundError, self.service.get_account, id)
 
     def test_register(self):
-        for user in users:
+        for user in users_by_id.values():
             name, email = user.name, user.email
             self.assertRaises(DataUniqueError,
                               self.service.register, UserInputData(name=name, email='email', password="password"))
