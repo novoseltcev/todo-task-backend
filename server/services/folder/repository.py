@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import NoReturn, Tuple
 
-from .entity import Folder
+from server.entity import Folder
 
 
 class FolderRepository(ABC):

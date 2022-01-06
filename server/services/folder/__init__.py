@@ -1,6 +1,5 @@
-from .interactor import FolderInteractor, FolderInputData
+from .interactor import FolderInteractor, FolderInputData, Folder
 from .repository import FolderRepository
-from .entity import Folder
 from .service import FolderService
 
 __all__ = [
@@ -9,5 +8,4 @@ __all__ = [
     'FolderRepository',
     'Folder',
     'FolderService',
-    
 ]

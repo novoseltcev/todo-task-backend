@@ -3,7 +3,7 @@ from typing import Tuple, NoReturn, Type
 from dataclasses import dataclass
 
 from .repository import FolderRepository
-from .entity import Folder
+from server.entity import Folder
 
 
 @dataclass(frozen=True)

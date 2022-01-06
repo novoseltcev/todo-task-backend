@@ -3,7 +3,7 @@ from typing import NoReturn, Tuple, Type
 from dataclasses import dataclass
 
 from .repository import UserRepository
-from .entity import User
+from server.entity import User
 
 
 @dataclass(frozen=True)
@@ -107,4 +107,3 @@ class UserInteractor(ABC):
         :raises NotFoundError: the user is not found by UUID.
         """
         pass
-
