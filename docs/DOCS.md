@@ -1,10 +1,10 @@
 # Docs
 
 ## Use Cases
-![Use Cases](UseCaseDiagram.png)
+![Use Cases](diagrams/UseCaseDiagram.png)
 
 ## Components
-![Components](ComponentsDiagram.png)
+![Components](diagrams/ComponentsDiagram.png)
 
 ## Deplyment
-![Deployment](DeploymentDiagram.png)
+![Deployment](diagrams/DeploymentDiagram.png)
