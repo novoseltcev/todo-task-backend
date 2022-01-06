@@ -83,8 +83,8 @@ class UsersMock(UserRepository, Mock):
             raise DataUniqueError()
 
     @classmethod
-    def update(cls, id, user):
-        _user = cls.from_id(id)
+    def update(cls, user_id, user):
+        _user = cls.from_id(user_id)
         name, email = user.name, user.email
         if _user.name != name and users_by_name.get(name) is not None:
             raise DataUniqueError()
@@ -99,7 +99,7 @@ class UsersMock(UserRepository, Mock):
 
 
 class UserServiceTestCase(TestCase):
-    mocked_checker = copy(User.update_password)
+    mocked_checker = copy(PasswordHash.generate)
 
     @classmethod
     def setUpClass(cls):
@@ -113,11 +113,11 @@ class UserServiceTestCase(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        User.check_password = copy(cls.mocked_checker)
+        PasswordHash.generate = copy(cls.mocked_checker)
 
     def test_get_account(self):
         for id in users_by_id.keys():
-            self.assertEqual(users_by_id[id], self.service.get_account(id=id))
+            self.assertEqual(users_by_id[id], self.service.get_account(user_id=id))
 
         for id in invalid_id:
             self.assertRaises(NotFoundError, self.service.get_account, id)
@@ -160,7 +160,7 @@ class UserServiceTestCase(TestCase):
 
     def test_delete_account(self):
         for id in users_by_id.keys():
-            self.service.delete_account(id=id)
+            self.service.delete_account(user_id=id)
 
         for id in invalid_id:
             self.assertRaises(NotFoundError, self.service.get_account, id)

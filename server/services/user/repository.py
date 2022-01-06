@@ -15,9 +15,9 @@ class UserRepository(ABC):
 
     @classmethod
     @abstractmethod
-    def from_id(cls, id: int) -> User:
+    def from_id(cls, user_id: int) -> User:
         """Load user by id from the system.
-        :param id: the ID by which the user is searched in the system.
+        :param user_id: the ID by which the user is searched in the system.
         :returns: User business-entity.
         :raises NotFoundError: the user is not found by ID.
         """
@@ -64,9 +64,9 @@ class UserRepository(ABC):
 
     @classmethod
     @abstractmethod
-    def update(cls, id: int, user: User) -> NoReturn:
+    def update(cls, user_id: int, user: User) -> NoReturn:
         """Update user by id from User representation.
-        :param id: the ID by which the user is searched in the system.
+        :param user_id: the ID by which the user is searched in the system.
         :param user: data for updating an existing user.
         :raises NotFoundError: the user is not found by ID.
         :raises DataUniqueError: the transmitted data is already contained in the user's unique fields.
@@ -75,9 +75,9 @@ class UserRepository(ABC):
 
     @classmethod
     @abstractmethod
-    def delete(cls, id: int) -> NoReturn:
+    def delete(cls, user_id: int) -> NoReturn:
         """Delete user by id.
-        :param id: the ID by which the user is searched in the system.
+        :param user_id: the ID by which the user is searched in the system.
         :raises NotFoundError: the user is not found by ID.
         """
         pass

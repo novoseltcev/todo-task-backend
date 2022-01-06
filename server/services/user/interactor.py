@@ -21,9 +21,9 @@ class UserInteractor(ABC):
         self.users = repository
 
     @abstractmethod
-    def get_account(self, id: int) -> User:
+    def get_account(self, user_id: int) -> User:
         """Getting information about user account.
-        :param id: unique User identifier.
+        :param user_id: unique User identifier.
         :returns: User representation based on ID.
         :raises NotFoundError: the user is not found by ID.
         """
@@ -41,9 +41,9 @@ class UserInteractor(ABC):
         pass
 
     @abstractmethod
-    def update_account(self, id: int, data: UserInputData) -> NoReturn:
+    def update_account(self, user_id: int, data: UserInputData) -> NoReturn:
         """Update the user account based on the data received.
-        :param id: unique User identifier.
+        :param user_id: unique User identifier.
         :param data: contains the user fields to be changed.
         :raises NotFoundError: the user is not found by ID.
         :raises DataUniqueError: email or name already in use.
@@ -51,9 +51,9 @@ class UserInteractor(ABC):
         pass
 
     @abstractmethod
-    def delete_account(self, id: int) -> NoReturn:
+    def delete_account(self, user_id: int) -> NoReturn:
         """Delete user account from the system
-        :param id: unique User identifier.
+        :param user_id: unique User identifier.
         :raises NotFoundError: the user is not found by ID.
         """
         pass

@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Tuple
 
-from user_entity import User
-from task import Task
+from .user_entity import User
+from .task import Task
 
 
 @dataclass
