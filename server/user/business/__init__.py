@@ -8,5 +8,4 @@ __all__ = [
     'UserRepository',
     'UserService',
     'User', 'Role', 'EmailStatus',
-    ''
 ]

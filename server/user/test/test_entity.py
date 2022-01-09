@@ -8,6 +8,14 @@ from server.user.business.entity import (
 )
 
 
+def pytest_assertrepr_compare(op, left, right):
+    if isinstance(left, User) and isinstance(right, User) and op == "==":
+        return [
+            "Comparing Foo instances:",
+            "   vals: {} != {}".format(left.id, right.id),
+        ]
+
+
 class UserEntityTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.test_user = User.create(

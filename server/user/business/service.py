@@ -1,14 +1,17 @@
-from .interactor import UserInteractor
-from .entity import (
+from entity import (
     User,
     PasswordError,
     UnconfirmedEmailError,
 )
+from interactor import UserInteractor
 
-from server.exec import *
+from server.exec.errors import (
+    NotFoundError,
+    LoginError,
+)
 
 
-class UserService(UserInteractor):
+class UserService(UserInteractor):  # TODO - add docstring
     def get_account(self, user_id):
         return self.users.from_id(user_id)
 
@@ -36,10 +39,10 @@ class UserService(UserInteractor):
             user.check_password(data.password)
             user.check_email()
             return user_id
-        except (NotFoundError, PasswordError):
-            raise LoginError("Not found account")
-        except UnconfirmedEmailError:
-            raise UnconfirmedEmailError("Account not confirmed")
+        except (NotFoundError, PasswordError) as exc:
+            raise LoginError("Not found account") from exc
+        except UnconfirmedEmailError as exc:
+            raise UnconfirmedEmailError("Account not confirmed") from exc
 
     def login_by_email(self, data):
         try:
@@ -47,10 +50,10 @@ class UserService(UserInteractor):
             user.check_password(data.password)
             user.check_email()
             return user_id
-        except (NotFoundError, PasswordError):
-            raise LoginError("Not found account")
-        except UnconfirmedEmailError:
-            raise UnconfirmedEmailError("Account not confirmed")
+        except (NotFoundError, PasswordError) as exc:
+            raise LoginError("Not found account") from exc
+        except UnconfirmedEmailError as exc:
+            raise UnconfirmedEmailError("Account not confirmed") from exc
 
     def reset_password(self, uuid, password):
         user_id, user = self.users.from_uuid(uuid)

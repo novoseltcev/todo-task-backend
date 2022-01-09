@@ -1,83 +1,64 @@
 from abc import ABC, abstractmethod
 from typing import Tuple, NoReturn
 
-from .entity import User
+from entity import User
 
 
 class UserRepository(ABC):
+    """Interface of interaction with infrastructure level of the user."""
+
     @classmethod
     @abstractmethod
     def all(cls) -> Tuple[User, ...]:
-        """Load all users from the system.
-        :returns: Tuple of the User business-entity.
-        """
+        """Load all users from the system."""
         pass
 
     @classmethod
     @abstractmethod
     def from_id(cls, user_id: int) -> User:
         """Load user by id from the system.
-        :param user_id: the ID by which the user is searched in the system.
-        :returns: User business-entity.
-        :raises NotFoundError: the user is not found by ID.
-        """
+        :raises NotFoundError: the user is not found by ID."""
         pass
 
     @classmethod
     @abstractmethod
     def from_name(cls, name: str) -> User:
         """Load user by name from the system.
-        :param name: the name by which the user is searched in the system.
-        :returns: User business-entity.
-        :raises NotFoundError: the user is not found by name.
-        """
+        :raises NotFoundError: the user is not found by name."""
         pass
 
     @classmethod
     @abstractmethod
     def from_email(cls, email: str) -> User:
         """Load user by email from the system.
-        :param email: the email by which the user is searched in the system.
-        :returns: User business-entity.
-        :raises NotFoundError: the user is not found by email.
-        """
+        :raises NotFoundError: the user is not found by email."""
         pass
 
     @classmethod
     @abstractmethod
     def from_uuid(cls, uuid: str) -> User:
         """Load user by uuid from the system.
-        :param uuid: the UUID by which the user is searched in the system.
-        :returns: User business-entity.
-        :raises NotFoundError: the user is not found by UUID.
-        """
+        :raises NotFoundError: the user is not found by UUID."""
         pass
 
     @classmethod
     @abstractmethod
     def create(cls, user: User) -> NoReturn:
         """Create new user from User representation.
-        :param user: data for creating a new user
-        :raises DataUniqueError: the transmitted data is already contained in the user's unique fields.
-        """
+        :raises DataUniqueError: data is already contained in the user's unique fields."""
         pass
 
     @classmethod
     @abstractmethod
     def update(cls, user_id: int, user: User) -> NoReturn:
         """Update user by id from User representation.
-        :param user_id: the ID by which the user is searched in the system.
-        :param user: data for updating an existing user.
         :raises NotFoundError: the user is not found by ID.
-        :raises DataUniqueError: the transmitted data is already contained in the user's unique fields.
-        """
+        :raises DataUniqueError: transmitted data already contained in the user's unique fields."""
         pass
 
     @classmethod
     @abstractmethod
     def delete(cls, user_id: int) -> NoReturn:
         """Delete user by id.
-        :param user_id: the ID by which the user is searched in the system.
-        :raises NotFoundError: the user is not found by ID.
-        """
+        :raises NotFoundError: the user is not found by ID."""
         pass

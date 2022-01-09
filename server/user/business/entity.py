@@ -2,12 +2,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum
+from functools import lru_cache
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-class PasswordHash:
-    """"""
+class PasswordHash:  # TODO - add docstring
     @staticmethod
     def generate(value: str) -> str:
         return generate_password_hash(value)
@@ -17,15 +17,13 @@ class PasswordHash:
         return check_password_hash(password_hash, value)
 
 
-class Role(Enum):
-    """"""
+class Role(Enum):  # TODO - add docstring
     USER = 'user'
     ADMIN = 'admin'
     OWNER = 'owner'
 
 
-class EmailStatus(Enum):
-    """"""
+class EmailStatus(Enum):  # TODO - add docstring
     NOT_CONFIRMED = 'not_confirmed'
     CONFIRMED = 'confirmed'
     REFUSED = 'refused'
@@ -48,13 +46,14 @@ class PasswordError(Exception):
 
 @dataclass
 class User:
-    """User business-entity.🐙"""
+    """User business entity.🐙"""
     _name: str
     _email: str
     _password: str
     _role: Role
     _email_status: EmailStatus
     _registration_date: date
+    _id: int = ...
 
     @property
     def name(self) -> str:
@@ -121,6 +120,13 @@ class User:
         if not self._is_owner():
             raise UserAccessError("Required owner to access")
 
+    @property
+    def id(self):
+        return self._id
+
+    def __eq__(self, value: User) -> bool:
+        return self._id == value._id
+
     @staticmethod
     def create(name: str, email: str, password: str, role=Role.USER) -> User:
         return User(
@@ -134,3 +140,39 @@ class User:
             }[role],
             date.today()
         )
+
+    class Generator:
+        """User's subclass to generate users examples for tests."""
+
+        @staticmethod
+        @lru_cache
+        def _get(user_id: int, name: str, role: Role, status: EmailStatus) -> User:
+            return User(
+                name,
+                f'{name}@domen.ru',
+                PasswordHash.generate(name),
+                role,
+                status,
+                date.today(),
+                user_id
+            )
+
+        @classmethod
+        @lru_cache
+        def user(cls, user_id: int, status: EmailStatus) -> User:
+            return cls._get(user_id, cls.user.__str__(), Role.USER, status)
+
+        @classmethod
+        @lru_cache
+        def admin(cls, user_id: int, status: EmailStatus) -> User:
+            return cls._get(user_id, cls.admin.__str__(), Role.ADMIN, status)
+
+        @classmethod
+        @lru_cache
+        def owner(cls, user_id: int, status: EmailStatus) -> User:
+            return cls._get(user_id, cls.owner.__str__(), Role.OWNER, status)
+
+        @classmethod
+        @lru_cache
+        def example(cls, user_id: int) -> User:
+            return cls.user(user_id, EmailStatus.CONFIRMED)
