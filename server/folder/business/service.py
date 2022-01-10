@@ -1,20 +1,25 @@
 from typing import Tuple
 
-from .interactor import FolderInputData, Folder, FolderInteractor
+from .interactor import (
+    FolderInteractor, FolderInputData,
+    FolderRepository, Folder, User,
+)
 
 
 class FolderService(FolderInteractor):
-    def get(self, folder_id: int, user_id: int) -> Folder:  # TODO
+    """Not working folder service"""
+
+    def get(self, folder_id: int, user: User) -> Folder:  # TODO
         return Folder.Generator.example(-1, -1)
 
-    def get_all(self, user_id: int) -> Tuple[Folder, ...]:  # TODO
-        return (Folder.Generator.example(-1, -1), )
+    def get_all(self, user: User) -> Tuple[Folder, ...]:  # TODO
+        return (Folder.Generator.example(-1, -1),)
 
-    def create(self, user_id: int, data: FolderInputData) -> int:  # TODO
+    def create(self, user: User, data: FolderInputData) -> int:  # TODO
         return -1
 
-    def update(self, folder_id: int, user_id: int, data: FolderInputData) -> None:  # TODO
+    def update(self, folder_id: int, user: User, data: FolderInputData) -> None:  # TODO
         assert False
 
-    def delete(self, folder_id: int, user_id: int) -> None:  # TODO
+    def delete(self, folder_id: int, user: User) -> None:  # TODO
         assert False

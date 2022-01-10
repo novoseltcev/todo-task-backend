@@ -1,10 +1,8 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Tuple
 
 from server.user import User
-from server.task.business.entity import Task
 
 
 @dataclass(order=True)
@@ -12,7 +10,6 @@ class Folder:
     """Folder business entity"""
     name: str
     _user: User
-    tasks: Tuple[Task, ...] = ...
     _id: int = ...
 
     @property

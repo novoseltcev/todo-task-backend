@@ -2,8 +2,10 @@ from abc import ABC, abstractmethod
 from typing import Tuple, Type
 from dataclasses import dataclass
 
-from .repository import FolderRepository
-from .entity import Folder
+from .repository import (
+    FolderRepository,
+    Folder, User,
+)
 
 
 @dataclass(frozen=True)
@@ -16,35 +18,32 @@ class FolderInteractor(ABC):
     """Interface of interaction with folder business logics"""
 
     def __init__(self, repository: Type[FolderRepository]):
-        """Initialization by the repository."""
         self.categories = repository
 
     @abstractmethod
-    def get(self, folder_id: int, user_id: int) -> Folder:
+    def get(self, folder_id: int, user: User) -> Folder:
         """Getting information about folder.
-        :raises NotFoundError: not found folder or user; or current user isn't folder's owner."""
+        :raises NotFoundError: the Folder wasn't found or the current User isn't the owner of Folder."""
         pass
 
     @abstractmethod
-    def get_all(self, user_id: int) -> Tuple[Folder, ...]:
-        """Getting information about folders.
-        :raises NotFoundError: the user was not found."""
+    def get_all(self, user: User) -> Tuple[Folder, ...]:
+        """Getting information about folders by User."""
         pass
 
     @abstractmethod
-    def create(self, user_id: int, data: FolderInputData) -> None:
-        """Creating new folder in the system.
-        :raises NotFoundError: the user was not found."""
+    def create(self, user: User, data: FolderInputData) -> None:
+        """Creating new folder in the system."""
         pass
 
     @abstractmethod
-    def update(self, folder_id: int, user_id: int, data: FolderInputData) -> None:
+    def update(self, folder_id: int, user: User, data: FolderInputData) -> None:
         """Updating the folder based on the received data.
-        :raises NotFoundError: not found folder or user; or current user isn't folder's owner."""
+        :raises NotFoundError: the Folder wasn't found or the current User isn't the owner of Folder."""
         pass
 
     @abstractmethod
-    def delete(self, folder_id: int, user_id: int) -> None:
+    def delete(self, folder_id: int, user: User) -> None:
         """Deleting the folder from the system.
-        :raises NotFoundError: not found folder or user; or current user isn't folder's owner."""
+        :raises NotFoundError: the Folder wasn't found or the current User isn't the owner of Folder."""
         pass

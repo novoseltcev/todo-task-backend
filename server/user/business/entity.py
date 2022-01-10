@@ -44,7 +44,7 @@ class PasswordError(Exception):
     pass
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class User:
     """User business entity.🐙"""
     _name: str

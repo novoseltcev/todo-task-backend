@@ -1,10 +1,11 @@
-from .interactor import UserInteractor, UserInputData
-from .repository import UserRepository
-from .entity import *
-from .service import UserService
+from .service import (
+    UserService, UserInputData,
+    UserRepository, User
+)
+from .entity import Role, EmailStatus
 
 __all__ = [
-    'UserInteractor', 'UserInputData',
+    'UserInputData',
     'UserRepository',
     'UserService',
     'User', 'Role', 'EmailStatus',
