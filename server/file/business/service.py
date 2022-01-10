@@ -6,8 +6,8 @@ from .interactor import (
 )
 
 
-class FileService(FileInteractor):
-    """Not working file-service"""
+class FileService(FileInteractor):  # TODO - realize working interface
+    """Implementation of the interface for interacting with the File's business logic"""
 
     def get(self, file_id: int, user: User) -> File:
         pass

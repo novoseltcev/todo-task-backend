@@ -25,10 +25,25 @@ class Task:
     def user(self) -> User:
         return self._user
 
-    class Generator:  # TODO - realize
+    class Generator:
         """Folder's subclass to generate task examples for tests."""
 
         @staticmethod
         @lru_cache
-        def example(task_id: int, user_id: int, *args) -> Task:
-            pass
+        def _get(task_id: int, folder_id: int, user_id: int,
+                 name: str, description: str, deadline: date) -> Task:
+            folder = Folder.Generator.example(folder_id, user_id)
+            return Task(
+                name,
+                description,
+                deadline,
+                folder,
+                folder.user,
+                task_id
+            )
+
+        @classmethod
+        @lru_cache
+        def example(cls, task_id: int, folder_id: int, user_id: int) -> Task:
+            return cls._get(task_id, folder_id, user_id,
+                            f'Task<{task_id}>', 'bla-bla-bla', date.fromisocalendar(2022, 1, 1))

@@ -6,7 +6,7 @@ from .interactor import (
 )
 
 
-class TaskService(TaskInteractor):
+class TaskService(TaskInteractor):  # TODO - realize working interface
     """Implementation of the interface for interacting with the Task's business logic"""
 
     def get(self, task_id: int, user: User) -> Task:

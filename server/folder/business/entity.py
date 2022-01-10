@@ -31,4 +31,4 @@ class Folder:
         @classmethod
         @lru_cache
         def example(cls, folder_id: int, user_id: int) -> Folder:
-            return cls.get(folder_id, f'folder_{folder_id}', user_id)
+            return cls.get(folder_id, f'Folder<{folder_id}>', user_id)

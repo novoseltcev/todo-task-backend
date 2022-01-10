@@ -12,7 +12,7 @@ from .interactor import (
 )
 
 
-class UserService(UserInteractor):
+class UserService(UserInteractor):  # TODO - realize working interface
     """Implementation of the interface for interacting with the User's business logic"""
 
     def get_account(self, user_id: int) -> User:
