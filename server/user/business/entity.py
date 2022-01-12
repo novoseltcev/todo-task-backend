@@ -21,14 +21,14 @@ class PasswordHash:
         return check_password_hash(password_hash, value)
 
 
-class Role(Enum):  # TODO - add docstring
+class Role(Enum):
     """Enum with user's roles in the system"""
     USER = 'user'
     ADMIN = 'admin'
     OWNER = 'owner'
 
 
-class EmailStatus(Enum):  # TODO - add docstring
+class EmailStatus(Enum):
     """Enum with account status based on email confirmation"""
     NOT_CONFIRMED = 'not_confirmed'
     CONFIRMED = 'confirmed'
