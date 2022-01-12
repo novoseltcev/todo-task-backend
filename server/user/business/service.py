@@ -38,10 +38,10 @@ class UserService(UserInteractor):  # TODO - realize working interface
 
     def login_by_name(self, data: UserInputData) -> int:
         try:
-            user_id, user = self.users.from_name(data.name)
+            user = self.users.from_name(data.name)
             user.check_password(data.password)
             user.check_email()
-            return user_id
+            return user.id
         except (NotFoundError, PasswordError) as exc:
             raise LoginError("Not found account") from exc
         except UnconfirmedEmailError as exc:

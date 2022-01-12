@@ -7,10 +7,14 @@ from functools import lru_cache
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-class PasswordHash:  # TODO - add docstring
+class PasswordHash:
+    """Utils to password hashing"""
+
     @staticmethod
     def generate(value: str) -> str:
-        return generate_password_hash(value)
+        result = generate_password_hash(value)
+        assert PasswordHash.check(result, value)
+        return result
 
     @staticmethod
     def check(password_hash: str, value: str) -> bool:
@@ -18,24 +22,26 @@ class PasswordHash:  # TODO - add docstring
 
 
 class Role(Enum):  # TODO - add docstring
+    """Enum with user's roles in the system"""
     USER = 'user'
     ADMIN = 'admin'
     OWNER = 'owner'
 
 
 class EmailStatus(Enum):  # TODO - add docstring
+    """Enum with account status based on email confirmation"""
     NOT_CONFIRMED = 'not_confirmed'
     CONFIRMED = 'confirmed'
     REFUSED = 'refused'
 
 
 class UserAccessError(Exception):
-    """Exception raises when access is denied"""
+    """Raises when access is denied"""
     pass
 
 
 class UnconfirmedEmailError(Exception):
-    """Exception raises when trying to access with a non-correct email"""
+    """Raises when trying to access with a non-correct email"""
     pass
 
 
@@ -102,7 +108,7 @@ class User:
             raise PasswordError()
 
     def check_email(self):
-        if self.email_status != EmailStatus.CONFIRMED:
+        if not self._is_confirmed():
             raise UnconfirmedEmailError(self.email)
 
     def _is_admin(self) -> bool:
@@ -111,9 +117,11 @@ class User:
     def _is_owner(self) -> bool:
         return self._role == Role.OWNER
 
+    def _is_confirmed(self):
+        return self.email_status == EmailStatus.CONFIRMED
+
     def admin_access(self):
-        self.check_email()
-        if not (self._is_admin() or self._is_owner()):
+        if not self._is_admin() and not self._is_owner() or not self._is_confirmed():
             raise UserAccessError("Required admins to access")
 
     def owner_access(self):
@@ -149,7 +157,7 @@ class User:
         def _get(user_id: int, name: str, role: Role, status: EmailStatus) -> User:
             return User(
                 name,
-                f'{name}@domen.ru',
+                f'{name}@domen.com',
                 PasswordHash.generate(name),
                 role,
                 status,
@@ -160,17 +168,17 @@ class User:
         @classmethod
         @lru_cache
         def user(cls, user_id: int, status: EmailStatus) -> User:
-            return cls._get(user_id, cls.user.__str__(), Role.USER, status)
+            return cls._get(user_id, f'User<{user_id}>', Role.USER, status)
 
         @classmethod
         @lru_cache
         def admin(cls, user_id: int, status: EmailStatus) -> User:
-            return cls._get(user_id, cls.admin.__str__(), Role.ADMIN, status)
+            return cls._get(user_id, f'Admin<{user_id}>', Role.ADMIN, status)
 
         @classmethod
         @lru_cache
         def owner(cls, user_id: int, status: EmailStatus) -> User:
-            return cls._get(user_id, cls.owner.__str__(), Role.OWNER, status)
+            return cls._get(user_id, f'Owner<{user_id}>', Role.OWNER, status)
 
         @classmethod
         @lru_cache

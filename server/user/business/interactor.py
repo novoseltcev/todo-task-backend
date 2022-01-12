@@ -11,8 +11,8 @@ from .repository import (
 @dataclass(frozen=True)
 class UserInputData:
     """Input DTO to service with contain data of the users"""
-    email: str
     password: str
+    email: str = ...
     name: str = ...
 
 
