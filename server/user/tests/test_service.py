@@ -1,6 +1,6 @@
 import uuid
 from copy import deepcopy, copy
-from typing import Callable
+from typing import Callable, List
 
 from mock import Mock
 import pytest
@@ -45,17 +45,17 @@ class FakeUsers(UserRepository, Mock):
         self.users = deepcopy(list_users)
         self.key_value_storage = deepcopy(users_by_uuid)
 
-    def all(self):
-        return self.users
-
     def from_id(self, user_id):
-        return copy(self.contain(lambda user: user.id == user_id))
+        return copy(self.get_by_id(user_id))
+
+    def all(self):
+        return deepcopy(self.users)
 
     def from_name(self, name):
-        return self.contain(lambda user: user.name == name)
+        return self.get(lambda user: user.name == name)
 
     def from_email(self, email):
-        return self.contain(lambda user: user.email == email)
+        return self.get(lambda user: user.email == email)
 
     def from_uuid(self, token):
         try:
@@ -64,36 +64,45 @@ class FakeUsers(UserRepository, Mock):
             raise NotFoundError() from error
 
     def create(self, user):
-        self.not_contain(lambda _user: _user.name == user.name)
-        self.not_contain(lambda _user: _user.email == user.email)
+        self.not_contain_name(user.name)
+        self.not_contain_email(user.email)
+        user._id = self.generate_id()
         self.users.append(user)
-        return len(self.users) - 1
+        return user.id
+
+    def generate_id(self):
+        return max(self.users, key=lambda user: user.id).id + 1
+
+    def not_contain_name(self, name: str):
+        self.not_contain(lambda user: user.name == name)
+
+    def not_contain_email(self, email: str):
+        self.not_contain(lambda user: user.email == email)
 
     def update(self, user_id, user):
-        print(f'{user_id=}')
-        old_user = self.contain(lambda _user: _user.id == user_id)
-        print(f'{old_user=}, {user=}')
+        old_user = self.get_by_id(user_id)
         if old_user.email != user.email:
-            self.not_contain(lambda _user: _user.email == user.email)
+            self.not_contain_email(user.email)
             old_user.email = user.email
         old_user._password = user.password
         old_user._email_status = user.email_status
 
     def delete(self, user_id):
-        self.users.remove(self.from_id(user_id))
+        self.users.remove(self.get_by_id(user_id))
 
-    def contain(self, pred: Callable):
-        result = self._custom_filter(pred)
+    def get(self, pred: Callable) -> User:
+        result = list(filter(pred, self.users))
         if len(result) == 0:
             raise NotFoundError()
         return result[0]
 
-    def not_contain(self, pred: Callable):
-        if len(self._custom_filter(pred)) > 0:
-            raise DataUniqueError()
+    def get_by_id(self, user_id: int) -> User:
+        return self.get(lambda user: user.id == user_id)
 
-    def _custom_filter(self, pred: Callable):
-        return list(filter(pred, self.users))
+    def not_contain(self, pred: Callable) -> None:
+        result = list(filter(pred, self.users))
+        if len(result) > 0:
+            raise DataUniqueError()
 
 
 class TestUserService:

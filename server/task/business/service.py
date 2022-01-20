@@ -18,13 +18,13 @@ class TaskService(TaskInteractor):  # TODO - realize working interface
     def get_all(self, user: User) -> Tuple[Task, ...]:
         pass
 
-    def create(self, user: User, data: TaskInputData) -> int:
+    def create(self, folder: Folder, data: TaskInputData) -> int:
         pass
 
     def move_to_folder(self, task_id: int, folder: Folder):
         pass
 
-    def update(self, task_id: int, user: User, data: TaskInputData) -> None:
+    def update(self, task_id: int, folder: Folder, data: TaskInputData) -> None:
         pass
 
     def delete(self, task_id: int, user: User) -> None:

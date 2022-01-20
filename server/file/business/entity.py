@@ -14,7 +14,6 @@ class File:
     name: str
     path: str
     _task: Task
-    _user: User
     _id: int = ...
 
     @property
@@ -25,22 +24,16 @@ class File:
     def task(self):
         return self._task
 
-    @property
-    def user(self):
-        return self._user
-
     class Generator:
         """File's subclass to generate file examples for tests."""
 
         @staticmethod
         @lru_cache
         def _get(file_id: int, user_id: int, task_id: int, name: str, path: str) -> File:
-            task = Task.Generator.example(task_id, user_id)
             return File(
                 name,
                 path,
-                task,
-                task.user,
+                Task.Generator.example(task_id, user_id),
                 file_id
             )
 

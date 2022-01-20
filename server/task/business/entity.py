@@ -14,16 +14,11 @@ class Task:
     description: str
     deadline: date
     folder: Folder
-    _user: User
     _id: int = ...
 
     @property
     def id(self):
         return self._id
-
-    @property
-    def user(self) -> User:
-        return self._user
 
     class Generator:
         """Folder's subclass to generate task examples for tests."""
@@ -32,13 +27,11 @@ class Task:
         @lru_cache
         def _get(task_id: int, folder_id: int, user_id: int,
                  name: str, description: str, deadline: date) -> Task:
-            folder = Folder.Generator.example(folder_id, user_id)
             return Task(
                 name,
                 description,
                 deadline,
-                folder,
-                folder.user,
+                Folder.Generator.example(folder_id, user_id),
                 task_id
             )
 

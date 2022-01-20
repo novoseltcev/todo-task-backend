@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from typing import Tuple
+from typing import List
 
 from .entity import File, User, Task
 
@@ -14,13 +14,13 @@ class FileRepository(ABC):
         pass
 
     @abstractmethod
-    def from_task(self, task_id: int) -> Tuple[File, ...]:
+    def from_task(self, task_id: int) -> List[File, ]:
         """Load files by Task ID from the system.
         :raises NotFoundError: the task is not found by ID."""
         pass
 
     @abstractmethod
-    def from_user(self, user_id: int) -> Tuple[File, ...]:
+    def from_user(self, user_id: int) -> List[File, ]:
         """Load files by User ID from the system.
         :raises NotFoundError: the user is not found by ID."""
         pass

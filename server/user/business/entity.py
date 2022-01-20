@@ -13,6 +13,7 @@ class PasswordHash:
     @staticmethod
     def generate(value: str) -> str:
         result = generate_password_hash(value)
+        print(result.__repr__())
         assert PasswordHash.check(result, value)
         return result
 

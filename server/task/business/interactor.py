@@ -12,6 +12,7 @@ class TaskInputData:
     name: str
     description: str
     deadline: date
+    folder: int
 
 
 class TaskInteractor(ABC):
@@ -37,7 +38,7 @@ class TaskInteractor(ABC):
         pass
 
     @abstractmethod
-    def create(self, user: User, data: TaskInputData) -> int:
+    def create(self, folder: Folder, data: TaskInputData) -> int:
         """Create new Task to User from external data."""
         pass
 

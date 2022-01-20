@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Tuple
+# from typing import List
+from typing import List
 
 from .entity import Folder, User
 
@@ -14,13 +15,13 @@ class FolderRepository(ABC):
         pass
 
     @abstractmethod
-    def from_user(self, user_id: int) -> Tuple[Folder, ...]:
+    def from_user(self, user_id: int) -> List[Folder, ]:
         """Load folders by User ID from the system.
         :raises NotFoundError: the user is not found by ID."""
         pass
 
     @abstractmethod
-    def create(self, user_id: int, folder: Folder) -> None:
+    def create(self, user_id: int, folder: Folder) -> int:
         """Create new folder from Folder representation and User ID.
         :raises NotFoundError: the folder wasn't found by passing User ID."""
         pass
