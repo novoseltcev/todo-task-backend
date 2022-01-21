@@ -1,7 +1,7 @@
 from typing import Tuple, List
 
 from .schema import UserSchema
-from ..business import User
+from ..business import Account
 
 
 class UserResponse(dict):
@@ -10,9 +10,9 @@ class UserResponse(dict):
 
 class UserSerializer:
     @staticmethod
-    def dump(user: User) -> UserResponse:
+    def dump(user: Account) -> UserResponse:
         return UserResponse(UserSchema().dump(user))
 
     @staticmethod
-    def dump_many(users: Tuple[User, ...]) -> List[UserResponse]:
+    def dump_many(users: Tuple[Account, ...]) -> List[UserResponse]:
         return [UserResponse(user) for user in UserSchema(many=True).dump(users)]

@@ -2,30 +2,30 @@ from typing import Tuple
 
 from .interactor import (
     TaskInteractor, TaskInputData,
-    TaskRepository, Task, User, Folder
+    TaskRepository, Task, Account, Category
 )
 
 
 class TaskService(TaskInteractor):  # TODO - realize working interface
     """Implementation of the interface for interacting with the Task's business logic"""
 
-    def get(self, task_id: int, user: User) -> Task:
+    def get(self, task_id: int, user: Account) -> Task:
         pass
 
-    def get_by_folder(self, folder: Folder) -> Tuple[Task, ...]:
+    def get_by_category(self, folder: Category) -> Tuple[Task, ...]:
         pass
 
-    def get_all(self, user: User) -> Tuple[Task, ...]:
+    def get_all(self, user: Account) -> Tuple[Task, ...]:
         pass
 
-    def create(self, folder: Folder, data: TaskInputData) -> int:
+    def create(self, folder: Category, data: TaskInputData) -> int:
         pass
 
-    def move_to_folder(self, task_id: int, folder: Folder):
+    def move_to_folder(self, task_id: int, folder: Category):
         pass
 
-    def update(self, task_id: int, folder: Folder, data: TaskInputData) -> None:
+    def update(self, task_id: int, folder: Category, data: TaskInputData) -> None:
         pass
 
-    def delete(self, task_id: int, user: User) -> None:
+    def delete(self, task_id: int, user: Account) -> None:
         pass

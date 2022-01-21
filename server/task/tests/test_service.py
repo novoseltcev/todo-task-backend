@@ -9,11 +9,11 @@ from server.task.business import (
     TaskService, TaskInputData,
     TaskRepository, Task
 )
-from server.task.business.entity import User, Folder
-from server.exec.errors import NotFoundError
+from server.task.business.entity import Account, Category
+from server.error.errors import NotFoundError
 
-list_users = [User.Generator.example(i) for i in range(2)]
-list_folders = [Folder.Generator.example(i, list_users[0].id) for i in range(2)]
+list_users = [Account.Generator.example(i) for i in range(2)]
+list_folders = [Category.Generator.example(i, list_users[0].id) for i in range(2)]
 list_tasks = [Task.Generator.example(i, list_folders[0].id, list_folders[0].user.id) for i in range(2)]
 
 
@@ -28,7 +28,7 @@ class FakeTasks(Mock, TaskRepository):
         return copy(self.get_by_id(task_id)[0])
 
     def from_user(self, user_id: int) -> List[Task,]:
-        return deepcopy(self.get(lambda task: task.user.id == user_id))
+        return deepcopy(self.get(lambda task: task.account.id == user_id))
 
     def from_folder(self, folder_id: int) -> List[Task,]:
         return deepcopy(self.get(lambda task: task.folder.id == folder_id))
@@ -80,29 +80,29 @@ class TestTaskService:
         with pytest.raises(NotFoundError):
             self.service.get(task_id, choice(list_users))
 
-    @pytest.mark.parametrize('folder', list_folders)
+    @pytest.mark.parametrize('category', list_folders)
     def test_get_by_folder_found(self, folder):
         expected = tuple(filter(lambda task: task.folder.id == folder.id, list_tasks))
-        assert self.service.get_by_folder(folder) == expected
+        assert self.service.get_by_category(folder) == expected
 
     @pytest.mark.parametrize('folder_id', [-1, max(list_folders, key=lambda folder: folder.id).id + 1])
     def test_get_by_folder__not_found_error(self, folder_id):
-        folder = Folder.Generator.example(folder_id, choice(list_users).id)
+        folder = Category.Generator.example(folder_id, choice(list_users).id)
         with pytest.raises(NotFoundError):
-            self.service.get_by_folder(folder)
+            self.service.get_by_category(folder)
 
-    @pytest.mark.parametrize('user', list_users)
+    @pytest.mark.parametrize('account', list_users)
     def test_get_all__found(self, user):
         user_id = user.id
-        expected = tuple(filter(lambda task: task.user.id == user_id, list_tasks))
+        expected = tuple(filter(lambda task: task.account.id == user_id, list_tasks))
         assert self.service.get_all(user) == expected
 
     @pytest.mark.parametrize('user_id', [-1, max(list_users, key=lambda user: user.id).id + 1])
     def test_get_all__not_found_error(self, user_id):
-        user = User.Generator.example(user_id)
+        user = Account.Generator.example(user_id)
         with pytest.raises(NotFoundError):
             self.service.get_all(user)
 
     def test_create__done(self, user, data):
-        # user =
+        # account =
         self.service.create(user, data)

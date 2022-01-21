@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from .entity import Task, Folder, User
+from .entity import Task, Category
 
 
 class TaskRepository(ABC):
@@ -16,13 +16,13 @@ class TaskRepository(ABC):
     @abstractmethod
     def from_user(self, user_id: int) -> List[Task, ]:
         """Load tasks by User ID from the system.
-        :raises NotFoundError: the user is not found by ID."""
+        :raises NotFoundError: the account is not found by ID."""
         pass
 
     @abstractmethod
     def from_folder(self, folder_id: int) -> List[Task, ]:
         """Load tasks by Folder ID from the system.
-        :raises NotFoundError: the folder is not found by ID."""
+        :raises NotFoundError: the category is not found by ID."""
         pass
 
     @abstractmethod

@@ -1,20 +1,20 @@
 from abc import abstractmethod, ABC
 from typing import List
 
-from .entity import File, User, Task
+from .entity import File, Task
 
 
 class FileRepository(ABC):
     """Interface of interaction with infrastructure level (ORM, connections, etc.) of the file."""
 
     @abstractmethod
-    def from_id(self, file_id: int) -> File:
+    def from_id(self, file_identity: int) -> File:
         """Load file by himself ID from the system.
         :raises NotFoundError: the file is not found by ID."""
         pass
 
     @abstractmethod
-    def from_task(self, task_id: int) -> List[File, ]:
+    def from_task(self, task_identity: int) -> List[File, ]:
         """Load files by Task ID from the system.
         :raises NotFoundError: the task is not found by ID."""
         pass
@@ -22,7 +22,7 @@ class FileRepository(ABC):
     @abstractmethod
     def from_user(self, user_id: int) -> List[File, ]:
         """Load files by User ID from the system.
-        :raises NotFoundError: the user is not found by ID."""
+        :raises NotFoundError: the account is not found by ID."""
         pass
 
     @abstractmethod

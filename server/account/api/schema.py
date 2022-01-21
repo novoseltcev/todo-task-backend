@@ -1,7 +1,7 @@
 from marshmallow import Schema, SchemaOpts, fields, validate, RAISE, INCLUDE
 from marshmallow_enum import EnumField
 
-from ..business import Role, EmailStatus
+from ..business import Role, AccountStatus
 
 
 class UserSchema(Schema):
@@ -14,7 +14,7 @@ class UserSchema(Schema):
 
     registration_date = fields.Date(required=True, dump_only=True)
     role = EnumField(Role, dump_only=True, dump_by=EnumField.VALUE)
-    email_status = EnumField(EmailStatus, dump_only=True, dump_by=EnumField.VALUE)
+    email_status = EnumField(AccountStatus, dump_only=True, dump_by=EnumField.VALUE)
 
     class Meta(SchemaOpts):
         missing = RAISE

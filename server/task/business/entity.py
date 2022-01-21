@@ -3,8 +3,7 @@ from dataclasses import dataclass
 from datetime import date
 from functools import lru_cache
 
-from server.user import User
-from server.folder import Folder
+from server.category import Category
 
 
 @dataclass(eq=True)
@@ -13,12 +12,12 @@ class Task:
     name: str
     description: str
     deadline: date
-    folder: Folder
-    _id: int = ...
+    category: Category
+    identity: int = ...
 
     @property
-    def id(self):
-        return self._id
+    def identity(self):
+        return self.identity
 
     class Generator:
         """Folder's subclass to generate task examples for tests."""
@@ -31,7 +30,7 @@ class Task:
                 name,
                 description,
                 deadline,
-                Folder.Generator.example(folder_id, user_id),
+                Category.Generator.example(folder_id, user_id),
                 task_id
             )
 
