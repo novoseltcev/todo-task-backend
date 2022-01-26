@@ -12,10 +12,7 @@ class PasswordHash:
 
     @staticmethod
     def generate(value: str) -> str:
-        result = generate_password_hash(value)
-        print(result.__repr__())
-        assert PasswordHash.check(result, value)
-        return result
+        return generate_password_hash(value)
 
     @staticmethod
     def check(password_hash: str, value: str) -> bool:
@@ -50,38 +47,23 @@ class Account:
 
     name: str
     email: str
-    _password: str
+    password: str
     role: Role
     status: Status
     registration_date: date
     identity: int = ...
 
     @staticmethod
-    def create(name: str, email: str, password: str, role=Role.USER) -> Account:
-        return Account(
-            name=name,
-            email=email,
-            password=PasswordHash.generate(password),
-            role=role,
-            status=Account.Status.NOT_CONFIRMED if role == role.USER else Account.Status.CONFIRMED,
-            registration_date=date.today()
-        )
+    def generate_password(password: str) -> str:
+        return PasswordHash.generate(password)
 
-    @property
-    def password(self) -> str:
-        return self._password
-
-    @password.setter
-    def password(self, value: str):
-        self._password = PasswordHash.generate(value)
+    def check_password(self, password: str) -> None:
+        if not PasswordHash.check(self.password, password):
+            raise AccessError()
 
     def admin_access(self):
         if self.role not in (self.Role.OWNER, self.Role.ADMIN):
             raise AccessError("Required owner to access")
-
-    # def check(self, password: str):
-    #     if not PasswordHash.check(self.password, password) or self.status != Account.Status.NOT_CONFIRMED:
-    #         raise
 
     def owner_access(self):
         if self.role != self.Role.OWNER:
@@ -96,7 +78,7 @@ class Account:
             return Account(
                 name,
                 f'{name}@domen.com',
-                PasswordHash.generate(name),
+                Account.generate_password(name),
                 role,
                 status,
                 date(2012, 12, 12),
