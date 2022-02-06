@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class File:
-    """Business entity: file pinned to task."""
+    """Domain entity: file pinned to task."""
 
     name: str
     path: str

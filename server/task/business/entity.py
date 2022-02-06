@@ -5,7 +5,7 @@ from datetime import date
 
 @dataclass
 class Task:
-    """Task business entity"""
+    """Domain entity: task """
 
     name: str
     description: str
@@ -13,3 +13,9 @@ class Task:
     category: int
     account: int
     identity: int = ...
+
+    def __hash__(self):
+        return hash(self.identity)
+
+    def __eq__(self, other: Task):
+        return self.identity == self.identity and self.identity is not None

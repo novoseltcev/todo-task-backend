@@ -7,42 +7,28 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class AccessError(Exception):
-    """Raises when access is denied"""
-    pass
+    """Access is denied"""
 
 
 class UnconfirmedEmailError(Exception):
-    """Raises when trying to access with a non-correct email"""
-    pass
-
-
-class PasswordHash:
-    """Utils to password hashing"""
-
-    @staticmethod
-    def generate(value: str) -> str:
-        return generate_password_hash(value)
-
-    @staticmethod
-    def check(password_hash: str, value: str) -> bool:
-        return check_password_hash(password_hash, value)
+    """Trying to access with a non-correct email"""
 
 
 @dataclass
 class Account:
-    """Account business entity."""
-
-    class Role(Enum):
-        """Enum with account's roles in the system"""
-        USER = 'account'
-        ADMIN = 'admin'
-        OWNER = 'owner'
+    """Domain entity: user account in the system."""
 
     class Status(Enum):
-        """Enum with account status based on email confirmation"""
+        """Account's statuses."""
         NOT_CONFIRMED = 'not_confirmed'
         CONFIRMED = 'confirmed'
         DELETED = 'deleted'
+
+    class Role(Enum):
+        """Account's roles."""
+        USER = 'account'
+        ADMIN = 'admin'
+        OWNER = 'owner'
 
     name: str
     email: str
@@ -53,17 +39,37 @@ class Account:
     identity: int = ...
 
     @staticmethod
-    def generate_password(password: str) -> str:
+    def generate_password_hash(password: str) -> str:
         return PasswordHash.generate(password)
 
     def check_password(self, password: str) -> None:
         if not PasswordHash.check(self.password, password):
             raise AccessError()
 
-    def admin_access(self):
-        if self.role not in (self.Role.OWNER, self.Role.ADMIN):
-            raise AccessError("Required admin to access")
+    def check_access_group(self, group: AccessGroup, msg=None) -> None:
+        if self.role not in group:
+            raise AccessError(msg)
 
-    def owner_access(self):
-        if self.role != self.Role.OWNER:
-            raise AccessError("Required owner to access")
+    def __hash__(self):
+        return hash(self.identity)
+
+    def __eq__(self, other: Account):
+        return self.identity == self.identity and self.identity is not None
+
+
+class PasswordHash:
+    """Utils to password hashing"""
+    @staticmethod
+    def generate(value: str) -> str:
+        return generate_password_hash(value)
+
+    @staticmethod
+    def check(password_hash: str, value: str) -> bool:
+        return check_password_hash(password_hash, value)
+
+
+class AccessGroup(Enum):
+    """Group of roles that define access levels"""
+    OWNERS = (Account.Role.OWNER, )
+    ADMINS = (*OWNERS, Account.Role.ADMIN)
+    USERS = (*ADMINS, Account.Role.USER)
