@@ -1,6 +1,7 @@
 from __future__ import annotations
-from dataclasses import dataclass, KW_ONLY
+from dataclasses import dataclass
 from datetime import datetime, timezone
+from enum import Enum
 from typing import Optional, List
 
 
@@ -12,7 +13,6 @@ class ContentOwner:
 @dataclass
 class Category:
     """Domain aggregator-entity: aggregates content within a single task category."""
-    _: KW_ONLY
     name: str
     color: Optional[str]
     owner: ContentOwner
@@ -26,12 +26,21 @@ class Category:
         return self.reference is not None \
                and self.reference == other.reference
 
+    def check_actor(self, actor: ContentOwner):
+        if self.owner != actor:
+            raise Exception()
+
+
+class Status(Enum):
+    IN_PROGRESS = 'in_progress'
+    DONE = 'done'
+
 
 @dataclass
 class Task:
     """Domain entity: associated with Files"""
-    _: KW_ONLY
     title: str
+    status: Status
     description: Optional[str]
     deadline: Optional[datetime]
     reference: str = ...
@@ -56,7 +65,6 @@ class Task:
 @dataclass(frozen=True)
 class File:
     """Domain entity: pinned to Task."""
-    _: KW_ONLY
-    name: str
-    path: str
+    filename: str
+    external_path: str
     reference: str = ...
