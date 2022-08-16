@@ -18,12 +18,12 @@ class JWTRepository(Repository):
         self.session.commit()
         return entity
 
-    def update(self, token: str, data: dict) -> None:
-        self.query().filter(self.model.token == token).update(**data)
+    def update(self, token: str, **kwargs) -> None:
+        self.query().filter(self.model.token == token).update(**kwargs)
         self.session.commit()
 
-    def update_by_user(self, user_id: int, data: dict) -> None:
-        self.query().filter(self.model.user_id == user_id).update(**data)
+    def update_by_user(self, user_id: int, **kwargs) -> None:
+        self.query().filter(self.model.user_id == user_id).update(**kwargs)
         self.session.commit()
 
     def delete(self, token: str) -> None:
