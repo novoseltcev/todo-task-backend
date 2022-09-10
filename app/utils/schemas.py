@@ -15,4 +15,3 @@ class JavaScriptMixin:
     @post_dump
     def to_camelcase(self, data, **kwargs):
         return {camelcase(key): value for key, value in data.items()}
-
