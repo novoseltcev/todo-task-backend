@@ -11,7 +11,5 @@ class Page(NamedTuple):
 
 
 class Service:
-    def __init__(self, repository: Repository | None):
+    def __init__(self, repository: Repository):
         self.repository = repository
-
-
