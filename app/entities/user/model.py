@@ -1,3 +1,4 @@
+from datetime import datetime as dt
 from enum import Enum, auto
 
 from app.db import db
@@ -20,9 +21,7 @@ class User(db.Model):
 
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
-    created_at = db.Column(db.Date, nullable=False, server_default=db.text('now()'))
+    created_at = db.Column(db.Date, nullable=False, default=dt.now, server_default=db.text('now()'))
     role = db.Column(db.Enum(Role), default=Role.common)
     status = db.Column(db.Enum(Status), default=Status.unconfirmed)
     confirmation_token = db.Column(db.String, nullable=True)
-
-    categories = db.relationship('Category', order_by='Category.id', lazy=True)

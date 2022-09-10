@@ -1,5 +1,10 @@
-from app.rest_lib.repository import Repository
+from __future__ import annotations
+from app.rest_lib.repository import Repository, NamedTuple
 from app.entities.user.model import User
+
+
+class PK(NamedTuple):
+    id: int
 
 
 class UserRepository(Repository):
@@ -7,12 +12,9 @@ class UserRepository(Repository):
 
     def __init__(self):
         super().__init__(model=User)
-        
-    def pk_query(self, pk: int):
-        return self.query().filter(self.model.id == pk)
 
-    def get_by_pk(self, id: int) -> User:
-        return self.pk_query(id).first()
+    def get_by_pk(self, pk: PK) -> User:
+        return self.pk_query(pk).first()
 
     def get_by_email(self, email: str) -> User:
         return self.query().filter(self.model.email == email).first()
@@ -22,10 +24,10 @@ class UserRepository(Repository):
         self.session.commit()
         return entity
 
-    def update(self, id: int, data: dict) -> None:
-        self.pk_query(id).update(**data)
+    def update(self, pk: PK, data: dict) -> None:
+        self.pk_query(pk).update(data)
         self.session.commit()
 
-    def delete(self, id: int) -> None:
-        self.pk_query(id).delete()
+    def delete(self, pk: PK) -> None:
+        self.pk_query(pk).delete()
         self.session.commit()

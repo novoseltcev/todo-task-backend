@@ -13,26 +13,35 @@ class UserController(Controller):
 
     def __init__(self):
         super().__init__(
-            service=UserService(),
-            schema_builder=UserSchema
+            service=UserService()
         )
 
     @auth_service.allowed_roles(roles=[Role.admin, Role.common])
     def get(self):
-        return jsonify(self.schema_builder().dump(self.user)), 200
+        return jsonify(
+            data=UserSchema().dump(self.user)
+        ), 200
 
     def post(self):
-        data = self.schema_builder(only=('email', 'password')).load(self.json)
-        self.service.register(**data)
+        data = UserSchema(only=('email', 'password')).load(self.json)
+        self.service.register(data)
         return jsonify(), 204
 
-    @auth_service.allowed_roles(roles=[Role.admin, Role.common])
+    @auth_service.allowed_roles(roles=[Role.admin, Role.common], fresh=True)
     def put(self):
-        data = self.schema_builder().load(self.json)
+        data = UserSchema(exclude=('password', 'email')).load(self.json)
         self.service.edit(entity_id=self.user.id, data=data)
         return jsonify(), 204
 
-    @auth_service.allowed_roles(roles=[Role.admin, Role.common])
+    @auth_service.allowed_roles(roles=[Role.admin, Role.common], optional=True, fresh=True)
+    def patch(self):
+        self.service.change_password(
+            entity_id=self.user.id,
+            password=UserSchema(only=('password',)).load(self.json)['password']
+        )
+        return jsonify(), 204
+
+    @auth_service.allowed_roles(roles=[Role.admin, Role.common], fresh=True)
     def delete(self):
         self.service.delete(entity_id=self.user.id)
         return jsonify(), 204
